@@ -1,0 +1,4 @@
+slug,name_zh,name_kk,name_ru,description_zh,description_kk,description_ru,business_type,target_audiences,phone,whatsapp,address,latitude,longitude,2gis_url,website,instagram,category_slugs
+cafe-astana,阿斯塔纳咖啡馆,Астана кафе,Кафе Астана,一家温馨的咖啡馆,,,local_merchant,family;student,+77012345678,+77012345678,Astana Kabanbay batyr 15,51.128,71.430,,,,food
+bad-row,,,,,,,invalid_type,,,,,,,,,,
+duplicate-test,重复测试,,,,,,local_merchant,,,,,,,,,,

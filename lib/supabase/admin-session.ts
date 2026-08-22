@@ -1,6 +1,6 @@
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import type { AdminRole } from '@/types/database.types';
+export type AdminRole = 'super_admin' | 'editor' | 'viewer';
 
 export interface AdminSession {
   id: string;
