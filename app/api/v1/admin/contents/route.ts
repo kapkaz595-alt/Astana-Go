@@ -98,17 +98,20 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
 
   const supabase = await getClient();
 
-  const { data: content, error } = await supabase
-    .from('contents')
-    .insert({
-      slug,
-      content_type,
-      status: status ?? 'draft',
-      cover_image: cover_image ?? null,
-      created_by: session.id,
-    })
-    .select()
-    .single();
+  const finalStatus = status ?? 'draft';
+
+const { data: content, error } = await supabase
+  .from('contents')
+  .insert({
+    slug,
+    content_type,
+    status: finalStatus,
+    cover_image: cover_image ?? null,
+    created_by: session.id,
+    published_at: finalStatus === 'published' ? new Date().toISOString() : null,
+  })
+  .select()
+  .single();
 
   if (error) {
     if (error.code === '23505') {
@@ -124,13 +127,14 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
   }
 
   // 写入多语言translations
-  const translationRows = translations.map((t: { locale: string; title: string; body: string; meta_description?: string }) => ({
-    content_id: content.id,
-    locale: t.locale,
-    title: t.title,
-    body: t.body,
-    meta_description: t.meta_description ?? null,
-  }));
+  const translationRows = translations.map((t: { locale: string; title: string; body: string; meta_description?: string; meta_title?: string }) => ({
+  content_id: content.id,
+  locale: t.locale,
+  title: t.title,
+  body: t.body,
+  meta_description: t.meta_description ?? null,
+  meta_title: t.meta_title ?? null,
+}));
 
   const { error: transError } = await supabase.from('content_translations').insert(translationRows);
   if (transError) {

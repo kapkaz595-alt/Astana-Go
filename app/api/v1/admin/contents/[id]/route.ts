@@ -122,13 +122,14 @@ export const PATCH = withAdminAuth(async (
       }
     }
 
-    const rows = translations.map((t: { locale: string; title: string; body: string; meta_description?: string }) => ({
-      content_id: id,
-      locale: t.locale,
-      title: t.title,
-      body: t.body,
-      meta_description: t.meta_description ?? null,
-    }));
+    const rows = translations.map((t: { locale: string; title: string; body: string; meta_description?: string; meta_title?: string }) => ({
+  content_id: id,
+  locale: t.locale,
+  title: t.title,
+  body: t.body,
+  meta_description: t.meta_description ?? null,
+  meta_title: t.meta_title ?? null,
+}));
 
     const { error: transError } = await supabase
       .from('content_translations')

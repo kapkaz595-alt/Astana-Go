@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { isOpenNow } from '@/lib/utils/business-hours';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { pickTranslation } from '@/lib/utils/i18n-fallback';
 
 async function getClient() {
   const cookieStore = await cookies();
@@ -23,48 +23,26 @@ export async function GET(request: NextRequest) {
 
   const page = parseInt(searchParams.get('page') || '1');
   const pageSize = Math.min(parseInt(searchParams.get('page_size') || '20'), 50);
-  const businessType = searchParams.get('business_type');
-  const keyword = searchParams.get('keyword');
-  const categorySlug = searchParams.get('category_slug');
+  const contentType = searchParams.get('content_type');
+  const locale = searchParams.get('locale') || 'zh';
 
   let query = supabase
-    .from('merchants')
+    .from('contents')
     .select(
-      `id, slug, name, description, business_type, target_audiences,
-      phone, whatsapp, address, latitude, longitude, "2gis_url", website, instagram,
-      business_hours, verification_status, view_count, created_at,
-      merchant_categories(categories(id, slug, name))`,
+      `id, slug, content_type, cover_image, published_at, created_at,
+       content_translations(locale, title, meta_description),
+       content_categories(categories(id, slug, name))`,
       { count: 'exact' }
     )
-    .eq('business_status', 'active');
+    .eq('status', 'published');
 
-  if (businessType) query = query.eq('business_type', businessType);
-  if (keyword) query = query.ilike('search_text', `%${keyword}%`);
-
-  if (categorySlug) {
-    // 先按slug查category_id，再筛选
-    const { data: cat } = await supabase
-      .from('categories')
-      .select('id')
-      .eq('slug', categorySlug)
-      .single();
-
-    if (!cat) {
-      return NextResponse.json({
-        success: true,
-        data: [],
-        pagination: { page, page_size: pageSize, total: 0 },
-      });
-    }
-
-    query = query.eq('merchant_categories.category_id', cat.id);
-  }
+  if (contentType) query = query.eq('content_type', contentType);
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
 
   const { data, error, count } = await query
-    .order('created_at', { ascending: false })
+    .order('published_at', { ascending: false })
     .range(from, to);
 
   if (error) {
@@ -76,12 +54,13 @@ export async function GET(request: NextRequest) {
 
   const responseData = (data || []).map((item) => ({
   ...item,
-  is_open_now: isOpenNow(item.business_hours as Record<string, { open: string; close: string }[]>),
+  translation: pickTranslation(item.content_translations, locale),
 }));
 
 return NextResponse.json({
   success: true,
   data: responseData,
+  meta: { requested_locale: locale },
   pagination: { page, page_size: pageSize, total: count || 0 },
 });
 }

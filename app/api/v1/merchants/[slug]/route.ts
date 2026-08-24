@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isOpenNow } from '@/lib/utils/business-hours';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
@@ -27,9 +28,9 @@ export async function GET(
     .from('merchants')
     .select(
       `id, slug, name, description, business_type, target_audiences,
-       phone, whatsapp, address, latitude, longitude, "2gis_url", website, instagram,
-       verification_status, view_count, created_at,
-       merchant_categories(categories(id, slug, name))`
+      phone, whatsapp, address, latitude, longitude, "2gis_url", website, instagram,
+      business_hours, verification_status, view_count, created_at,
+      merchant_categories(categories(id, slug, name))`
     )
     .eq('slug', slug)
     .eq('business_status', 'active')
@@ -45,5 +46,6 @@ export async function GET(
   // view_count异步自增：不await，不阻塞响应返回
   supabase.rpc('increment_merchant_view_count', { merchant_id: data.id }).then();
 
-  return NextResponse.json({ success: true, data });
+  const responseData = { ...data, is_open_now: isOpenNow(data.business_hours as Record<string, { open: string; close: string }[]>) };
+  return NextResponse.json({ success: true, data: responseData });
 }
