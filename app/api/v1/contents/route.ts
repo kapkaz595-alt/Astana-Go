@@ -24,6 +24,7 @@ export async function GET(request: NextRequest) {
   const page = parseInt(searchParams.get('page') || '1');
   const pageSize = Math.min(parseInt(searchParams.get('page_size') || '20'), 50);
   const contentType = searchParams.get('content_type');
+  const tag = searchParams.get('tag');
   const locale = searchParams.get('locale') || 'zh';
 
   let query = supabase
@@ -37,6 +38,7 @@ export async function GET(request: NextRequest) {
     .eq('status', 'published');
 
   if (contentType) query = query.eq('content_type', contentType);
+  if (tag) query = query.eq('topic_tag', tag);
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
@@ -53,14 +55,14 @@ export async function GET(request: NextRequest) {
   }
 
   const responseData = (data || []).map((item) => ({
-  ...item,
-  translation: pickTranslation(item.content_translations, locale),
-}));
+    ...item,
+    translation: pickTranslation(item.content_translations, locale),
+  }));
 
-return NextResponse.json({
-  success: true,
-  data: responseData,
-  meta: { requested_locale: locale },
-  pagination: { page, page_size: pageSize, total: count || 0 },
-});
+  return NextResponse.json({
+    success: true,
+    data: responseData,
+    meta: { requested_locale: locale },
+    pagination: { page, page_size: pageSize, total: count || 0 },
+  });
 }

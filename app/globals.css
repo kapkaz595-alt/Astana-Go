@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+:root {
+  --color-bg: #F7F8FA;
+  --color-ink: #14171F;
+  --color-gold: #D9A441;
+  --color-teal: #2B8C93;
+  --color-red: #B54B3A;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: 'Inter', 'Noto Sans SC', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Manrope', 'Noto Sans SC', sans-serif;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

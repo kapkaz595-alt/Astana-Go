@@ -46,7 +46,7 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
   }
 
   const body = await request.json();
-  const { slug, name, description, parent_id, sort_order, status } = body;
+  const { slug, name, description, parent_id, sort_order, sort_order_zh, sort_order_kk, status, icon, icon_color } = body;
 
   if (!slug || !name) {
     return NextResponse.json(
@@ -65,7 +65,11 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
       description: description ?? {},
       parent_id: parent_id ?? null,
       sort_order: sort_order ?? 0,
+      sort_order_zh: sort_order_zh ?? null,
+      sort_order_kk: sort_order_kk ?? null,
       status: status ?? 'active',
+      icon: icon ?? null,
+      icon_color: icon_color ?? null,
     })
     .select()
     .single();

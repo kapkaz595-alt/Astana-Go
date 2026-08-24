@@ -1,0 +1,41 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createServerClient } from '@supabase/ssr';
+import { cookies } from 'next/headers';
+
+async function getClient() {
+  const cookieStore = await cookies();
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => cookieStore.getAll(),
+        setAll: () => {},
+      },
+    }
+  );
+}
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const locale = searchParams.get('locale') || 'zh';
+  const sortField = locale === 'kk' ? 'sort_order_kk' : 'sort_order_zh';
+
+  const supabase = await getClient();
+
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id, slug, name, description, parent_id, sort_order, sort_order_zh, sort_order_kk, status, icon, icon_color')
+    .eq('status', 'active')
+    .order(sortField, { ascending: true, nullsFirst: false })
+    .order('sort_order', { ascending: true });
+
+  if (error) {
+    return NextResponse.json(
+      { success: false, error: { code: 'DB_ERROR', message: error.message } },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json({ success: true, data });
+}

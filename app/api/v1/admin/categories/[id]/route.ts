@@ -57,15 +57,19 @@ export const PATCH = withAdminAuth(async (
 
   const { id } = await context.params;
   const body = await request.json();
-  const { slug, name, description, parent_id, sort_order, status } = body;
+  const { slug, name, description, parent_id, sort_order, sort_order_zh, sort_order_kk, status, icon, icon_color } = body;
 
   const updateData: Record<string, unknown> = {};
-  if (slug !== undefined) updateData.slug = slug;
-  if (name !== undefined) updateData.name = name;
-  if (description !== undefined) updateData.description = description;
-  if (parent_id !== undefined) updateData.parent_id = parent_id;
-  if (sort_order !== undefined) updateData.sort_order = sort_order;
-  if (status !== undefined) updateData.status = status;
+if (slug !== undefined) updateData.slug = slug;
+if (name !== undefined) updateData.name = name;
+if (description !== undefined) updateData.description = description;
+if (parent_id !== undefined) updateData.parent_id = parent_id;
+if (sort_order !== undefined) updateData.sort_order = sort_order;
+if (sort_order_zh !== undefined) updateData.sort_order_zh = sort_order_zh;
+if (sort_order_kk !== undefined) updateData.sort_order_kk = sort_order_kk;
+if (status !== undefined) updateData.status = status;
+if (icon !== undefined) updateData.icon = icon;
+if (icon_color !== undefined) updateData.icon_color = icon_color;
 
   const supabase = await getClient();
 
