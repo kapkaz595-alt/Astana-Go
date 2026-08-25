@@ -1,32 +1,61 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 
 type Category = { id: string; slug: string; name: Record<string, string> };
 
-export default function NewContentPage() {
+export default function EditContentPage() {
   const router = useRouter();
+  const params = useParams();
+  const id = params.id as string;
+
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
 
   const [form, setForm] = useState({
-  slug: '',
-  content_type: 'guide',
-  status: 'published',
-  cover_image: '',
-  topic_tag: 'guide',
-  title_zh: '',
-  body_zh: '',
-  meta_description_zh: '',
-});
+    slug: '',
+    content_type: 'guide',
+    status: 'published',
+    cover_image: '',
+    title_zh: '',
+    body_zh: '',
+    meta_description_zh: '',
+  });
 
   useEffect(() => {
     fetch('/api/v1/categories?locale=zh').then((r) => r.json()).then((d) => setCategories(d.data ?? []));
-  }, []);
+
+    fetch(`/api/v1/admin/contents/${id}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.success) {
+          setError('加载失败');
+          setLoading(false);
+          return;
+        }
+        const c = d.data;
+        const zhTranslation = (c.content_translations ?? []).find((t: { locale: string }) => t.locale === 'zh');
+
+        setForm({
+          slug: c.slug ?? '',
+          content_type: c.content_type ?? 'guide',
+          status: c.status ?? 'published',
+          cover_image: c.cover_image ?? '',
+          title_zh: zhTranslation?.title ?? '',
+          body_zh: zhTranslation?.body ?? '',
+          meta_description_zh: zhTranslation?.meta_description ?? '',
+        });
+
+        const existingCatIds = (c.content_categories ?? []).map((cc: { category_id: string }) => cc.category_id);
+        setSelectedCategoryIds(existingCatIds);
+        setLoading(false);
+      });
+  }, [id]);
 
   function updateField(key: string, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -54,8 +83,8 @@ export default function NewContentPage() {
       category_ids: selectedCategoryIds,
     };
 
-    const res = await fetch('/api/v1/admin/contents', {
-      method: 'POST',
+    const res = await fetch(`/api/v1/admin/contents/${id}`, {
+      method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     });
@@ -69,10 +98,12 @@ export default function NewContentPage() {
     router.push('/admin/dashboard/contents');
   }
 
+  if (loading) return <div className="p-6">加载中…</div>;
+
   return (
     <div className="p-6 max-w-2xl mx-auto">
       <Link href="/admin/dashboard/contents" className="text-sm text-gray-500">‹ 返回内容列表</Link>
-      <h1 className="text-xl font-bold mt-2 mb-6">新增内容</h1>
+      <h1 className="text-xl font-bold mt-2 mb-6">编辑内容</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div>
@@ -119,23 +150,11 @@ export default function NewContentPage() {
             </select>
           </div>
         </div>
-        
-        <div>
-  <label className="text-sm font-medium block mb-1">首页归属Tab</label>
-  <select value={form.topic_tag} onChange={(e) => updateField('topic_tag', e.target.value)}
-          className="w-full border rounded-lg px-3 py-2 text-sm">
-    <option value="guide">攻略 & 资讯</option>
-    <option value="food">美食</option>
-    <option value="checkin">打卡</option>
-    <option value="shopping">购物</option>
-    <option value="transport">交通</option>
-  </select>
-</div>
 
         <div>
           <label className="text-sm font-medium block mb-1">封面图URL（可选）</label>
           <input value={form.cover_image} onChange={(e) => updateField('cover_image', e.target.value)}
-                 placeholder="https://..." className="w-full border rounded-lg px-3 py-2 text-sm" />
+                 className="w-full border rounded-lg px-3 py-2 text-sm" />
         </div>
 
         <div>
@@ -150,7 +169,7 @@ export default function NewContentPage() {
                     if (e.target.checked) {
                       setSelectedCategoryIds((prev) => [...prev, c.id]);
                     } else {
-                      setSelectedCategoryIds((prev) => prev.filter((id) => id !== c.id));
+                      setSelectedCategoryIds((prev) => prev.filter((cid) => cid !== c.id));
                     }
                   }}
                 />
@@ -164,7 +183,7 @@ export default function NewContentPage() {
 
         <button type="submit" disabled={saving}
                 className="bg-[#14171F] text-white rounded-lg py-3 text-sm font-medium disabled:opacity-50">
-          {saving ? '保存中…' : '保存内容'}
+          {saving ? '保存中…' : '保存修改'}
         </button>
       </form>
     </div>

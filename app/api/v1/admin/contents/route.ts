@@ -68,10 +68,10 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
 
   const body = await request.json();
   const {
-    slug, content_type, status, cover_image,
-    translations, // [{ locale, title, body, meta_description }]
-    category_ids,
-  } = body;
+  slug, content_type, status, cover_image, topic_tag,
+  translations, // [{ locale, title, body, meta_description }]
+  category_ids,
+} = body;
 
   if (!slug || !content_type) {
     return NextResponse.json(
@@ -107,6 +107,7 @@ const { data: content, error } = await supabase
     content_type,
     status: finalStatus,
     cover_image: cover_image ?? null,
+    topic_tag: topic_tag ?? null,
     created_by: session.id,
     published_at: finalStatus === 'published' ? new Date().toISOString() : null,
   })

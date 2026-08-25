@@ -59,12 +59,13 @@ export const PATCH = withAdminAuth(async (
 
   const { id } = await context.params;
   const body = await request.json();
-  const { slug, content_type, status, cover_image, translations, category_ids } = body;
+  const { slug, content_type, status, cover_image, topic_tag, translations, category_ids } = body;
 
   const updateData: Record<string, unknown> = {};
   if (slug !== undefined) updateData.slug = slug;
   if (content_type !== undefined) updateData.content_type = content_type;
   if (cover_image !== undefined) updateData.cover_image = cover_image;
+  if (topic_tag !== undefined) updateData.topic_tag = topic_tag;
   if (status !== undefined) {
     updateData.status = status;
     // 状态变为published且之前未设置published_at时自动记录发布时间

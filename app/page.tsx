@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-const CONTENT_TABS = ['攻略 & 资讯', '美食', '打卡', '购物', '交通'];
-const TAB_TAGS = ['guide', 'food', 'checkin', 'shopping', 'transport'];
+const CONTENT_TABS = ['攻略 & 资讯'];
+const TAB_TAGS = ['guide'];
 
 type Category = { id: string; slug: string; name: Record<string, string>; icon: string | null; icon_color: string | null };
 type Merchant = {
@@ -136,17 +136,9 @@ export default function HomePage() {
         <div className="font-extrabold text-[16px]" style={{ fontFamily: 'Manrope' }}>本地精选</div>
         <Link href="/contents" className="text-xs text-[#6B7280] font-medium">查看全部 ›</Link>
       </div>
-      <div className="flex gap-4 px-[18px] pb-[14px] overflow-x-auto no-scrollbar text-[12.5px] text-[#6B7280] font-medium">
-        {CONTENT_TABS.map((tab, i) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(i)}
-            className={`whitespace-nowrap pb-[6px] ${i === activeTab ? 'text-[#14171F] font-bold border-b-2 border-[#D9A441]' : ''}`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
+      <div className="px-[18px] pb-[14px] text-[12.5px] font-bold text-[#14171F] border-b-2 border-[#D9A441] inline-block ml-[18px] mr-auto w-fit">
+  攻略 & 资讯
+</div>
 
       <div className="px-[18px] grid grid-cols-2 grid-rows-2 gap-[10px]">
         {contents[0] && (
