@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
   const [{ data: merchants }, { data: contents }] = await Promise.all([
     supabase
       .from('merchants')
-      .select('id, slug, name, view_count, verification_status, business_status, business_hours, created_at, merchant_categories(categories(id, slug, name))')
+      .select('id, slug, name, cover_image, price_range, view_count, verification_status, business_status, business_hours, created_at, merchant_categories(categories(name))')
       .eq('business_status', 'active')
       .order('created_at', { ascending: false }),
     supabase
@@ -46,6 +46,8 @@ export async function GET(request: NextRequest) {
     verification_status: m.verification_status,
    is_open_now: isOpenNow(m.business_hours),
     sort_date: m.created_at,
+    cover_image: m.cover_image,
+price_range: m.price_range,
    categories: ((m.merchant_categories ?? []) as any[]).map((mc) => mc.categories?.name?.zh).filter(Boolean),
   }));
 

@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { NoticeBar } from '@/components/home/notice-bar';
+import { BannerSlot } from '@/components/home/banner-slot';
+import { MasonryFeed } from '@/components/home/masonry-feed';
 
 const CONTENT_TABS = ['攻略 & 资讯'];
 const TAB_TAGS = ['guide'];
@@ -16,16 +19,26 @@ type ContentItem = {
   translation: { title: string };
 };
 
+type Banner = { id: string; image_url: string; link_url: string | null };
+
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [merchants, setMerchants] = useState<Merchant[]>([]);
   const [contents, setContents] = useState<ContentItem[]>([]);
   const [activeTab, setActiveTab] = useState(0);
+  const [feedItems, setFeedItems] = useState<any[]>([]);
+  const [feedHasMore, setFeedHasMore] = useState(false);
+  const [banners, setBanners] = useState<Banner[]>([]);
 
   useEffect(() => {
-    fetch('/api/v1/categories?locale=zh').then(r => r.json()).then(d => setCategories(d.data ?? []));
-    fetch('/api/v1/merchants?page_size=10').then(r => r.json()).then(d => setMerchants(d.data ?? []));
-  }, []);
+  fetch('/api/v1/categories?locale=zh').then(r => r.json()).then(d => setCategories(d.data ?? []));
+  fetch('/api/v1/merchants?page_size=10').then(r => r.json()).then(d => setMerchants(d.data ?? []));
+  fetch('/api/v1/banners?position=homepage_top').then(r => r.json()).then(d => setBanners(d.data ?? []));
+  fetch('/api/v1/feed?page=1&page_size=6').then(r => r.json()).then(d => {
+    setFeedItems(d.data ?? []);
+    setFeedHasMore(d.pagination?.has_more ?? false);
+  });
+}, []);
 
   useEffect(() => {
     fetch(`/api/v1/contents?tag=${TAB_TAGS[activeTab]}&page_size=5`)
@@ -49,6 +62,8 @@ export default function HomePage() {
         </div>
         <button className="bg-[#EDEFF3] rounded-full px-[13px] py-[6px] text-xs font-semibold">中 / Қаз</button>
       </header>
+
+      <NoticeBar />
 
       {/* Search */}
       <div className="px-[18px] pb-[18px]">
@@ -78,15 +93,9 @@ export default function HomePage() {
         ))}
       </div>
 
-      {/* Emergency banner */}
-      <Link href="/emergency" className="mx-[18px] mb-1 bg-[#14171F] rounded-[14px] px-[14px] py-[13px] flex items-center gap-[11px]">
-        <div className="w-[38px] h-[38px] rounded-[10px] bg-[#B54B3A] flex items-center justify-center text-lg shrink-0">🚨</div>
-        <div className="flex-1">
-          <div className="text-white font-bold text-[13px]" style={{ fontFamily: 'Manrope' }}>紧急求助中心</div>
-          <div className="text-[#A6ACB8] text-[10.5px] mt-[2px]">急救 · 警察 · 消防 一键直达</div>
-        </div>
-        <div className="text-[#D9A441] text-[17px]">›</div>
-      </Link>
+      <div className="mx-[18px] mb-1">
+  <BannerSlot banners={banners} />
+</div>
 
       {/* Hot merchants */}
       <div className="flex items-center justify-between px-[18px] pt-[20px] pb-3">
@@ -132,45 +141,12 @@ export default function HomePage() {
       </div>
 
       {/* Local picks */}
-      <div className="flex items-center justify-between px-[18px] pt-[22px] pb-3">
-        <div className="font-extrabold text-[16px]" style={{ fontFamily: 'Manrope' }}>本地精选</div>
-        <Link href="/contents" className="text-xs text-[#6B7280] font-medium">查看全部 ›</Link>
-      </div>
-      <div className="px-[18px] pb-[14px] text-[12.5px] font-bold text-[#14171F] border-b-2 border-[#D9A441] inline-block ml-[18px] mr-auto w-fit">
-  攻略 & 资讯
+<div className="flex items-center justify-between px-[18px] pt-[22px] pb-3">
+  <div className="font-extrabold text-[16px]" style={{ fontFamily: 'Manrope' }}>本地精选</div>
 </div>
-
-      <div className="px-[18px] grid grid-cols-2 grid-rows-2 gap-[10px]">
-        {contents[0] && (
-          <Link href={`/content/${contents[0].slug}`}
-                className="row-span-2 rounded-[14px] overflow-hidden relative min-h-[236px] flex flex-col justify-end p-[14px]"
-                style={{ background: 'linear-gradient(160deg,#3A5F6A,#152A30)' }}>
-            <span className="absolute top-[10px] left-[10px] bg-white/92 text-[9.5px] font-bold px-[9px] py-1 rounded-full">攻略</span>
-            <div className="text-white font-extrabold text-[15px] leading-snug" style={{ fontFamily: 'Manrope' }}>
-              {contents[0].translation?.title}
-            </div>
-            <div className="text-white/85 text-[10.5px] mt-[6px]">👁 浏览</div>
-          </Link>
-        )}
-        {contents.slice(1, 5).map((c, i) => {
-          const bgs = [
-            'linear-gradient(160deg,#C97B3E,#8C4F22)',
-            'linear-gradient(160deg,#4A5A8A,#232C4E)',
-            'linear-gradient(160deg,#6B7280,#2E3238)',
-            'linear-gradient(160deg,#4C9E6B,#1E4A31)',
-          ];
-          return (
-            <Link key={c.id} href={`/content/${c.slug}`}
-                  className="rounded-xl overflow-hidden relative min-h-[113px] flex flex-col justify-end p-[10px]"
-                  style={{ background: bgs[i] }}>
-              <div className="text-white font-bold text-xs leading-snug" style={{ fontFamily: 'Manrope' }}>
-                {c.translation?.title}
-              </div>
-              <div className="text-white/75 text-[9.5px] mt-[6px]">👁 浏览</div>
-            </Link>
-          );
-        })}
-      </div>
+<div className="px-[18px]">
+  <MasonryFeed initialItems={feedItems} initialHasMore={feedHasMore} />
+</div>
 
       {/* Footer */}
       <footer className="mt-7 bg-white border-t border-[#E7E9EE] px-[18px] pt-[26px] pb-6">

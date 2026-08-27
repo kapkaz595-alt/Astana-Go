@@ -57,7 +57,22 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    query = query.eq('merchant_categories.category_id', cat.id);
+    const { data: relations } = await supabase
+      .from('merchant_categories')
+      .select('merchant_id')
+      .eq('category_id', cat.id);
+
+    const merchantIds = (relations ?? []).map((r) => r.merchant_id);
+
+    if (merchantIds.length === 0) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+        pagination: { page, page_size: pageSize, total: 0 },
+      });
+    }
+
+    query = query.in('id', merchantIds);
   }
 
   const from = (page - 1) * pageSize;

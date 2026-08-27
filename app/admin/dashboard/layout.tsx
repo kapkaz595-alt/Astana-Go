@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: '/admin/dashboard/categories', label: '分类管理' },
   { href: '/admin/dashboard/merchants', label: '商家管理' },
   { href: '/admin/dashboard/contents', label: '内容管理' },
+  { href: '/admin/banners', label: '广告管理' },
 ];
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
