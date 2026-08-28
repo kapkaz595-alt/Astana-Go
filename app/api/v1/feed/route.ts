@@ -24,32 +24,11 @@ export async function GET(request: NextRequest) {
 
   const supabase = await getClient();
 
-  const [{ data: merchants }, { data: contents }] = await Promise.all([
-    supabase
-      .from('merchants')
-      .select('id, slug, name, cover_image, price_range, view_count, verification_status, business_status, business_hours, created_at, merchant_categories(categories(name))')
-      .eq('business_status', 'active')
-      .order('created_at', { ascending: false }),
-    supabase
-      .from('contents')
-      .select('id, slug, cover_image, published_at, content_type, content_translations(locale, title)')
-      .eq('status', 'published')
-      .order('published_at', { ascending: false }),
-  ]);
-
-  const merchantItems = (merchants ?? []).map((m) => ({
-    type: 'merchant' as const,
-    id: m.id,
-    slug: m.slug,
-    name: m.name,
-    view_count: m.view_count,
-    verification_status: m.verification_status,
-   is_open_now: isOpenNow(m.business_hours),
-    sort_date: m.created_at,
-    cover_image: m.cover_image,
-price_range: m.price_range,
-   categories: ((m.merchant_categories ?? []) as any[]).map((mc) => mc.categories?.name?.zh).filter(Boolean),
-  }));
+  const { data: contents } = await supabase
+  .from('contents')
+  .select('id, slug, cover_image, published_at, content_type, content_translations(locale, title)')
+  .eq('status', 'published')
+  .order('published_at', { ascending: false });
 
   const contentItems = (contents ?? []).map((c) => ({
     type: 'content' as const,
@@ -61,9 +40,7 @@ price_range: m.price_range,
     sort_date: c.published_at,
   }));
 
-  const merged = [...merchantItems, ...contentItems].sort(
-    (a, b) => new Date(b.sort_date).getTime() - new Date(a.sort_date).getTime()
-  );
+  const merged = contentItems;
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize;

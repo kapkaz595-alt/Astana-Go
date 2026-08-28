@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isOpenNow } from '@/lib/utils/business-hours';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { pickLocaleField } from '@/lib/utils/i18n-fallback';
 
 async function getClient() {
   const cookieStore = await cookies();
@@ -26,6 +27,7 @@ export async function GET(request: NextRequest) {
   const businessType = searchParams.get('business_type');
   const keyword = searchParams.get('keyword');
   const categorySlug = searchParams.get('category_slug');
+  const locale = searchParams.get('locale') || 'zh';
 
   let query = supabase
     .from('merchants')
@@ -91,6 +93,14 @@ export async function GET(request: NextRequest) {
 
   const responseData = (data || []).map((item) => ({
   ...item,
+  name: pickLocaleField(item.name as Record<string, string>, locale),
+  description: pickLocaleField(item.description as Record<string, string>, locale),
+  merchant_categories: (item.merchant_categories || []).map((mc: any) => ({
+    ...mc,
+    categories: mc.categories
+      ? { ...mc.categories, name: pickLocaleField(mc.categories.name as Record<string, string>, locale) }
+      : mc.categories,
+  })),
   is_open_now: isOpenNow(item.business_hours as Record<string, { open: string; close: string }[]>),
 }));
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { pickLocaleField } from '@/lib/utils/i18n-fallback';
 
 async function getClient() {
   const cookieStore = await cookies();
@@ -37,5 +38,11 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return NextResponse.json({ success: true, data });
+  const responseData = (data || []).map((item) => ({
+  ...item,
+  name: pickLocaleField(item.name as Record<string, string>, locale),
+  description: pickLocaleField(item.description as Record<string, string>, locale),
+}));
+
+return NextResponse.json({ success: true, data: responseData });
 }

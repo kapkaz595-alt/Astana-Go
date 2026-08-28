@@ -1,6 +1,10 @@
 import Link from 'next/link';
 
-export function NoticeBar() {
+export function NoticeBar({ locale }: { locale: 'zh' | 'kk' }) {
+  const text = locale === 'kk'
+    ? 'Жедел жәрдем · нөмірлерді бір рет басып көру'
+    : '紧急求助 · 常用号码一键查看';
+
   return (
     <Link
       href="/emergency"
@@ -8,7 +12,7 @@ export function NoticeBar() {
       style={{ backgroundColor: '#B54B3A' }}
     >
       <span>⚠️</span>
-      <span>紧急求助 · 常用号码一键查看</span>
+      <span>{text}</span>
     </Link>
   );
 }
