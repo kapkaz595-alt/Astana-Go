@@ -23,6 +23,8 @@ export default function NewMerchantPage() {
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [coverImage, setCoverImage] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetch('/api/v1/categories?locale=zh')
@@ -51,6 +53,28 @@ export default function NewMerchantPage() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  setUploading(true);
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('folder', 'merchants');
+  formData.append('entity_id', form.slug || 'temp');
+
+  const res = await fetch('/api/v1/admin/upload', {
+    method: 'POST',
+    body: formData,
+  });
+  const data = await res.json();
+  setUploading(false);
+  if (data.url) {
+    setCoverImage(data.url);
+  } else {
+    setError('图片上传失败');
+  }
+}
+
   function updateHour(day: string, field: 'open' | 'close' | 'closed', value: string | boolean) {
     setHours((h) => ({ ...h, [day]: { ...h[day], [field]: value } }));
   }
@@ -67,6 +91,7 @@ export default function NewMerchantPage() {
 
     const body = {
   slug: form.slug,
+  cover_image: coverImage || null,
   name: { zh: form.name_zh, ru: form.name_ru, kk: form.name_kk },
   description: { zh: form.description_zh },
   business_type: form.business_type,
@@ -107,6 +132,15 @@ export default function NewMerchantPage() {
           <input required value={form.slug} onChange={(e) => updateField('slug', e.target.value)}
                  className="w-full border rounded-lg px-3 py-2 text-sm" />
         </div>
+
+        <div>
+  <label className="text-sm font-medium block mb-1">封面图</label>
+  <input type="file" accept="image/*" onChange={handleImageUpload} className="text-sm" />
+  {uploading && <span className="text-xs text-gray-400 ml-2">上传中…</span>}
+  {coverImage && (
+    <img src={coverImage} alt="预览" className="mt-2 w-32 h-20 object-cover rounded-lg border" />
+  )}
+</div>
 
         <div className="grid grid-cols-3 gap-3">
           <div>

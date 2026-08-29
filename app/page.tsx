@@ -164,9 +164,12 @@ function toggleLocale() {
             <span className="w-[5px] h-[5px] rounded-full bg-[#2B8C93]" />{t.liveUpdate}
           </span>
         </div>
-        <Link href="/merchants?filter=open" className="text-xs text-[#6B7280] font-medium">{t.viewAll} ›</Link>
+        <Link href="/merchants?filter=open" className="text-xs text-[#6B7280] font-medium py-2 px-1 -mr-1">{t.viewAll}</Link>
       </div>
-      <div className="flex gap-[11px] overflow-x-auto px-[18px] pb-1 no-scrollbar">
+      <div
+  className="flex gap-[11px] overflow-x-auto px-[18px] pb-1 no-scrollbar"
+  style={{ WebkitOverflowScrolling: 'touch', scrollSnapType: 'x proximity' }}
+>
         {merchants.map((m, i) => {
           const gradients = [
             'linear-gradient(135deg,#6B5B4A,#3D3227)',
@@ -175,7 +178,7 @@ function toggleLocale() {
             'linear-gradient(135deg,#3A4550,#1E252C)',
           ];
           return (
-            <Link key={m.id} href={`/merchants/${m.slug}`} className="shrink-0 w-[148px] bg-white rounded-[14px] overflow-hidden border border-[#E7E9EE]">
+           <Link key={m.id} href={`/merchants/${m.slug}`} className="shrink-0 w-[148px] bg-white rounded-[14px] overflow-hidden border bo..." style={{ scrollSnapAlign: 'start' }}>
               <div className="h-[104px] flex items-end p-2" style={{ background: gradients[i % gradients.length] }}>
                 <span className={`text-[9.5px] font-bold px-2 py-[3px] rounded-full flex items-center gap-1 bg-white/95 ${m.is_open_now ? 'text-[#1D7A44]' : 'text-[#B54B3A]'}`}>
                   <span className={`w-[6px] h-[6px] rounded-full ${m.is_open_now ? 'bg-[#2E9E5B]' : 'bg-[#B54B3A]'}`} />
