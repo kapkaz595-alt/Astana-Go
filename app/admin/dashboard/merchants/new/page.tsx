@@ -24,6 +24,7 @@ export default function NewMerchantPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [coverImage, setCoverImage] = useState<string>('');
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
@@ -74,6 +75,29 @@ export default function NewMerchantPage() {
     setError('图片上传失败');
   }
 }
+
+  async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  const files = e.target.files;
+  if (!files || files.length === 0) return;
+  setUploading(true);
+  const uploaded: string[] = [];
+  for (const file of Array.from(files)) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'merchants');
+    formData.append('entity_id', form.slug || 'temp');
+    const res = await fetch('/api/v1/admin/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.url) uploaded.push(data.url);
+  }
+  setGalleryImages((prev) => [...prev, ...uploaded]);
+  setUploading(false);
+}
+
+function removeGalleryImage(index: number) {
+  setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+}
+
 
   function updateHour(day: string, field: 'open' | 'close' | 'closed', value: string | boolean) {
     setHours((h) => ({ ...h, [day]: { ...h[day], [field]: value } }));
@@ -140,6 +164,21 @@ export default function NewMerchantPage() {
   {coverImage && (
     <img src={coverImage} alt="预览" className="mt-2 w-32 h-20 object-cover rounded-lg border" />
   )}
+</div>
+
+        <div>
+  <label className="text-sm font-medium block mb-1">详情图相册（可多选）</label>
+  <input type="file" accept="image/*" multiple onChange={handleGalleryUpload} className="text-sm" />
+  {uploading && <span className="text-xs text-gray-400 ml-2">上传中…</span>}
+  <div className="flex flex-wrap gap-2 mt-2">
+    {galleryImages.map((url, i) => (
+      <div key={i} className="relative">
+        <img src={url} alt="" className="w-20 h-20 object-cover rounded-lg border" />
+        <button type="button" onClick={() => removeGalleryImage(i)}
+                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs">×</button>
+      </div>
+    ))}
+  </div>
 </div>
 
         <div className="grid grid-cols-3 gap-3">
