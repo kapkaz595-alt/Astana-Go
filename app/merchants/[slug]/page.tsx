@@ -50,6 +50,23 @@ export default async function MerchantDetailPage({
               <span className="text-[10px] font-semibold text-[#2B8C93]">✓ 已认证</span>
             )}
           </div>
+
+          {m.gallery_images && m.gallery_images.length > 0 && (
+  <div className="px-[18px] pb-4">
+    <div className="flex gap-2 overflow-x-auto no-scrollbar" style={{ WebkitOverflowScrolling: 'touch', scrollSnapType: 'x mandatory' }}>
+      {(m.gallery_images as string[]).map((url, i) => (
+        <img
+          key={i}
+          src={url}
+          alt={`${name?.zh} ${i + 1}`}
+          className="w-full aspect-[4/3] object-cover rounded-xl shrink-0"
+          style={{ scrollSnapAlign: 'start' }}
+        />
+      ))}
+    </div>
+  </div>
+)}
+          
           <h1 className="text-xl font-extrabold" style={{ fontFamily: 'Manrope' }}>{name?.zh}</h1>
           <div className="text-sm text-[#6B7280] mt-1">{name?.ru} · {name?.kk}</div>
           {description?.zh && (
