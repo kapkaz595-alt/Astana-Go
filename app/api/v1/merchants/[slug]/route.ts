@@ -27,11 +27,11 @@ export async function GET(
   const { data, error } = await supabase
     .from('merchants')
     .select(
-      `id, slug, name, description, business_type, target_audiences,
-      phone, whatsapp, address, latitude, longitude, "2gis_url", website, instagram,
-      business_hours, verification_status, view_count, created_at,
-      merchant_categories(categories(id, slug, name))`
-    )
+  `id, slug, name, cover_image, gallery_images, description, business_type, target_audiences,
+  phone, whatsapp, address, latitude, longitude, "2gis_url", website, instagram,
+  business_hours, verification_status, view_count, created_at,
+  merchant_categories(categories(id, slug, name))`
+)
     .eq('slug', slug)
     .eq('business_status', 'active')
     .single();
