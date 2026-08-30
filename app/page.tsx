@@ -54,7 +54,7 @@ const TAB_TAGS = ['guide'];
 
 type Category = { id: string; slug: string; name: string; icon: string | null; icon_color: string | null };
 type Merchant = {
-  id: string; slug: string; name: string;
+  id: string; slug: string; name: string; cover_image: string | null;
   view_count: number; verification_status: string; is_open_now: boolean;
 };
 type ContentItem = {
@@ -179,7 +179,14 @@ function toggleLocale() {
           ];
           return (
            <Link key={m.id} href={`/merchants/${m.slug}`} className="shrink-0 w-[148px] bg-white rounded-[14px] overflow-hidden border bo..." style={{ scrollSnapAlign: 'start' }}>
-              <div className="h-[104px] flex items-end p-2" style={{ background: gradients[i % gradients.length] }}>
+             <div
+  className="h-[104px] flex items-end p-2 bg-cover bg-center"
+  style={
+    m.cover_image
+      ? { backgroundImage: `url(${m.cover_image})` }
+      : { background: gradients[i % gradients.length] }
+  }
+>
                 <span className={`text-[9.5px] font-bold px-2 py-[3px] rounded-full flex items-center gap-1 bg-white/95 ${m.is_open_now ? 'text-[#1D7A44]' : 'text-[#B54B3A]'}`}>
                   <span className={`w-[6px] h-[6px] rounded-full ${m.is_open_now ? 'bg-[#2E9E5B]' : 'bg-[#B54B3A]'}`} />
                  {m.is_open_now ? t.open : t.closed}
