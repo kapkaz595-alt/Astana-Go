@@ -32,12 +32,12 @@ export async function GET(request: NextRequest) {
   let query = supabase
     .from('merchants')
     .select(
-      `id, slug, name, description, business_type, target_audiences,
-      phone, whatsapp, address, latitude, longitude, "2gis_url", website, instagram,
-      business_hours, verification_status, view_count, created_at,
-      merchant_categories(categories(id, slug, name))`,
-      { count: 'exact' }
-    )
+  `id, slug, name, cover_image, description, business_type, target_audiences,
+  phone, whatsapp, address, latitude, longitude, "2gis_url", website, instagram,
+  business_hours, verification_status, view_count, created_at,
+  merchant_categories(categories(id, slug, name))`,
+  { count: 'exact' }
+)
     .eq('business_status', 'active');
 
   if (businessType) query = query.eq('business_type', businessType);
