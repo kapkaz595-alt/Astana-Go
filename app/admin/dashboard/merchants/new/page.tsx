@@ -116,6 +116,7 @@ function removeGalleryImage(index: number) {
     const body = {
   slug: form.slug,
   cover_image: coverImage || null,
+  gallery_images: galleryImages,
   name: { zh: form.name_zh, ru: form.name_ru, kk: form.name_kk },
   description: { zh: form.description_zh },
   business_type: form.business_type,
