@@ -14,8 +14,8 @@
     "csv-parse": "^7.0.2",
     "next": "16.3.1",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
-    "@aws-sdk/client-s3": "^3.600.0",
+    "react-dom": "19.2.8",
+    "@aws-sdk/client-s3": "^3.600.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
