@@ -28,15 +28,15 @@ export default async function ContentDetailPage({
   const t = c.translation as { title: string; body: string; meta_description: string | null };
 
   return (
-    <div className="min-h-screen bg-[#DEE1E6] flex justify-center py-8">
-      <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] w-full mx-auto shadow-2xl rounded-3xl overflow-hidden">
+    <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:py-8">
+  <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] md:max-w-[720px] w-full mx-auto md:shadow-2xl md:rounded-3xl overflow-hidden">
         <header className="flex items-center gap-3 px-[18px] pt-[18px] pb-[14px]">
           <Link href="/" className="text-[#6B7280] text-lg">‹</Link>
         </header>
 
         {c.cover_image && (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={c.cover_image} alt={t.title} className="w-full h-[200px] object-cover" />
+          <img src={c.cover_image} alt={t.title} className="w-full h-[200px] md:h-[360px] object-cover" />
         )}
 
         <div className="px-[18px] py-4">
@@ -53,7 +53,7 @@ export default async function ContentDetailPage({
           )}
         </div>
 
-        <div className="px-[18px] pb-8 text-sm leading-relaxed text-[#14171F] whitespace-pre-wrap">
+        className="px-[18px] md:px-8 pb-8 text-sm md:text-base leading-relaxed md:leading-loose text-[#14171F] whitespace-pre-wrap"
           {t.body}
         </div>
       </main>
