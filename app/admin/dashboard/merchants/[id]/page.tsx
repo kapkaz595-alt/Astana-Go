@@ -155,7 +155,6 @@ function removeGalleryImage(index: number) {
       business_status: form.business_status,
       verification_status: form.verification_status,
       category_ids: selectedCategoryIds,
-      category_ids: selectedCategoryIds,
       gallery_images: galleryImages,
     };
 
