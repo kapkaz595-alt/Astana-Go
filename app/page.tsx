@@ -103,8 +103,8 @@ function toggleLocale() {
 }, [activeTab, locale]);
 
    return (
-    <div className="min-h-screen bg-[#DEE1E6] flex justify-center py-8">
-      <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] w-full mx-auto shadow-2xl rounded-3xl overflow-hidden">
+    <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:py-8">
+  <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] md:max-w-[1200px] w-full mx-auto md:shadow-2xl md:rounded-3xl overflow-hidden">
       {/* Header */}
       <header className="flex items-center justify-between px-[18px] pt-[18px] pb-[14px]">
         <div className="flex items-center gap-2">
