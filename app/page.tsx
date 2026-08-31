@@ -140,7 +140,7 @@ function toggleLocale() {
       </div>
 
       {/* Categories */}
-      <div className="px-3 pb-5 grid grid-cols-5 gap-x-[2px] gap-y-[14px]">
+      <div className="px-3 pb-5 grid grid-cols-5 md:grid-cols-10 gap-x-[2px] md:gap-x-4 gap-y-[14px]">
         {categories.map((c) => (
           <Link key={c.id} href={`/category/${c.slug}`} className="flex flex-col items-center gap-[6px] text-center">
             <div className="w-[42px] h-[42px] rounded-xl flex items-center justify-center text-lg text-white"
@@ -166,8 +166,8 @@ function toggleLocale() {
         </div>
         <Link href="/merchants?filter=open" className="text-xs text-[#6B7280] font-medium py-2 px-1 -mr-1">{t.viewAll}</Link>
       </div>
-      <div
-  className="flex gap-[11px] overflow-x-auto px-[18px] pb-1 no-scrollbar"
+     <div
+  className="flex md:grid md:grid-cols-6 gap-[11px] overflow-x-auto md:overflow-visible px-[18px] pb-1 no-scrollbar"
   style={{ WebkitOverflowScrolling: 'touch', scrollSnapType: 'x proximity' }}
 >
         {merchants.map((m, i) => {
@@ -178,7 +178,7 @@ function toggleLocale() {
             'linear-gradient(135deg,#3A4550,#1E252C)',
           ];
           return (
-           <Link key={m.id} href={`/merchants/${m.slug}`} className="shrink-0 w-[148px] bg-white rounded-[14px] overflow-hidden border bo..." style={{ scrollSnapAlign: 'start' }}>
+           <Link key={m.id} href={`/merchants/${m.slug}`} className="shrink-0 md:shrink md:w-auto w-[148px] bg-white rounded-[14px] overflow-hidden border bo..." style={{ scrollSnapAlign: 'start' }}>
              <div
   className="h-[104px] flex items-end p-2 bg-cover bg-center"
   style={
