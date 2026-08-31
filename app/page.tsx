@@ -89,7 +89,7 @@ function toggleLocale() {
 
   useEffect(() => {
   fetch(`/api/v1/categories?locale=${locale}`).then(r => r.json()).then(d => setCategories(d.data ?? []));
-  fetch(`/api/v1/merchants?page_size=10&locale=${locale}`).then(r => r.json()).then(d => setMerchants(d.data ?? []));
+  fetch(`/api/v1/merchants?page_size=10&locale=${locale}&featured=true`).then(r => r.json()).then(d => setMerchants(d.data ?? []));
   fetch('/api/v1/banners?position=homepage_top').then(r => r.json()).then(d => setBanners(d.data ?? []));
   fetch(`/api/v1/feed?page=1&page_size=6&locale=${locale}`).then(r => r.json()).then(d => {
     setFeedItems(d.data ?? []);
