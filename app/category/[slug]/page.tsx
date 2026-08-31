@@ -38,7 +38,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
   const [category, merchants] = await Promise.all([getCategory(slug), getMerchants(slug)]);
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA] max-w-[480px] w-full mx-auto">
+    <div className="min-h-screen bg-[#F7F8FA] max-w-[480px] md:max-w-[1100px] w-full mx-auto">
       <div className="px-[18px] py-4 flex items-center gap-2 border-b border-[#E7E9EE]">
         <a href="/" className="text-[#6B7280] text-sm">← 返回</a>
         <div
@@ -54,14 +54,14 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
         {merchants.length === 0 && (
           <p className="text-center text-[#6B7280] text-sm py-10">该分类下暂无商家</p>
         )}
-        <div className="space-y-3">
+       <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-3 md:gap-3">
           {merchants.map((m) => (
             <a
               key={m.id}
               href={`/merchants/${m.slug}`}
-              className="flex gap-3 bg-white rounded-xl p-3 border border-[#E7E9EE]"
+              className="flex md:flex-col gap-3 bg-white rounded-xl p-3 border border-[#E7E9EE]"
             >
-              <div className="w-20 h-20 rounded-lg overflow-hidden bg-[#EDEFF3] flex-shrink-0">
+              <div className="w-20 h-20 md:w-full md:h-32 rounded-lg overflow-hidden bg-[#EDEFF3] flex-shrink-0">
                 {m.cover_image && (
                   <img src={m.cover_image} className="w-full h-full object-cover" />
                 )}
