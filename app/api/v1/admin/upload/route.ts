@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { randomUUID } from 'crypto';
+import { withAdminAuth, requireAdminRole } from '@/lib/supabase/admin-auth-middleware';
+import type { AdminSession } from '@/lib/supabase/admin-session';
 
 const s3 = new S3Client({
   region: 'auto',
@@ -14,7 +16,17 @@ const s3 = new S3Client({
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
-export async function POST(request: NextRequest) {
+export const POST = withAdminAuth(async (
+  session: AdminSession,
+  request: NextRequest
+) => {
+  if (!requireAdminRole(session, ['super_admin', 'editor'])) {
+    return NextResponse.json(
+      { success: false, error: { code: 'FORBIDDEN', message: '权限不足' } },
+      { status: 403 }
+    );
+  }
+
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
@@ -51,4 +63,4 @@ export async function POST(request: NextRequest) {
     console.error('Upload error:', err);
     return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
   }
-}
+});
