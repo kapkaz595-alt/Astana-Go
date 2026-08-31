@@ -11,7 +11,7 @@ async function getMerchants(params: { filter?: string; category?: string; keywor
 }
 
 type Merchant = {
-  id: string; slug: string; name: Record<string, string>;
+  id: string; slug: string; name: string; cover_image?: string;
   view_count: number; verification_status: string; is_open_now: boolean;
 };
 
@@ -47,31 +47,35 @@ export default async function MerchantsPage({
             <div className="text-sm text-[#6B7280] py-10 text-center">暂无商家</div>
           )}
           {items.map((m) => (
-            <Link
-              key={m.id}
-              href={`/merchants/${m.slug}`}
-              className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center gap-3"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className={`text-[9px] font-bold px-[6px] py-[2px] rounded-full ${
-                    m.is_open_now ? 'bg-[#2E9E5B]/10 text-[#1D7A44]' : 'bg-[#B54B3A]/10 text-[#B54B3A]'
-                  }`}>
-                    {m.is_open_now ? '营业中' : '已打烊'}
-                  </span>
-                  <div className="text-sm font-bold truncate">{m.name?.zh ?? ''}</div>
-                </div>
-                <div className="text-xs text-[#6B7280] mt-1">{m.name?.ru ?? m.name?.kk ?? ''}</div>
-                <div className="flex items-center gap-2 mt-[6px] text-[10px] text-[#6B7280] tabular-nums">
-                  <span>👁 {m.view_count}</span>
-                  {m.verification_status === 'verified' ? (
-                    <span className="text-[#2B8C93] font-semibold">✓ 已认证</span>
-                  ) : (
-                    <span className="text-[#B0B5BF]">○ 待认证</span>
-                  )}
-                </div>
-              </div>
-            </Link>
+           <Link
+  key={m.id}
+  href={`/merchants/${m.slug}`}
+  className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center gap-3"
+>
+  {m.cover_image ? (
+    <img src={m.cover_image} className="w-16 h-16 rounded-lg object-cover shrink-0" />
+  ) : (
+    <div className="w-16 h-16 rounded-lg shrink-0 bg-gradient-to-br from-[#D9A441] to-[#2B8C93]" />
+  )}
+  <div className="flex-1 min-w-0">
+    <div className="flex items-center gap-2">
+      <span className={`text-[9px] font-bold px-[6px] py-[2px] rounded-full ${
+        m.is_open_now ? 'bg-[#2E9E5B]/10 text-[#1D7A44]' : 'bg-[#B54B3A]/10 text-[#B54B3A]'
+      }`}>
+        {m.is_open_now ? '营业中' : '已打烊'}
+      </span>
+      <div className="text-sm font-bold truncate">{m.name}</div>
+    </div>
+    <div className="flex items-center gap-2 mt-[6px] text-[10px] text-[#6B7280] tabular-nums">
+      <span>👁 {m.view_count}</span>
+      {m.verification_status === 'verified' ? (
+        <span className="text-[#2B8C93] font-semibold">✓ 已认证</span>
+      ) : (
+        <span className="text-[#B0B5BF]">○ 待认证</span>
+      )}
+    </div>
+  </div>
+</Link>
           ))}
         </div>
       </main>
