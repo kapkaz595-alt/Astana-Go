@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
   const businessType = searchParams.get('business_type');
   const keyword = searchParams.get('keyword');
   const categorySlug = searchParams.get('category_slug');
+  const featured = searchParams.get('featured');
   const locale = searchParams.get('locale') || 'zh';
 
   let query = supabase
@@ -34,14 +35,16 @@ export async function GET(request: NextRequest) {
     .select(
   `id, slug, name, cover_image, description, business_type, target_audiences,
   phone, whatsapp, address, latitude, longitude, "2gis_url", website, instagram,
-  business_hours, verification_status, view_count, created_at,
+  business_hours, verification_status, view_count, created_at, is_featured,
   merchant_categories(categories(id, slug, name))`,
   { count: 'exact' }
 )
     .eq('business_status', 'active');
-
+  
+  if (featured === 'true') query = query.eq('is_featured', true);
   if (businessType) query = query.eq('business_type', businessType);
   if (keyword) query = query.ilike('search_text', `%${keyword}%`);
+  
 
   if (categorySlug) {
     // 先按slug查category_id，再筛选
