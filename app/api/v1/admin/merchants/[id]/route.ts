@@ -64,8 +64,8 @@ export const PATCH = withAdminAuth(async (
     phone, whatsapp, address, latitude, longitude,
     '2gis_url': gisUrl, website, instagram,
     business_status, verification_status, business_hours,
-    category_ids,
-  } = body;
+category_ids, gallery_images,
+} = body;
 
   const updateData: Record<string, unknown> = {};
   if (slug !== undefined) updateData.slug = slug;
@@ -84,6 +84,7 @@ export const PATCH = withAdminAuth(async (
   if (business_status !== undefined) updateData.business_status = business_status;
   if (verification_status !== undefined) updateData.verification_status = verification_status;
   if (business_hours !== undefined) updateData.business_hours = business_hours;
+  if (gallery_images !== undefined) updateData.gallery_images = gallery_images;
 
   const supabase = await getClient();
 
