@@ -37,7 +37,7 @@ const remaining = images.length - MAX_PREVIEW;
           onClick={() => setOpenIndex(i)}
           className="relative aspect-square rounded-lg overflow-hidden"
         >
-          <img src={url} alt={${name} ${i + 1}} className="w-full h-full object-cover" />
+          <img src={url} alt={`${name} ${i + 1}`} className="w-full h-full object-cover" />
           {i === MAX_PREVIEW - 1 && remaining > 0 && (
             <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-sm font-bold">
               +{remaining}
