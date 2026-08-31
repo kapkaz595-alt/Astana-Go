@@ -27,8 +27,8 @@ export default async function SearchPage({
   const items: SearchItem[] = result?.data ?? [];
 
   return (
-    <div className="min-h-screen bg-[#DEE1E6] flex justify-center py-8">
-      <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] w-full mx-auto shadow-2xl rounded-3xl overflow-hidden">
+    <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:py-8">
+  <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] md:max-w-[1200px] w-full mx-auto md:shadow-2xl md:rounded-3xl overflow-hidden">
         <header className="flex items-center gap-3 px-[18px] pt-[18px] pb-[14px]">
           <Link href="/" className="text-[#6B7280] text-lg">‹</Link>
           <form action="/search" className="flex-1">
@@ -55,11 +55,11 @@ export default async function SearchPage({
           )}
         </div>
 
-        <div className="flex flex-col gap-2 px-[18px] pb-6">
+        <div className="flex flex-col md:grid md:grid-cols-3 gap-2 px-[18px] pb-6">
           {items.map((item) => (
             <Link
               key={`${item.type}-${item.id}`}
-              href={item.type === 'merchant' ? `/merchant/${item.slug}` : `/content/${item.slug}`}
+             href={item.type === 'merchant' ? `/merchants/${item.slug}` : `/content/${item.slug}`}
               className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center gap-3"
             >
               <span className={`text-[9px] font-bold px-2 py-1 rounded-full shrink-0 ${
