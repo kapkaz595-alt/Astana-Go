@@ -53,7 +53,7 @@ export default async function ContentDetailPage({
           )}
         </div>
 
-        className="px-[18px] md:px-8 pb-8 text-sm md:text-base leading-relaxed md:leading-loose text-[#14171F] whitespace-pre-wrap"
+       <div className="px-[18px] md:px-8 pb-8 text-sm md:text-base leading-relaxed md:leading-loose text-[#14171F] whitespace-pre-wrap">
           {t.body}
         </div>
       </main>
