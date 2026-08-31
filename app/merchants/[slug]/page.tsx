@@ -34,8 +34,8 @@ export default async function MerchantDetailPage({
   const businessHours = m.business_hours as Record<string, { open: string; close: string }[]>;
 
   return (
-    <div className="min-h-screen bg-[#DEE1E6] flex justify-center py-8">
-      <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] w-full mx-auto shadow-2xl rounded-3xl overflow-hidden">
+    <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:py-8">
+  <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] md:max-w-[900px] w-full mx-auto md:shadow-2xl md:rounded-3xl overflow-hidden">
         <header className="flex items-center gap-3 px-[18px] pt-[18px] pb-[14px]">
           <Link href="/" className="text-[#6B7280] text-lg">‹</Link>
         </header>
@@ -53,7 +53,7 @@ export default async function MerchantDetailPage({
           </div>
 
         {m.gallery_images && m.gallery_images.length > 0 && (
-  <div className="px-[18px] pb-4">
+ <div className="px-[18px] pb-4 md:px-6">
     <GalleryLightbox images={m.gallery_images as string[]} name={name?.zh ?? ''} />
   </div>
 )}
@@ -65,7 +65,7 @@ export default async function MerchantDetailPage({
           )}
         </div>
 
-        <div className="px-[18px] flex flex-col gap-3 pb-4">
+        <div className="px-[18px] flex flex-col md:grid md:grid-cols-2 gap-3 pb-4">
           {m.address && (
             <div className="bg-white rounded-xl border border-[#E7E9EE] p-3">
               <div className="text-xs text-[#6B7280] mb-1">📍 地址</div>
