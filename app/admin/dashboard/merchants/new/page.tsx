@@ -217,8 +217,6 @@ function removeGalleryImage(index: number) {
          </select>
          </div>
 
-        </div>
-
 <div className="flex items-center gap-2">
   <input
     type="checkbox"
