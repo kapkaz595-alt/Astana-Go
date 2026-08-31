@@ -27,6 +27,8 @@ export default function EditMerchantPage() {
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [galleryImages, setGalleryImages] = useState<string[]>([]);
+  const [galleryUploading, setGalleryUploading] = useState(false);
 
   const [form, setForm] = useState({
     slug: '',
@@ -75,7 +77,8 @@ export default function EditMerchantPage() {
           business_status: m.business_status ?? 'active',
           verification_status: m.verification_status ?? 'unverified',
         });
-
+        
+        setGalleryImages(m.gallery_images || []);
         if (m.business_hours) {
           const h: Record<string, { open: string; close: string; closed: boolean }> = {};
           for (const d of WEEKDAYS) {
@@ -103,6 +106,30 @@ export default function EditMerchantPage() {
     setHours((h) => ({ ...h, [day]: { ...h[day], [field]: value } }));
   }
 
+  async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  const files = e.target.files;
+  if (!files || files.length === 0) return;
+  setGalleryUploading(true);
+  try {
+    const uploadedUrls: string[] = [];
+    for (const file of Array.from(files)) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'merchants');
+      const res = await fetch('/api/v1/admin/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.url) uploadedUrls.push(data.url);
+    }
+    setGalleryImages((prev) => [...prev, ...uploadedUrls]);
+  } finally {
+    setGalleryUploading(false);
+  }
+}
+
+function removeGalleryImage(index: number) {
+  setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+}
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -128,6 +155,8 @@ export default function EditMerchantPage() {
       business_status: form.business_status,
       verification_status: form.verification_status,
       category_ids: selectedCategoryIds,
+      category_ids: selectedCategoryIds,
+      gallery_images: galleryImages,
     };
 
     const res = await fetch(`/api/v1/admin/merchants/${id}`, {
@@ -285,6 +314,27 @@ export default function EditMerchantPage() {
           <input value={form.twogis_url} onChange={(e) => updateField('twogis_url', e.target.value)}
                  className="w-full border rounded-lg px-3 py-2 text-sm" />
         </div>
+
+        <div>
+  <label className="text-sm font-medium block mb-1">相册图片（多选）</label>
+  <input
+    type="file"
+    accept="image/jpeg,image/png,image/webp,image/gif"
+    multiple
+    onChange={handleGalleryUpload}
+    disabled={galleryUploading}
+  />
+  {galleryUploading && <p className="text-sm text-gray-500">上传中…</p>}
+  <div className="flex flex-wrap gap-2 mt-2">
+    {galleryImages.map((url, i) => (
+      <div key={i} className="relative">
+        <img src={url} className="w-20 h-20 object-cover rounded" />
+        <button type="button" onClick={() => removeGalleryImage(i)}
+                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs">×</button>
+      </div>
+    ))}
+  </div>
+</div>
 
         <div>
           <label className="text-sm font-medium block mb-2">营业时间</label>
