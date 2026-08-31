@@ -29,8 +29,8 @@ export default async function MerchantsPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#DEE1E6] flex justify-center py-8">
-      <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] w-full mx-auto shadow-2xl rounded-3xl overflow-hidden">
+    <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:py-8">
+  <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] md:max-w-[1200px] w-full mx-auto md:shadow-2xl md:rounded-3xl overflow-hidden">
         <header className="flex items-center gap-3 px-[18px] pt-[18px] pb-[14px]">
           <Link href="/" className="text-[#6B7280] text-lg">‹</Link>
           <div className="font-extrabold text-[16px]" style={{ fontFamily: 'Manrope' }}>
@@ -42,7 +42,7 @@ export default async function MerchantsPage({
           共 {items.length} 家商家
         </div>
 
-        <div className="flex flex-col gap-3 px-[18px] pb-6">
+       <div className="flex flex-col md:grid md:grid-cols-4 gap-3 px-[18px] pb-6">
           {items.length === 0 && (
             <div className="text-sm text-[#6B7280] py-10 text-center">暂无商家</div>
           )}
@@ -50,12 +50,12 @@ export default async function MerchantsPage({
            <Link
   key={m.id}
   href={`/merchants/${m.slug}`}
-  className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center gap-3"
+ className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center md:flex-col md:items-stretch gap-3"
 >
   {m.cover_image ? (
-    <img src={m.cover_image} className="w-16 h-16 rounded-lg object-cover shrink-0" />
+   <img src={m.cover_image} className="w-16 h-16 md:w-full md:h-32 rounded-lg object-cover shrink-0" />
   ) : (
-    <div className="w-16 h-16 rounded-lg shrink-0 bg-gradient-to-br from-[#D9A441] to-[#2B8C93]" />
+    <img src={m.cover_image} className="w-16 h-16 md:w-full md:h-32 rounded-lg object-cover shrink-0" />
   )}
   <div className="flex-1 min-w-0">
     <div className="flex items-center gap-2">
