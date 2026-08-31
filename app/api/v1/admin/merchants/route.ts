@@ -78,9 +78,10 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
     phone, whatsapp, address, latitude, longitude,
     '2gis_url': gisUrl, website, instagram,
     business_status, verification_status,
-    category_ids, // 数组,用于写merchant_categories
-  } = body;
-
+   category_ids, // 数组,用于写merchant_categories
+is_featured,
+} = body;
+  
   if (!slug || !name || !business_type) {
     return NextResponse.json(
       { success: false, error: { code: 'INVALID_INPUT', message: 'slug/name/business_type为必填项' } },
@@ -99,6 +100,7 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
     gallery_images: gallery_images ?? [],
     description: description ?? {},
     business_type,
+    is_featured: is_featured ?? false,
     target_audiences: target_audiences ?? [],
     phone: phone ?? null,
     whatsapp: whatsapp ?? null,
