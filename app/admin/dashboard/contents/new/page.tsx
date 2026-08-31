@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import RichTextEditor from '@/components/admin/rich-text-editor';
 
 type Category = { id: string; slug: string; name: Record<string, string> };
 
@@ -108,11 +109,10 @@ function removeCover() {
                  className="w-full border rounded-lg px-3 py-2 text-sm" />
         </div>
 
-        <div>
-          <label className="text-sm font-medium block mb-1">正文（中文）*</label>
-          <textarea required value={form.body_zh} onChange={(e) => updateField('body_zh', e.target.value)}
-                    className="w-full border rounded-lg px-3 py-2 text-sm" rows={8} />
-        </div>
+       <div>
+  <label className="text-sm font-medium block mb-1">正文 (中文) *</label>
+  <RichTextEditor content={form.body_zh} onChange={(html) => updateField('body_zh', html)} />
+</div>
 
         <div>
           <label className="text-sm font-medium block mb-1">SEO简介（可选）</label>
