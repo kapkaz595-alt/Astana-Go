@@ -51,11 +51,16 @@ export default function AdminBannersPage() {
     loadBanners();
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('确定删除这条广告吗？')) return;
-    await fetch(`/api/v1/admin/banners/${id}`, { method: 'DELETE' });
-    loadBanners();
-  };
+ const handleDelete = async (id: string) => {
+  if (!confirm('确定删除这条广告吗？')) return;
+  const res = await fetch(`/api/v1/admin/banners/${id}`, { method: 'DELETE' });
+  const data = await res.json();
+  if (!data.success) {
+    alert(data.error?.message || '删除失败');
+    return;
+  }
+  loadBanners();
+};
 
   return (
     <div className="p-6 max-w-2xl">
