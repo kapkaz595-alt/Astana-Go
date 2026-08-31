@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import GallerySlider from '@/components/merchant/gallery-slider';
 
 async function getMerchant(slug: string) {
   const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -51,19 +52,9 @@ export default async function MerchantDetailPage({
             )}
           </div>
 
-          {m.gallery_images && m.gallery_images.length > 0 && (
+         {m.gallery_images && m.gallery_images.length > 0 && (
   <div className="px-[18px] pb-4">
-    <div className="flex gap-2 overflow-x-auto no-scrollbar" style={{ WebkitOverflowScrolling: 'touch', scrollSnapType: 'x mandatory' }}>
-      {(m.gallery_images as string[]).map((url, i) => (
-        <img
-          key={i}
-          src={url}
-          alt={`${name?.zh} ${i + 1}`}
-          className="w-full aspect-[4/3] object-cover rounded-xl shrink-0"
-          style={{ scrollSnapAlign: 'start' }}
-        />
-      ))}
-    </div>
+    <GallerySlider images={m.gallery_images as string[]} name={name?.zh ?? ''} />
   </div>
 )}
           
