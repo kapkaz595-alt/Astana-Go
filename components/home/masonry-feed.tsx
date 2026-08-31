@@ -44,7 +44,7 @@ export function MasonryFeed({ initialItems, initialHasMore }: { initialItems: Fe
 
   return (
     <div>
-      <div className="columns-2 gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid">
+     <div className="columns-2 md:columns-4 gap-3 [&>*]:mb-3 [&>*]:break-inside-avoid">
         {items.map((item) =>
           item.type === 'merchant' ? (
             <MerchantCard key={`m-${item.id}`} item={item} />
