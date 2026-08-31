@@ -26,6 +26,7 @@ export default function NewMerchantPage() {
   const [coverImage, setCoverImage] = useState<string>('');
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [isFeatured, setIsFeatured] = useState(false);
 
   useEffect(() => {
     fetch('/api/v1/categories?locale=zh')
@@ -129,7 +130,8 @@ function removeGalleryImage(index: number) {
   business_hours,
   business_status: 'active',
   category_ids: selectedCategoryIds,
-};
+  is_featured: isFeatured,
+  };
 
     const res = await fetch('/api/v1/admin/merchants', {
       method: 'POST',
@@ -214,6 +216,19 @@ function removeGalleryImage(index: number) {
          <option value="business_service">商业服务</option>
          </select>
          </div>
+
+        </div>
+
+<div className="flex items-center gap-2">
+  <input
+    type="checkbox"
+    id="isFeatured"
+    checked={isFeatured}
+    onChange={(e) => setIsFeatured(e.target.checked)}
+    className="w-4 h-4"
+  />
+  <label htmlFor="isFeatured" className="text-sm font-medium">设为首页热门推荐</label>
+</div>
 
          <div>
          <label className="text-sm font-medium block mb-1">所属分类（可多选）</label>
