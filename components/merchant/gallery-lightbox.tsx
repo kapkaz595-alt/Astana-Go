@@ -13,6 +13,10 @@ export default function GalleryLightbox({ images, name }: { images: string[]; na
     setOpenIndex((i) => (i === null ? null : (i + 1) % images.length));
   }, [images.length]);
 
+  const MAX_PREVIEW = 6;
+const previewImages = images.slice(0, MAX_PREVIEW);
+const remaining = images.length - MAX_PREVIEW;
+
   useEffect(() => {
     if (openIndex === null) return;
     function onKey(e: KeyboardEvent) {
@@ -25,18 +29,23 @@ export default function GalleryLightbox({ images, name }: { images: string[]; na
   }, [openIndex, close, prev, next]);
 
   return (
-    <>
-      <div className="grid grid-cols-3 gap-2">
-        {images.map((url, i) => (
-          <button
-            key={i}
-            onClick={() => setOpenIndex(i)}
-            className="aspect-square rounded-lg overflow-hidden"
-          >
-            <img src={url} alt={`${name} ${i + 1}`} className="w-full h-full object-cover" />
-          </button>
-        ))}
-      </div>
+  <>
+    <div className="grid grid-cols-3 gap-2">
+      {previewImages.map((url, i) => (
+        <button
+          key={i}
+          onClick={() => setOpenIndex(i)}
+          className="relative aspect-square rounded-lg overflow-hidden"
+        >
+          <img src={url} alt={${name} ${i + 1}} className="w-full h-full object-cover" />
+          {i === MAX_PREVIEW - 1 && remaining > 0 && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-sm font-bold">
+              +{remaining}
+            </div>
+          )}
+        </button>
+      ))}
+    </div>
 
       {openIndex !== null && (
         <div
