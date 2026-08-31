@@ -29,6 +29,7 @@ export default function EditMerchantPage() {
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [galleryUploading, setGalleryUploading] = useState(false);
+  const [isFeatured, setIsFeatured] = useState(false);
 
   const [form, setForm] = useState({
     slug: '',
@@ -78,7 +79,8 @@ export default function EditMerchantPage() {
           verification_status: m.verification_status ?? 'unverified',
         });
         
-        setGalleryImages(m.gallery_images || []);
+        setGalleryImages(m.gallery_images ?? []);
+        setIsFeatured(m.is_featured ?? false);
         if (m.business_hours) {
           const h: Record<string, { open: string; close: string; closed: boolean }> = {};
           for (const d of WEEKDAYS) {
@@ -156,7 +158,8 @@ function removeGalleryImage(index: number) {
       verification_status: form.verification_status,
       category_ids: selectedCategoryIds,
       gallery_images: galleryImages,
-    };
+      is_featured: isFeatured,
+      };
 
     const res = await fetch(`/api/v1/admin/merchants/${id}`, {
       method: 'PATCH',
@@ -275,6 +278,19 @@ function removeGalleryImage(index: number) {
             </select>
           </div>
         </div>
+
+        </div>
+
+<div className="flex items-center gap-2">
+  <input
+    type="checkbox"
+    id="isFeatured"
+    checked={isFeatured}
+    onChange={(e) => setIsFeatured(e.target.checked)}
+    className="w-4 h-4"
+  />
+  <label htmlFor="isFeatured" className="text-sm font-medium">设为首页热门推荐</label>
+</div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
