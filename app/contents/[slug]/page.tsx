@@ -45,9 +45,10 @@ export default async function ContentDetailPage({
 
         <div className="px-[18px] py-4">
           <h1 className="text-xl font-extrabold" style={{ fontFamily: 'Manrope' }}>{t?.title}</h1>
-          <div className="text-sm text-[#14171F] mt-4 leading-relaxed whitespace-pre-wrap">
-            {t?.body}
-          </div>
+          <div
+  className="text-sm text-[#14171F] mt-4 leading-relaxed prose prose-sm max-w-none"
+  dangerouslySetInnerHTML={{ __html: t?.body || '' }}
+/>
         </div>
       </main>
     </div>
