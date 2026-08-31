@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import GallerySlider from '@/components/merchant/gallery-slider';
+import GalleryLightbox from '@/components/merchant/gallery-lightbox';
 
 async function getMerchant(slug: string) {
   const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -52,9 +52,9 @@ export default async function MerchantDetailPage({
             )}
           </div>
 
-         {m.gallery_images && m.gallery_images.length > 0 && (
+        {m.gallery_images && m.gallery_images.length > 0 && (
   <div className="px-[18px] pb-4">
-    <GallerySlider images={m.gallery_images as string[]} name={name?.zh ?? ''} />
+    <GalleryLightbox images={m.gallery_images as string[]} name={name?.zh ?? ''} />
   </div>
 )}
           
