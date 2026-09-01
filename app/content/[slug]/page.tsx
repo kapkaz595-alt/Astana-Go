@@ -47,10 +47,12 @@ export default async function ContentDetailPage({
             {t.title}
           </h1>
           {c.published_at && (
-            <div className="text-xs text-[#6B7280] mt-2">
-              {new Date(c.published_at).toLocaleDateString('zh-CN')}
-            </div>
-          )}
+                <div className="text-xs text-[#6B7280] mt-2">
+                  {c.content_updated_at && new Date(c.content_updated_at).getTime() - new Date(c.published_at).getTime() > 60000
+                    ? `更新于 ${new Date(c.content_updated_at).toLocaleDateString('zh-CN')}`
+                    : `发布于 ${new Date(c.published_at).toLocaleDateString('zh-CN')}`}
+                </div>
+              )}
         </div>
 
        <div className="px-[18px] md:px-8 pb-8 text-sm md:text-base leading-relaxed md:leading-loose text-[#14171F] whitespace-pre-wrap">
