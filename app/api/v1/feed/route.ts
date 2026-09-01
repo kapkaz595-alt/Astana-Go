@@ -21,14 +21,43 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get('page') || '1');
   const pageSize = parseInt(searchParams.get('page_size') || '6');
+  const category = searchParams.get('category');
 
   const supabase = await getClient();
 
-  const { data: contents } = await supabase
-  .from('contents')
-  .select('id, slug, cover_image, published_at, content_type, content_translations(locale, title)')
-  .eq('status', 'published')
-  .order('published_at', { ascending: false });
+  let filteredIds: string[] | null = null;
+    if (category) {
+      const { data: cat } = await supabase
+        .from('local_pick_categories')
+        .select('id')
+        .eq('slug', category)
+        .single();
+
+      if (!cat) {
+        return NextResponse.json({ success: true, data: [], pagination: { page, page_size: pageSize, total: 0, has_more: false } });
+      }
+
+      const { data: rels } = await supabase
+        .from('content_local_pick_categories')
+        .select('content_id')
+        .eq('category_id', cat.id);
+
+      filteredIds = (rels ?? []).map(r => r.content_id);
+      if (filteredIds.length === 0) {
+        return NextResponse.json({ success: true, data: [], pagination: { page, page_size: pageSize, total: 0, has_more: false } });
+      }
+    }
+
+  let query = supabase
+      .from('contents')
+      .select('id, slug, cover_image, published_at, content_type, content_translations(locale, title)')
+      .eq('status', 'published');
+
+    if (filteredIds) {
+      query = query.in('id', filteredIds);
+    }
+
+    const { data: contents } = await query.order('published_at', { ascending: false });
 
   const contentItems = (contents ?? []).map((c) => ({
     type: 'content' as const,
