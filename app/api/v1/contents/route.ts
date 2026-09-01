@@ -20,6 +20,7 @@ async function getClient() {
 export async function GET(request: NextRequest) {
   const supabase = await getClient();
   const { searchParams } = new URL(request.url);
+  const localPickCategory = searchParams.get('local_pick_category');
 
   const page = parseInt(searchParams.get('page') || '1');
   const pageSize = Math.min(parseInt(searchParams.get('page_size') || '20'), 50);
@@ -37,8 +38,32 @@ export async function GET(request: NextRequest) {
     )
     .eq('status', 'published');
 
+  let filteredIds: string[] | null = null;
+    if (localPickCategory) {
+      const { data: cat } = await supabase
+        .from('local_pick_categories')
+        .select('id')
+        .eq('slug', localPickCategory)
+        .single();
+
+      if (!cat) {
+        return NextResponse.json({ success: true, data: [], meta: { requested_locale: locale }, pagination: { page, page_size: pageSize, total: 0 } });
+      }
+
+      const { data: rels } = await supabase
+        .from('content_local_pick_categories')
+        .select('content_id')
+        .eq('category_id', cat.id);
+
+      filteredIds = (rels ?? []).map(r => r.content_id);
+      if (filteredIds.length === 0) {
+        return NextResponse.json({ success: true, data: [], meta: { requested_locale: locale }, pagination: { page, page_size: pageSize, total: 0 } });
+      }
+    }
+
   if (contentType) query = query.eq('content_type', contentType);
   if (tag) query = query.eq('topic_tag', tag);
+  if (filteredIds) query = query.in('id', filteredIds);
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
