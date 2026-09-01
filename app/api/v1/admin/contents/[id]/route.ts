@@ -59,7 +59,7 @@ export const PATCH = withAdminAuth(async (
 
   const { id } = await context.params;
   const body = await request.json();
-  const { slug, content_type, status, cover_image, topic_tag, translations, category_ids } = body;
+  const { slug, content_type, status, cover_image, topic_tag, translations, category_ids, local_pick_category_ids } = body;
 
   const updateData: Record<string, unknown> = {};
   if (slug !== undefined) updateData.slug = slug;
@@ -159,6 +159,21 @@ export const PATCH = withAdminAuth(async (
     }
   }
 
+  // local_pick_category_ids传了就整体替换
+    if (Array.isArray(local_pick_category_ids)) {
+      await supabase.from('content_local_pick_categories').delete().eq('content_id', id);
+      if (local_pick_category_ids.length > 0) {
+        const localPickRels = local_pick_category_ids.map((cid: string) => ({ content_id: id, category_id: cid }));
+        const { error: localPickError } = await supabase.from('content_local_pick_categories').insert(localPickRels);
+        if (localPickError) {
+          return NextResponse.json(
+            { success: false, error: { code: 'LOCAL_PICK_CATEGORY_LINK_ERROR', message: localPickError.message } },
+            { status: 500 }
+          );
+        }
+      }
+    }
+
   return NextResponse.json({ success: true, data: content });
 });
 
@@ -179,6 +194,8 @@ export const DELETE = withAdminAuth(async (
   const supabase = await getClient();
 
   await supabase.from('content_categories').delete().eq('content_id', id);
+
+  await supabase.from('content_local_pick_categories').delete().eq('content_id', id);
 
   const { error } = await supabase.from('contents').delete().eq('id', id);
 
