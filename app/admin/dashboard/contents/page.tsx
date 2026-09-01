@@ -12,12 +12,23 @@ export default function AdminContentsPage() {
   const [contents, setContents] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true);
     fetch('/api/v1/admin/contents?page_size=50')
       .then((r) => r.json())
       .then((d) => setContents(d.data ?? []))
       .finally(() => setLoading(false));
-  }, []);
+  };
+
+  useEffect(() => { load(); }, []);
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('确定要删除这篇文章吗？删除后文章内容及相关分类关系将无法恢复。')) return;
+    const res = await fetch(`/api/v1/admin/contents/${id}`, { method: 'DELETE' });
+    const data = await res.json();
+    if (!data.success) alert(data.error?.message ?? '删除失败');
+    load();
+  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
@@ -41,9 +52,14 @@ export default function AdminContentsPage() {
                   {c.slug} · {c.content_type} · {c.status === 'published' ? '已发布' : '草稿'}
                 </div>
               </div>
-              <Link href={`/admin/dashboard/contents/${c.id}`} className="text-sm text-[#2B8C93]">
-                编辑 ›
-              </Link>
+              <div className="flex items-center gap-3">
+                <Link href={`/admin/dashboard/contents/${c.id}`} className="text-sm text-[#2B8C93]">
+                  编辑
+                </Link>
+                <button onClick={() => handleDelete(c.id)} className="text-sm text-red-500">
+                  删除
+                </button>
+              </div>
             </div>
           );
         })}
