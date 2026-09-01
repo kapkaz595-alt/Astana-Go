@@ -111,6 +111,7 @@ const { data: content, error } = await supabase
     topic_tag: topic_tag ?? null,
     created_by: session.id,
     published_at: finalStatus === 'published' ? new Date().toISOString() : null,
+    content_updated_at: new Date().toISOString(),
   })
   .select()
   .single();
