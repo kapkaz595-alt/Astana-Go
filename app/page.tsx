@@ -63,6 +63,7 @@ type ContentItem = {
 };
 
 type Banner = { id: string; image_url: string; link_url: string | null };
+type LocalPickCategory = { id: string; slug: string; name: { zh?: string; kk?: string; ru?: string } };
 
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -72,6 +73,8 @@ export default function HomePage() {
   const [feedItems, setFeedItems] = useState<any[]>([]);
   const [feedHasMore, setFeedHasMore] = useState(false);
   const [banners, setBanners] = useState<Banner[]>([]);
+  const [localPickCategories, setLocalPickCategories] = useState<LocalPickCategory[]>([]);
+  const [activeLocalPickCategory, setActiveLocalPickCategory] = useState<string>('');
 
   const [locale, setLocale] = useState<'zh' | 'kk'>('zh');
   const t = UI_TEXT[locale];
@@ -87,20 +90,20 @@ function toggleLocale() {
   document.cookie = `locale=${next}; path=/; max-age=31536000`;
 }
 
-  useEffect(() => {
-  fetch(`/api/v1/categories?locale=${locale}`).then(r => r.json()).then(d => setCategories(d.data ?? []));
-  fetch(`/api/v1/merchants?page_size=10&locale=${locale}&featured=true`).then(r => r.json()).then(d => setMerchants(d.data ?? []));
-  fetch('/api/v1/banners?position=homepage_top').then(r => r.json()).then(d => setBanners(d.data ?? []));
-  fetch(`/api/v1/feed?page=1&page_size=6&locale=${locale}`).then(r => r.json()).then(d => {
-    setFeedItems(d.data ?? []);
-    setFeedHasMore(d.pagination?.has_more ?? false);
-  });
-}, [locale]);
+ useEffect(() => {
+    fetch(`/api/v1/categories?locale=${locale}`).then(r => r.json()).then(d => setCategories(d.data ?? []));
+    fetch(`/api/v1/merchants?page_size=10&locale=${locale}&featured=true`).then(r => r.json()).then(d => setMerchants(d.data ?? []));
+    fetch('/api/v1/banners?position=homepage_top').then(r => r.json()).then(d => setBanners(d.data ?? []));
+    fetch('/api/v1/local-pick-categories').then(r => r.json()).then(d => setLocalPickCategories(d.data ?? []));
+  }, [locale]);
 
   useEffect(() => {
-  fetch(`/api/v1/contents?tag=${TAB_TAGS[activeTab]}&page_size=5&locale=${locale}`)
-    .then(r => r.json()).then(d => setContents(d.data ?? []));
-}, [activeTab, locale]);
+    const categoryParam = activeLocalPickCategory ? `&category=${activeLocalPickCategory}` : '';
+    fetch(`/api/v1/feed?page=1&page_size=6&locale=${locale}${categoryParam}`).then(r => r.json()).then(d => {
+      setFeedItems(d.data ?? []);
+      setFeedHasMore(d.pagination?.has_more ?? false);
+    });
+  }, [locale, activeLocalPickCategory]);
 
    return (
     <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:py-8">
@@ -208,13 +211,30 @@ function toggleLocale() {
         })}
       </div>
 
-      {/* Local picks */}
-<div className="flex items-center justify-between px-[18px] pt-[22px] pb-3">
-  <div className="font-extrabold text-[16px]" style={{ fontFamily: 'Manrope' }}>{t.localPicks}</div>
-</div>
-<div className="px-[18px]">
-  <MasonryFeed initialItems={feedItems} initialHasMore={feedHasMore} />
-</div>
+    {/* Local picks */}
+        <div className="flex items-center justify-between px-[18px] pt-[22px] pb-3">
+          <div className="font-extrabold text-[16px]" style={{ fontFamily: 'Manrope' }}>{t.localPicks}</div>
+        </div>
+        <div className="flex gap-2 overflow-x-auto px-[18px] pb-3" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <button
+            onClick={() => setActiveLocalPickCategory('')}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap ${activeLocalPickCategory === '' ? 'bg-black text-white' : 'bg-[#EDEFF3] text-[#6B7280]'}`}
+          >
+            全部
+          </button>
+          {localPickCategories.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => setActiveLocalPickCategory(c.slug)}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap ${activeLocalPickCategory === c.slug ? 'bg-black text-white' : 'bg-[#EDEFF3] text-[#6B7280]'}`}
+            >
+              {c.name?.zh}
+            </button>
+          ))}
+        </div>
+        <div className="px-[18px]">
+          <MasonryFeed initialItems={feedItems} initialHasMore={feedHasMore} key={activeLocalPickCategory} />
+        </div>
 
       {/* Footer */}
       <footer className="mt-7 bg-white border-t border-[#E7E9EE] px-[18px] pt-[26px] pb-6">
