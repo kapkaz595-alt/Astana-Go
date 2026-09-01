@@ -248,8 +248,7 @@ function toggleLocale() {
           </div>
           <div className="flex-1 min-w-0">
            <h4 className="text-[11.5px] font-bold mb-[10px]">{t.contactUs}</h4>
-            <div className="text-[10.5px] text-[#6B7280] mb-2">✉️ hello@astanago.com</div>
-            <div className="text-[10.5px] text-[#6B7280] mb-2">💬 {t.whatsappContact}</div>
+            <a href="/contact" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">■ {t.contactUs}</a>
           </div>
           <div className="flex-1 min-w-0">
             <h4 className="text-[11.5px] font-bold mb-[10px]">{t.followUs}</h4>
