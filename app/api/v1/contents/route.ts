@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
   let query = supabase
     .from('contents')
     .select(
-      `id, slug, content_type, cover_image, published_at, created_at,
+      `id, slug, content_type, cover_image, published_at, created_at, content_updated_at,
        content_translations(locale, title, meta_description),
        content_categories(categories(id, slug, name))`,
       { count: 'exact' }
