@@ -142,6 +142,11 @@ export const PATCH = withAdminAuth(async (
         { status: 500 }
       );
     }
+    // 只有真正更新了标题/正文才刷新"内容更新时间"（updated_at本身由数据库触发器在任何UPDATE时自动刷新，不能用于前台"更新于"展示）
+      await supabase
+        .from('contents')
+        .update({ content_updated_at: new Date().toISOString() })
+        .eq('id', id);
   }
 
   // category_ids传了就整体替换(分类关系本身是轻量标签,替换合理)
