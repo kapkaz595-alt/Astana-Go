@@ -29,7 +29,7 @@ export async function GET(
   const { data, error } = await supabase
     .from('contents')
     .select(
-      `id, slug, content_type, cover_image, published_at, created_at,
+     `id, slug, content_type, cover_image, published_at, created_at, content_updated_at,
        content_translations(locale, title, body, meta_title, meta_description),
        content_categories(categories(id, slug, name))`
     )
