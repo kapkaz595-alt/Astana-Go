@@ -6,7 +6,7 @@ import { ContentCard } from './content-card';
 
 type FeedItem = { type: 'merchant' | 'content'; [key: string]: any };
 
-export function MasonryFeed({ initialItems, initialHasMore }: { initialItems: FeedItem[]; initialHasMore: boolean }) {
+export function MasonryFeed({ initialItems, initialHasMore, category }: { initialItems: FeedItem[]; initialHasMore: boolean; category?: string }) {
   const [items, setItems] = useState<FeedItem[]>(initialItems);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(initialHasMore);
@@ -21,13 +21,14 @@ export function MasonryFeed({ initialItems, initialHasMore }: { initialItems: Fe
     if (loading || !hasMore) return;
     setLoading(true);
     const nextPage = page + 1;
-    const res = await fetch(`/api/v1/feed?page=${nextPage}&page_size=6`);
+    const categoryParam = category ? `&category=${category}` : '';
+    const res = await fetch(`/api/v1/feed?page=${nextPage}&page_size=6${categoryParam}`);
     const json = await res.json();
     setItems((prev) => [...prev, ...json.data]);
     setPage(nextPage);
     setHasMore(json.pagination.has_more);
     setLoading(false);
-  }, [page, hasMore, loading]);
+  }, [page, hasMore, loading, category]);
 
   useEffect(() => {
     const el = sentinelRef.current;
