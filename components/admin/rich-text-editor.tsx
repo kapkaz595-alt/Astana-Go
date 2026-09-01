@@ -4,6 +4,8 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import { useState } from 'react';
+import TextStyle from '@tiptap/extension-text-style';
+import Color from '@tiptap/extension-color';
 
 export default function RichTextEditor({
   content,
@@ -21,7 +23,7 @@ export default function RichTextEditor({
   const [cardLink, setCardLink] = useState('');
 
   const editor = useEditor({
-    extensions: [StarterKit, Image],
+    extensions: [StarterKit, Image, TextStyle, Color],
     content,
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
@@ -110,6 +112,20 @@ export default function RichTextEditor({
           className={`text-xs px-2 py-1 rounded border italic ${editor.isActive('italic') ? 'bg-[#14171F] text-white' : ''}`}
         >
           I
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().setColor('#B54B3A').run()}
+          className="text-xs px-2 py-1 rounded border text-[#B54B3A] font-semibold"
+        >
+          红色
+        </button>
+        <button
+          type="button"
+          onClick={() => editor.chain().focus().unsetColor().run()}
+          className="text-xs px-2 py-1 rounded border"
+        >
+          默认色
         </button>
         <label className="text-xs px-2 py-1 rounded border cursor-pointer">
           {uploading ? '上传中…' : '插入图片'}
