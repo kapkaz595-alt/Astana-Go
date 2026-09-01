@@ -70,7 +70,8 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
   const {
   slug, content_type, status, cover_image, topic_tag,
   translations, // [{ locale, title, body, meta_description }]
-  category_ids,
+ category_ids,
+      local_pick_category_ids,
 } = body;
 
   if (!slug || !content_type) {
@@ -156,6 +157,18 @@ const { data: content, error } = await supabase
       );
     }
   }
+
+  // 写入本地精选分类关联
+    if (Array.isArray(local_pick_category_ids) && local_pick_category_ids.length > 0) {
+      const localPickRels = local_pick_category_ids.map((cid: string) => ({ content_id: content.id, category_id: cid }));
+      const { error: localPickError } = await supabase.from('content_local_pick_categories').insert(localPickRels);
+      if (localPickError) {
+        return NextResponse.json(
+          { success: false, error: { code: 'LOCAL_PICK_CATEGORY_LINK_ERROR', message: localPickError.message } },
+          { status: 500 }
+        );
+      }
+    }
 
   return NextResponse.json({ success: true, data: content }, { status: 201 });
 });
