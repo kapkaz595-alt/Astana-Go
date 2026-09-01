@@ -1,7 +1,7 @@
 type Merchant = {
   id: string;
   slug: string;
-  name: Record<string, string>;
+  name: string;
   view_count: number;
   verification_status: string;
   is_open_now: boolean;
@@ -67,8 +67,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-[14px] truncate">{m.name?.zh}</p>
-                <p className="text-[11px] text-[#6B7280] truncate">{m.name?.kk}</p>
+               <p className="font-semibold text-[14px] truncate">{m.name}</p>
                 <div className="flex items-center gap-2 mt-1 text-[10.5px] text-[#6B7280]">
                   <span className={m.is_open_now ? 'text-[#2B8C93]' : 'text-[#B54B3A]'}>
                     {m.is_open_now ? '营业中' : '休息中'}
