@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { NoticeBar } from '@/components/home/notice-bar';
 import { BannerSlot } from '@/components/home/banner-slot';
 import { MasonryFeed } from '@/components/home/masonry-feed';
+import FooterSocial from '@/components/footer-social';
 
 const UI_TEXT = {
   zh: {
@@ -252,12 +253,7 @@ function toggleLocale() {
           </div>
           <div className="flex-1 min-w-0">
             <h4 className="text-[11.5px] font-bold mb-[10px]">{t.followUs}</h4>
-            <div className="flex gap-[6px]">
-              <span className="w-[30px] h-[30px] rounded-[9px] bg-[#07C160] flex items-center justify-center text-white text-xs">微</span>
-              <span className="w-[30px] h-[30px] rounded-[9px] bg-black flex items-center justify-center text-white text-xs">抖</span>
-              <span className="w-[30px] h-[30px] rounded-[9px] flex items-center justify-center text-white text-xs"
-                    style={{ background: 'radial-gradient(circle at 30% 110%, #FDF497 0%, #FD5949 45%, #D6249F 60%, #285AEB 90%)' }}>I</span>
-            </div>
+           <FooterSocial />
           </div>
         </div>
         <div className="mt-[22px] pt-4 border-t border-[#E7E9EE] text-[10.5px] text-[#9AA0AC] text-center">
