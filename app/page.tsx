@@ -242,9 +242,9 @@ function toggleLocale() {
         <div className="flex gap-[14px] justify-between">
           <div className="flex-1 min-w-0">
             <h4 className="text-[11.5px] font-bold mb-[10px]">{t.aboutUs}</h4>
-            <div className="text-[10.5px] text-[#6B7280] mb-2">· {t.platformIntro}</div>
-            <div className="text-[10.5px] text-[#6B7280] mb-2">· {t.terms}</div>
-           <div className="text-[10.5px] text-[#6B7280] mb-2">· {t.privacy}</div>
+            <a href="/about" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.platformIntro}</a>
+            <a href="/terms" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.terms}</a>
+            <a href="/privacy" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.privacy}</a>
           </div>
           <div className="flex-1 min-w-0">
            <h4 className="text-[11.5px] font-bold mb-[10px]">{t.contactUs}</h4>
