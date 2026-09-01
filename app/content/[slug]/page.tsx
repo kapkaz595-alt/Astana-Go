@@ -1,5 +1,13 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import DOMPurify from 'isomorphic-dompurify';
+
+function sanitizeHtml(html: string) {
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['p', 'strong', 'em', 'span', 'a', 'img', 'div', 'br', 'ul', 'ol', 'li', 'h1', 'h2', 'h3'],
+    ALLOWED_ATTR: ['style', 'href', 'src', 'target', 'alt', 'class'],
+  });
+}
 
 async function getContent(slug: string) {
   const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -55,9 +63,10 @@ export default async function ContentDetailPage({
               )}
         </div>
 
-       <div className="px-[18px] md:px-8 pb-8 text-sm md:text-base leading-relaxed md:leading-loose text-[#14171F] whitespace-pre-wrap">
-          {t.body}
-        </div>
+      <div
+            className="px-[18px] md:px-8 pb-8 text-sm md:text-base leading-relaxed md:leading-loose text-[#14171F] prose prose-sm max-w-none"
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(t.body) }}
+          />
       </main>
     </div>
   );
