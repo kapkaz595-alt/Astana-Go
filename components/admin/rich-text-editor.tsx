@@ -24,7 +24,6 @@ export default function RichTextEditor({
   const [cardLink, setCardLink] = useState('');
 
   const editor = useEditor({
-    extensions: [StarterKit, Image, TextStyle, Color],
     extensions: [StarterKit, Image, TextStyle, Color, Link.configure({ openOnClick: false })],
     content,
     immediatelyRender: false,
