@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import TimeSelect from '../_components/TimeSelect';
+import imageCompression from 'browser-image-compression';
 
 const WEEKDAYS = [
   { key: 'monday', label: '周一' },
@@ -55,9 +56,24 @@ export default function NewMerchantPage() {
     setForm((f) => ({ ...f, [key]: value }));
   }
 
+  async function compressImage(file: File): Promise<File> {
+  try {
+    return await imageCompression(file, {
+      maxWidthOrHeight: 1600,
+      maxSizeMB: 0.5,
+      useWebWorker: true,
+      fileType: 'image/webp',
+    });
+  } catch (err) {
+    console.error('压缩失败，使用原图', err);
+    return file;
+  }
+}
+
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-  const file = e.target.files?.[0];
-  if (!file) return;
+  const rawFile = e.target.files?.[0];
+if (!rawFile) return;
+const file = await compressImage(rawFile);
   setUploading(true);
   const formData = new FormData();
   formData.append('file', file);
@@ -82,9 +98,10 @@ export default function NewMerchantPage() {
   if (!files || files.length === 0) return;
   setUploading(true);
   const uploaded: string[] = [];
-  for (const file of Array.from(files)) {
-    const formData = new FormData();
-    formData.append('file', file);
+ for (const rawFile of Array.from(files)) {
+  const file = await compressImage(rawFile);
+  const formData = new FormData();
+  formData.append('file', file);
     formData.append('folder', 'merchants');
     formData.append('entity_id', form.slug || 'temp');
     const res = await fetch('/api/v1/admin/upload', { method: 'POST', body: formData });
