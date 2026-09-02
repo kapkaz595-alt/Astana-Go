@@ -109,7 +109,7 @@ function toggleLocale() {
    return (
    <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:pb-8">
   <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] md:max-w-[1200px] w-full mx-auto md:shadow-2xl">
-    <div className="sticky top-0 z-50 bg-[#E6F4FA]">
+    <div className="sticky top-0 z-50 bg-[#A8D8EC]">
       {/* Header */}
       <header className="flex items-center justify-between px-[18px] pt-[18px] pb-[14px]">
         <div className="flex items-center gap-2">
