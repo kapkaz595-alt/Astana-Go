@@ -56,9 +56,9 @@ export default async function ContentDetailPage({
           </h1>
           {c.published_at && (
                 <div className="text-xs text-[#6B7280] mt-2">
-                  {c.content_updated_at && new Date(c.content_updated_at).getTime() - new Date(c.published_at).getTime() > 60000
-                    ? `更新于 ${new Date(c.content_updated_at).toLocaleDateString('zh-CN')}`
-                    : `发布于 ${new Date(c.published_at).toLocaleDateString('zh-CN')}`}
+                 {c.updated_at && new Date(c.updated_at).getTime() - new Date(c.published_at).getTime() > 60000
+                ? `更新于 ${new Date(c.updated_at).toLocaleDateString('zh-CN')}`
+                : `发布于 ${new Date(c.published_at).toLocaleDateString('zh-CN')}`}
                 </div>
               )}
         </div>
