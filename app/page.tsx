@@ -109,13 +109,13 @@ function toggleLocale() {
    return (
    <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:pb-8">
   <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] md:max-w-[1200px] w-full mx-auto md:shadow-2xl">
-    <div className="sticky top-0 z-50 bg-[#A8D8EC]">
+   <div className="sticky top-0 z-50" style={{ background: 'linear-gradient(135deg,#F4A83D,#E8722C)' }}>
       {/* Header */}
       <header className="flex items-center justify-between px-[18px] pt-[18px] pb-[14px]">
         <div className="flex items-center gap-2">
          <img src="/logo.png" alt="Astana Go" className="h-[36px] w-auto" />
         </div>
-        <button onClick={toggleLocale} className="bg-[#EDEFF3] rounded-full px-[13px] py-[6px] text-xs font-semibold">
+       <button onClick={toggleLocale} className="bg-white/90 rounded-full px-[13px] py-[6px] text-xs font-semibold">
   {locale === 'zh' ? '中 / Қаз' : 'Қаз / 中'}
 </button>
       </header>
