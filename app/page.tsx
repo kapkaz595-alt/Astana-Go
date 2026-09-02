@@ -107,7 +107,7 @@ function toggleLocale() {
   }, [locale, activeLocalPickCategory]);
 
    return (
-    <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:py-8">
+   <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:pb-8">
   <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] md:max-w-[1200px] w-full mx-auto md:shadow-2xl">
     <div className="sticky top-0 z-50 bg-[#E6F4FA]">
       {/* Header */}
