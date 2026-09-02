@@ -109,17 +109,11 @@ function toggleLocale() {
    return (
     <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:py-8">
   <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] md:max-w-[1200px] w-full mx-auto md:shadow-2xl md:rounded-3xl overflow-hidden">
+    <div className="sticky top-0 z-50 bg-[#E6F4FA]">
       {/* Header */}
       <header className="flex items-center justify-between px-[18px] pt-[18px] pb-[14px]">
         <div className="flex items-center gap-2">
-          <div className="w-[34px] h-[34px] rounded-[10px] flex items-center justify-center text-white font-extrabold text-base"
-               style={{ background: 'linear-gradient(135deg,#D9A441,#C68A2E)', fontFamily: 'Manrope' }}>
-            A
-          </div>
-          <div className="leading-tight">
-            <div className="font-extrabold text-[15px]" style={{ fontFamily: 'Manrope' }}>Astana Go</div>
-            <div className="font-bold text-[9.5px] tracking-wider text-[#6B7280]" style={{ fontFamily: 'Manrope' }}>本地生活</div>
-          </div>
+         <img src="/logo.png" alt="Astana Go" className="h-[36px] w-auto" />
         </div>
         <button onClick={toggleLocale} className="bg-[#EDEFF3] rounded-full px-[13px] py-[6px] text-xs font-semibold">
   {locale === 'zh' ? '中 / Қаз' : 'Қаз / 中'}
@@ -142,6 +136,7 @@ function toggleLocale() {
           />
         </form>
       </div>
+   </div>
 
       {/* Categories */}
       <div className="px-3 pb-5 grid grid-cols-5 md:grid-cols-10 gap-x-[2px] md:gap-x-4 gap-y-[14px]">
