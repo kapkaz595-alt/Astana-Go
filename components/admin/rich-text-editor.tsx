@@ -6,6 +6,7 @@ import Image from '@tiptap/extension-image';
 import { useState } from 'react';
 import TextStyle from '@tiptap/extension-text-style';
 import Color from '@tiptap/extension-color';
+import Link from '@tiptap/extension-link';
 
 export default function RichTextEditor({
   content,
@@ -24,6 +25,7 @@ export default function RichTextEditor({
 
   const editor = useEditor({
     extensions: [StarterKit, Image, TextStyle, Color],
+    extensions: [StarterKit, Image, TextStyle, Color, Link.configure({ openOnClick: false })],
     content,
     immediatelyRender: false,
     onUpdate: ({ editor }) => {
