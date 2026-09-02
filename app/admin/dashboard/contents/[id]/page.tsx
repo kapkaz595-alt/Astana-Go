@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
+import RichTextEditor from '@/components/admin/rich-text-editor';
 
 type Category = { id: string; slug: string; name: Record<string, string> };
 
@@ -16,6 +17,7 @@ export default function EditContentPage() {
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   const [form, setForm] = useState({
     slug: '',
@@ -60,6 +62,26 @@ export default function EditContentPage() {
   function updateField(key: string, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
   }
+
+  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  setUploading(true);
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'contents');
+    const res = await fetch('/api/v1/admin/upload', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.url) updateField('cover_image', data.url);
+  } finally {
+    setUploading(false);
+  }
+}
+
+function removeCover() {
+  updateField('cover_image', '');
+}
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -118,7 +140,7 @@ export default function EditContentPage() {
                  className="w-full border rounded-lg px-3 py-2 text-sm" />
         </div>
 
-        <<div>
+        <div>
   <label className="text-sm font-medium block mb-1">正文（中文）*</label>
   <RichTextEditor content={form.body_zh} onChange={(html) => updateField('body_zh', html)} />
 </div>
@@ -150,11 +172,23 @@ export default function EditContentPage() {
           </div>
         </div>
 
-        <div>
-          <label className="text-sm font-medium block mb-1">封面图URL（可选）</label>
-          <input value={form.cover_image} onChange={(e) => updateField('cover_image', e.target.value)}
-                 className="w-full border rounded-lg px-3 py-2 text-sm" />
-        </div>
+      <div>
+  <label className="text-sm font-medium block mb-1">封面图</label>
+  {form.cover_image ? (
+    <div className="relative w-32 h-32">
+      <img src={form.cover_image} className="w-full h-full object-cover rounded-lg" />
+      <button type="button" onClick={removeCover}
+              className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs">×</button>
+    </div>
+  ) : (
+    <input
+      type="file"
+      accept="image/jpeg,image/png,image/webp,image/gif"
+      onChange={handleCoverUpload}
+      disabled={uploading}
+    />
+  )}
+</div>
 
         <div>
           <label className="text-sm font-medium block mb-1">所属分类（可多选）</label>
