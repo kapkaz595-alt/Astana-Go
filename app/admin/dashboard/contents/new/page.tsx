@@ -14,6 +14,8 @@ export default function NewContentPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [localPickCategories, setLocalPickCategories] = useState<{id: string; slug: string; name: Record<string,string>}[]>([]);
+ const [selectedLocalPickIds, setSelectedLocalPickIds] = useState<string[]>([]);
 
   const [form, setForm] = useState({
   slug: '',
@@ -28,6 +30,7 @@ export default function NewContentPage() {
 
   useEffect(() => {
     fetch('/api/v1/categories?locale=zh').then((r) => r.json()).then((d) => setCategories(d.data ?? []));
+    fetch('/api/v1/local-pick-categories').then(r => r.json()).then(d => setLocalPickCategories(d.data ?? []));
   }, []);
 
   function updateField(key: string, value: string) {
@@ -74,6 +77,7 @@ function removeCover() {
         },
       ],
       category_ids: selectedCategoryIds,
+      local_pick_category_ids: selectedLocalPickIds,
     };
 
     const res = await fetch('/api/v1/admin/contents', {
@@ -141,16 +145,26 @@ function removeCover() {
           </div>
         </div>
         
-        <div>
-  <label className="text-sm font-medium block mb-1">首页归属Tab</label>
-  <select value={form.topic_tag} onChange={(e) => updateField('topic_tag', e.target.value)}
-          className="w-full border rounded-lg px-3 py-2 text-sm">
-    <option value="guide">攻略 & 资讯</option>
-    <option value="food">美食</option>
-    <option value="checkin">打卡</option>
-    <option value="shopping">购物</option>
-    <option value="transport">交通</option>
-  </select>
+       <div>
+  <label className="text-sm font-medium block mb-1">首页本地精选分类（可多选）</label>
+  <div className="flex flex-wrap gap-2">
+    {localPickCategories.map((c) => (
+      <label key={c.id} className="flex items-center gap-1 text-xs border rounded-full px-3 py-1 cursor-pointer">
+        <input
+          type="checkbox"
+          checked={selectedLocalPickIds.includes(c.id)}
+          onChange={(e) => {
+            if (e.target.checked) {
+              setSelectedLocalPickIds((prev) => [...prev, c.id]);
+            } else {
+              setSelectedLocalPickIds((prev) => prev.filter((id) => id !== c.id));
+            }
+          }}
+        />
+        {c.name?.zh ?? c.slug}
+      </label>
+    ))}
+  </div>
 </div>
 
        <div>
