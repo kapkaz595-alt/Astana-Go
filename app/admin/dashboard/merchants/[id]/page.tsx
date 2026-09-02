@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 import TimeSelect from '../_components/TimeSelect';
+import imageCompression from 'browser-image-compression';
 
 const WEEKDAYS = [
   { key: 'monday', label: '周一' },
@@ -108,15 +109,30 @@ export default function EditMerchantPage() {
     setHours((h) => ({ ...h, [day]: { ...h[day], [field]: value } }));
   }
 
+  async function compressImage(file: File): Promise<File> {
+  try {
+    return await imageCompression(file, {
+      maxWidthOrHeight: 1600,
+      maxSizeMB: 0.5,
+      useWebWorker: true,
+      fileType: 'image/webp',
+    });
+  } catch (err) {
+    console.error('压缩失败，使用原图', err);
+    return file;
+  }
+}
+
   async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
   const files = e.target.files;
   if (!files || files.length === 0) return;
   setGalleryUploading(true);
   try {
     const uploadedUrls: string[] = [];
-    for (const file of Array.from(files)) {
-      const formData = new FormData();
-      formData.append('file', file);
+    for (const rawFile of Array.from(files)) {
+  const file = await compressImage(rawFile);
+  const formData = new FormData();
+  formData.append('file', file);
       formData.append('folder', 'merchants');
       const res = await fetch('/api/v1/admin/upload', { method: 'POST', body: formData });
       const data = await res.json();
