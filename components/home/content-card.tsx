@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { formatRelativeTime } from '@/lib/utils/format-time';
 
 export function ContentCard({ item }: { item: any }) {
   return (
@@ -16,6 +17,9 @@ export function ContentCard({ item }: { item: any }) {
       <div className="p-2.5">
         <div className="text-sm font-medium line-clamp-2" style={{ color: '#14171F' }}>{item.title}</div>
         {item.excerpt && <div className="text-xs text-gray-400 line-clamp-2 mt-1">{item.excerpt}</div>}
+        {item.published_at && (
+          <div className="text-xs text-gray-400 mt-1">{formatRelativeTime(item.published_at)}</div>
+        )}
       </div>
     </Link>
   );
