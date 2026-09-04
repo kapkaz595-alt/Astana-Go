@@ -7,6 +7,8 @@ interface EmergencyNumber {
   name: { zh?: string; kk?: string; ru?: string };
   phone_number: string;
   icon: string | null;
+  color: string | null;
+  description: { zh?: string; kk?: string; ru?: string } | null;
   sort_order: number;
   is_active: boolean;
 }
@@ -18,6 +20,8 @@ export default function EmergencyNumbersPage() {
   const [nameZh, setNameZh] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [icon, setIcon] = useState('');
+  const [color, setColor] = useState('#6B7280');
+  const [descZh, setDescZh] = useState('');
   const [sortOrder, setSortOrder] = useState('0');
 
   const fetchItems = async () => {
@@ -41,6 +45,8 @@ export default function EmergencyNumbersPage() {
         name: { zh: nameZh },
         phone_number: phoneNumber,
         icon: icon || null,
+        color: color || null,
+        description: descZh ? { zh: descZh } : null,
         sort_order: Number(sortOrder) || 0,
       }),
     });
@@ -49,6 +55,8 @@ export default function EmergencyNumbersPage() {
       setNameZh('');
       setPhoneNumber('');
       setIcon('');
+      setColor('#6B7280');
+      setDescZh('');
       setSortOrder('0');
       fetchItems();
     }
@@ -90,10 +98,27 @@ export default function EmergencyNumbersPage() {
         />
         <input
           className="border rounded px-3 py-2 text-sm"
-          placeholder="图标（可选，如emoji：🚓）"
-          value={icon}
-          onChange={(e) => setIcon(e.target.value)}
+          placeholder="描述（如：盗窃、袭击、证件丢失等报案）"
+          value={descZh}
+          onChange={(e) => setDescZh(e.target.value)}
         />
+        <div className="flex items-center gap-3">
+          <input
+            className="border rounded px-3 py-2 text-sm flex-1"
+            placeholder="图标（emoji，如：🚓）"
+            value={icon}
+            onChange={(e) => setIcon(e.target.value)}
+          />
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={color}
+              onChange={(e) => setColor(e.target.value)}
+              className="w-10 h-9 border rounded cursor-pointer"
+            />
+            <span className="text-xs text-gray-400">{color}</span>
+          </div>
+        </div>
         <input
           className="border rounded px-3 py-2 text-sm"
           placeholder="排序（数字越小越靠前）"
@@ -116,10 +141,18 @@ export default function EmergencyNumbersPage() {
           {items.map((item) => (
             <div key={item.id} className="bg-white border border-gray-200 rounded-lg p-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                {item.icon && <span className="text-xl">{item.icon}</span>}
+                <div
+                  className="w-9 h-9 rounded-lg flex items-center justify-center text-lg shrink-0"
+                  style={{ background: item.color || '#6B7280' }}
+                >
+                  {item.icon}
+                </div>
                 <div>
                   <div className="text-sm font-medium">{item.name?.zh}</div>
-                  <div className="text-xs text-gray-400">{item.phone_number} · 排序{item.sort_order}</div>
+                  <div className="text-xs text-gray-400">
+                    {item.phone_number} · 排序{item.sort_order}
+                    {item.description?.zh ? ` · ${item.description.zh}` : ''}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-3">
