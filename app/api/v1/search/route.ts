@@ -35,6 +35,13 @@ async function expandKeywords(supabase: Awaited<ReturnType<typeof getClient>>, k
   return Array.from(terms);
 }
 
+// 判断某条文本命中了扩展词集合中的哪些词
+function findMatchedTerms(text: string | null | undefined, terms: string[]): string[] {
+  if (!text) return [];
+  const lower = text.toLowerCase();
+  return terms.filter((t) => lower.includes(t.toLowerCase()));
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const keyword = searchParams.get('keyword')?.trim();
@@ -55,7 +62,7 @@ export async function GET(request: NextRequest) {
   // 搜索商家
   const { data: merchants, error: merchantError } = await supabase
     .from('merchants')
-    .select('id, slug, name, description, business_type, view_count, created_at')
+    .select('id, slug, name, description, business_type, view_count, created_at, verification_status, business_hours, search_text')
     .eq('business_status', 'active')
     .or(orFilter);
 
@@ -66,11 +73,11 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // 搜索内容（通过content_translations的title/body匹配，再关联已发布的contents）
+  // 搜索内容
   const contentOrFilter = terms.map((t) => `title.ilike.%${t}%,body.ilike.%${t}%`).join(',');
   const { data: translationMatches, error: contentError } = await supabase
     .from('content_translations')
-    .select('content_id, locale, title, contents!inner(id, slug, content_type, status, cover_image, published_at)')
+    .select('content_id, locale, title, body, contents!inner(id, slug, content_type, status, cover_image, published_at)')
     .or(contentOrFilter)
     .eq('contents.status', 'published');
 
@@ -81,7 +88,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // 去重（同一篇内容可能多语言都匹配到）
+  // 去重
   const seenContentIds = new Set<string>();
   const contents = (translationMatches || [])
     .filter((row) => {
@@ -93,14 +100,24 @@ export async function GET(request: NextRequest) {
       id: row.content_id,
       title: row.title,
       locale: row.locale,
+      matched_terms: [...findMatchedTerms(row.title, terms), ...findMatchedTerms(row.body, terms)],
       ...row.contents,
     }));
 
-  // 合并结果，统一标注type，按created_at倒序排序（内容用published_at，商家用created_at）
+  // 商家排序权重：已认证+营业中的排前面
+  function merchantWeight(m: any): number {
+    let w = 0;
+    if (m.verification_status === 'verified') w += 100;
+    w += Math.min(m.view_count ?? 0, 1000) / 10; // 浏览量加分，封顶100
+    return w;
+  }
+
   const merged = [
     ...(merchants || []).map((m) => ({
       type: 'merchant' as const,
       sort_date: (m as { created_at: string }).created_at,
+      weight: merchantWeight(m),
+      matched_terms: findMatchedTerms((m as any).search_text, terms),
       ...m,
     })),
     ...contents.map((c) => ({
@@ -108,9 +125,14 @@ export async function GET(request: NextRequest) {
       sort_date: (c as { published_at?: string; created_at?: string }).published_at
         || (c as { published_at?: string; created_at?: string }).created_at
         || '',
+      weight: 20, // 内容基础权重，介于普通商家和认证商家之间
       ...c,
     })),
-  ].sort((a, b) => new Date(b.sort_date).getTime() - new Date(a.sort_date).getTime());
+  ].sort((a, b) => {
+    // 先按权重降序，权重相同再按时间降序
+    if (b.weight !== a.weight) return b.weight - a.weight;
+    return new Date(b.sort_date).getTime() - new Date(a.sort_date).getTime();
+  });
 
   const total = merged.length;
   const from = (page - 1) * pageSize;
@@ -120,6 +142,6 @@ export async function GET(request: NextRequest) {
     success: true,
     data: paged,
     matched_terms: terms,
-    pagination: { page, page_size: pageSize, total },
+    pagination: { page, page_size: pageSize, total, has_more: from + pageSize < total },
   });
 }
