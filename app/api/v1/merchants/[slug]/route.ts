@@ -46,6 +46,31 @@ export async function GET(
   // view_count异步自增：不await，不阻塞响应返回
   supabase.rpc('increment_merchant_view_count', { merchant_id: data.id }).then();
 
+  // 查询菜单套餐数据
+  const { data: menuItems } = await supabase
+    .from('merchant_menu_items')
+    .select('*')
+    .eq('merchant_id', data.id)
+    .order('sort_order', { ascending: true });
+
+  const responseData = {
+    ...data,
+    is_open_now: isOpenNow(data.business_hours as Record<string, { open: string; close: string }[]>),
+    menu_items: menuItems || [],
+  };
+  return NextResponse.json({ success: true, data: responseData });
+}    .single();
+
+  if (error || !data) {
+    return NextResponse.json(
+      { success: false, error: { code: 'NOT_FOUND', message: '商家不存在' } },
+      { status: 404 }
+    );
+  }
+
+  // view_count异步自增：不await，不阻塞响应返回
+  supabase.rpc('increment_merchant_view_count', { merchant_id: data.id }).then();
+
   const responseData = { ...data, is_open_now: isOpenNow(data.business_hours as Record<string, { open: string; close: string }[]>) };
   return NextResponse.json({ success: true, data: responseData });
 }
