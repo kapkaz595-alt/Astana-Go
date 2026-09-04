@@ -77,12 +77,12 @@ export default function RichTextEditor({
     if (!editor || !cardTitle || !cardLink) return;
     const target = cardLink.startsWith('http') ? '_blank' : '_self';
     const html = `
-      <a href="${cardLink}" target="${target}" style="display:flex;text-decoration:none;color:inherit;border:1px solid #E7E9EE;border-radius:12px;overflow:hidden;margin:12px 0;">
-        ${cardImage ? `<img src="${cardImage}" style="width:110px;height:110px;object-fit:cover;flex-shrink:0;" />` : ''}
-        <div style="padding:12px;flex:1;">
-          <div style="font-weight:700;font-size:14px;color:#14171F;">${cardTitle}</div>
-          ${cardDesc ? `<div style="font-size:12px;color:#6B7280;margin-top:4px;">${cardDesc}</div>` : ''}
-          <div style="font-size:12px;color:#2B8C93;font-weight:600;margin-top:8px;">立即查看 →</div>
+      <a href="${cardLink}" target="${target}" style="display:block;text-decoration:none;color:inherit;border:1px solid #E7E9EE;border-radius:14px;overflow:hidden;margin:16px 0;box-shadow:0 1px 6px rgba(20,23,31,0.08);">
+        ${cardImage ? `<img src="${cardImage}" style="width:100%;height:160px;object-fit:cover;display:block;" />` : ''}
+        <div style="padding:14px 16px;">
+          <div style="font-weight:800;font-size:15px;color:#14171F;line-height:1.4;">${cardTitle}</div>
+          ${cardDesc ? `<div style="font-size:12px;color:#6B7280;margin-top:6px;line-height:1.5;">${cardDesc}</div>` : ''}
+          <div style="display:inline-block;background:#B54B3A;color:#fff;font-size:12px;font-weight:700;padding:7px 16px;border-radius:999px;margin-top:10px;">立即阅读 →</div>
         </div>
       </a>
       <p></p>
@@ -94,7 +94,6 @@ export default function RichTextEditor({
     setCardDesc('');
     setCardLink('');
   }
-
   if (!editor) return null;
 
   return (
