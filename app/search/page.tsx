@@ -6,6 +6,13 @@ async function getResults(keyword: string) {
   return res.json();
 }
 
+async function getFallbackMerchants() {
+  const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const res = await fetch(`${base}/api/v1/merchants?page_size=6&featured=true`, { cache: 'no-store' });
+  const json = await res.json();
+  return json.data ?? [];
+}
+
 type SearchItem = {
   type: 'merchant' | 'content';
   id: string;
@@ -25,6 +32,8 @@ export default async function SearchPage({
   const keyword = q ?? '';
   const result = keyword ? await getResults(keyword) : null;
   const items: SearchItem[] = result?.data ?? [];
+
+  const fallbackMerchants = keyword && items.length === 0 ? await getFallbackMerchants() : [];
 
   return (
     <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:py-8">
@@ -54,6 +63,28 @@ export default async function SearchPage({
             <div className="text-xs text-[#6B7280] mb-3">找到 {items.length} 条结果</div>
           )}
         </div>
+
+        {keyword && items.length === 0 && fallbackMerchants.length > 0 && (
+          <div className="px-[18px] pb-6">
+            <div className="text-sm font-bold mb-3">为你推荐</div>
+            <div className="flex flex-col md:grid md:grid-cols-3 gap-2">
+              {fallbackMerchants.map((m: any) => (
+                <Link
+                  key={m.id}
+                  href={`/merchants/${m.slug}`}
+                  className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center gap-3"
+                >
+                  <span className="text-[9px] font-bold px-2 py-1 rounded-full shrink-0 bg-[#2B8C93]/10 text-[#2B8C93]">
+                    商家
+                  </span>
+                  <div className="min-w-0">
+                    <div className="text-sm font-medium truncate">{m.name}</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-col md:grid md:grid-cols-3 gap-2 px-[18px] pb-6">
           {items.map((item) => (
