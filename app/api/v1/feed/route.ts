@@ -66,7 +66,7 @@ export async function GET(request: NextRequest) {
     title: c.content_translations?.find((t: { locale: string }) => t.locale === 'zh')?.title ?? '',
     cover_image: c.cover_image,
     content_type: c.content_type,
-    sort_date: c.published_at,
+    published_at: c.published_at,
   }));
 
   const merged = contentItems;
