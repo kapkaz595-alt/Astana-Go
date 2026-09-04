@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     await resend.emails.send({
       from: 'Astana Go <onboarding@resend.dev>',
-      to: 'hello@astanago.com',
+      to: 'kapkaz595@gmail.com',
       subject: `新留言来自 ${name}`,
       html: `<p>姓名: ${name}</p><p>邮箱: ${email}</p><p>电话: ${phone || '未填写'}</p><p>留言: ${message}</p>`,
     });
