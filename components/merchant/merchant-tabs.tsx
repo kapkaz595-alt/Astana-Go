@@ -22,6 +22,56 @@ const TABS = [
 
 type TabKey = typeof TABS[number]['key'];
 
+function MenuSection({ items }: { items: any[] }) {
+  const categories = Array.from(
+    new Set(items.map((i) => i.category).filter(Boolean))
+  ) as string[];
+
+  const [activeCategory, setActiveCategory] = useState<string>('全部');
+
+  const filtered = activeCategory === '全部'
+    ? items
+    : items.filter((i) => i.category === activeCategory);
+
+  return (
+    <div>
+      {categories.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto no-scrollbar mb-3 pb-1">
+          {['全部', ...categories].map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border ${
+                activeCategory === cat
+                  ? 'bg-[#14171F] text-white border-[#14171F]'
+                  : 'bg-white text-[#6B7280] border-[#E7E9EE]'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        {filtered.map((item: any) => (
+          <div key={item.id} className="bg-white rounded-xl border border-[#E7E9EE] overflow-hidden">
+            {item.image_url && (
+              <img src={item.image_url} alt={item.name?.zh} className="w-full aspect-square object-cover" />
+            )}
+            <div className="p-2">
+              <div className="text-sm font-medium truncate">{item.name?.zh}</div>
+              {item.price && (
+                <div className="text-xs text-[#D9A441] font-bold mt-1">{item.price} 坚戈</div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function MerchantTabs({ m, name, description, businessHours }: {
   m: any;
   name: Record<string, string>;
@@ -126,21 +176,7 @@ export default function MerchantTabs({ m, name, description, businessHours }: {
       {active === 'menu' && (
         <div className="px-[18px] md:px-6 py-4">
           {m.menu_items && m.menu_items.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {m.menu_items.map((item: any) => (
-                <div key={item.id} className="bg-white rounded-xl border border-[#E7E9EE] overflow-hidden">
-                  {item.image_url && (
-                    <img src={item.image_url} alt={item.name?.zh} className="w-full aspect-square object-cover" />
-                  )}
-                  <div className="p-2">
-                    <div className="text-sm font-medium truncate">{item.name?.zh}</div>
-                    {item.price && (
-                      <div className="text-xs text-[#D9A441] font-bold mt-1">{item.price} 坚戈</div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <MenuSection items={m.menu_items} />
           ) : (
             <div className="text-sm text-[#B0B5BF] text-center py-12">该商家暂无菜单信息</div>
           )}
