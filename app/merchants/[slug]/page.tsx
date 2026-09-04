@@ -46,7 +46,7 @@ export default async function MerchantDetailPage({
           <div className="text-sm text-[#6B7280] mt-1">{name?.ru} · {name?.kk}</div>
         </div>
 
-        <MerchantTabs m={m} name={name} description={description} businessHours={businessHours} />
+        <MerchantTabs m={m} name={name} description={description} businessHours={businessHours} slug={slug} />
       </main>
     </div>
   );
