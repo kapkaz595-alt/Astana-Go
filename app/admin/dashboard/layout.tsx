@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '/admin/dashboard/contents', label: '内容管理' },
   { href: '/admin/banners', label: '广告管理' },
   { href: '/admin/dashboard/local-pick-categories', label: '本地精选分类' },
+  { href: '/admin/dashboard/emergency-numbers', label: '紧急求助号码' },
 ];
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
