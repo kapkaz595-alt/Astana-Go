@@ -210,7 +210,12 @@ function removeGalleryImage(index: number) {
       <Link href="/admin/dashboard/merchants" className="text-sm text-gray-500">‹ 返回商家列表</Link>
       <div className="flex items-center justify-between mt-2 mb-6">
         <h1 className="text-xl font-bold">编辑商家</h1>
-        <button onClick={handleDelete} className="text-sm text-red-600">删除商家</button>
+        <div className="flex items-center gap-3">
+          <Link href={`/admin/dashboard/merchants/${id}/menu`} className="text-sm text-[#2B8C93]">
+            管理菜单套餐 ›
+          </Link>
+          <button onClick={handleDelete} className="text-sm text-red-600">删除商家</button>
+        </div>
       </div>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
