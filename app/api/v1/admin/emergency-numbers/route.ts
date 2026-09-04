@@ -37,7 +37,7 @@ export const POST = withAdminAuth(async (_session, request: NextRequest) => {
   const supabase = await getClient();
   const body = await request.json();
 
-  const { name, phone_number, icon, sort_order, is_active } = body;
+  const { name, phone_number, icon, color, description, sort_order, is_active } = body;
 
   if (!name || !phone_number) {
     return NextResponse.json({ success: false, error: { message: 'name和phone_number必填' } }, { status: 400 });
@@ -49,6 +49,8 @@ export const POST = withAdminAuth(async (_session, request: NextRequest) => {
       name,
       phone_number,
       icon: icon ?? null,
+      color: color ?? null,
+      description: description ?? null,
       sort_order: sort_order ?? 0,
       is_active: is_active ?? true,
     })
