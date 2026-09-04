@@ -22,6 +22,14 @@ const TABS = [
 
 type TabKey = typeof TABS[number]['key'];
 
+function trackClick(slug: string, eventType: string) {
+  fetch(`/api/v1/merchants/${slug}/track-click`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ event_type: eventType }),
+  }).catch(() => {});
+}
+
 function MenuSection({ items }: { items: any[] }) {
   const categories = Array.from(
     new Set(items.map((i) => i.category).filter(Boolean))
@@ -72,11 +80,12 @@ function MenuSection({ items }: { items: any[] }) {
   );
 }
 
-export default function MerchantTabs({ m, name, description, businessHours }: {
+export default function MerchantTabs({ m, name, description, businessHours, slug }: {
   m: any;
   name: Record<string, string>;
   description: Record<string, string>;
   businessHours: Record<string, { open: string; close: string }[]>;
+  slug: string;
 }) {
   const [active, setActive] = useState<TabKey>('info');
 
@@ -109,7 +118,12 @@ export default function MerchantTabs({ m, name, description, businessHours }: {
               <div className="text-xs text-[#6B7280] mb-1">📍 地址</div>
               <div className="text-sm">{m.address}</div>
               {m['2gis_url'] && (
-                <a href={m['2gis_url']} target="_blank" className="text-xs text-[#2B8C93] mt-2 inline-block">
+                <a
+                  href={m['2gis_url']}
+                  target="_blank"
+                  onClick={() => trackClick(slug, '2gis')}
+                  className="text-xs text-[#2B8C93] mt-2 inline-block"
+                >
                   在2GIS中查看 ›
                 </a>
               )}
@@ -117,7 +131,11 @@ export default function MerchantTabs({ m, name, description, businessHours }: {
           )}
 
           {m.phone && (
-            <a href={`tel:${m.phone}`} className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center justify-between">
+            <a
+              href={`tel:${m.phone}`}
+              onClick={() => trackClick(slug, 'phone')}
+              className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center justify-between"
+            >
               <div>
                 <div className="text-xs text-[#6B7280] mb-1">📞 电话</div>
                 <div className="text-sm font-medium">{m.phone}</div>
@@ -127,7 +145,12 @@ export default function MerchantTabs({ m, name, description, businessHours }: {
           )}
 
           {m.whatsapp && (
-            <a href={`https://wa.me/${m.whatsapp.replace(/\D/g, '')}`} target="_blank" className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center justify-between">
+            <a
+              href={`https://wa.me/${m.whatsapp.replace(/\D/g, '')}`}
+              target="_blank"
+              onClick={() => trackClick(slug, 'whatsapp')}
+              className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center justify-between"
+            >
               <div>
                 <div className="text-xs text-[#6B7280] mb-1">💬 WhatsApp</div>
                 <div className="text-sm font-medium">{m.whatsapp}</div>
