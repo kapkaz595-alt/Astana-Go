@@ -27,10 +27,15 @@ export default function MerchantMenuPage() {
 
   const fetchItems = async () => {
     setLoading(true);
-    const res = await fetch(`/api/v1/admin/merchants/${merchantId}/menu-items`);
-    const json = await res.json();
-    if (json.success) setItems(json.data);
-    setLoading(false);
+    try {
+      const res = await fetch(`/api/v1/admin/merchants/${merchantId}/menu-items`);
+      const json = await res.json();
+      if (json.success) setItems(json.data);
+    } catch (err) {
+      console.error('fetchItems error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -50,7 +55,7 @@ export default function MerchantMenuPage() {
     });
     const json = await res.json();
     setUploading(false);
-    if (json.success) setImageUrl(json.data.url);
+    if (json.url) setImageUrl(json.url);
   };
 
   const handleAdd = async () => {
