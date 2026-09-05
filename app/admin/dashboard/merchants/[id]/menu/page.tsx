@@ -70,6 +70,7 @@ export default function MerchantMenuPage() {
         price: price ? Number(price) : null,
         image_url: imageUrl || null,
         category: category || null,
+        detail: detailZh ? { zh: detailZh } : null,
       }),
     });
     const json = await res.json();
@@ -78,6 +79,7 @@ export default function MerchantMenuPage() {
       setPrice('');
       setCategory('');
       setImageUrl('');
+      setDetailZh('');
       fetchItems();
     }
   };
@@ -116,6 +118,13 @@ export default function MerchantMenuPage() {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         />
+        <textarea
+          className="border rounded px-3 py-2 text-sm"
+          placeholder="套餐详情（中文，如：含牛肉卷、羊肉卷、蔬菜拼盘...）"
+          rows={3}
+          value={detailZh}
+          onChange={(e) => setDetailZh(e.target.value)}
+        />
         <div>
           <input
             type="file"
@@ -149,6 +158,7 @@ export default function MerchantMenuPage() {
                 <div className="text-sm font-medium">{item.name?.zh}</div>
                 {item.price && <div className="text-xs text-[#D9A441]">{item.price} 坚戈</div>}
                 {item.category && <div className="text-xs text-gray-400">{item.category}</div>}
+                {item.detail?.zh && <div className="text-xs text-gray-500 mt-1 line-clamp-2">{item.detail.zh}</div>}
                 <button
                   onClick={() => handleDelete(item.id)}
                   className="text-xs text-red-500 mt-2"
