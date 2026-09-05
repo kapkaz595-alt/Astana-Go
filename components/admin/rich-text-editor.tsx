@@ -77,15 +77,19 @@ export default function RichTextEditor({
 
   function insertCard() {
     if (!editor || !cardTitle || !cardLink) return;
+    let finalLink = cardLink;
+    if (cardType === 'article') finalLink = `/contents/${cardLink}`;
+    if (cardType === 'merchant') finalLink = `/merchants/${cardLink}`;
     editor.chain().focus().insertContent({
       type: 'recommendCard',
-      attrs: { image: cardImage, title: cardTitle, desc: cardDesc, link: cardLink },
+      attrs: { image: cardImage, title: cardTitle, desc: cardDesc, link: finalLink },
     }).run();
     setShowCardForm(false);
     setCardImage('');
     setCardTitle('');
     setCardDesc('');
     setCardLink('');
+    setCardType('article');
   }
   if (!editor) return null;
 
@@ -166,12 +170,23 @@ export default function RichTextEditor({
             onChange={(e) => setCardDesc(e.target.value)}
             className="border rounded px-2 py-1 text-xs"
           />
-          <input
-            placeholder="链接：/merchants/店铺slug 或 https://外部网址 *"
-            value={cardLink}
-            onChange={(e) => setCardLink(e.target.value)}
-            className="border rounded px-2 py-1 text-xs"
-          />
+          <div className="flex gap-2">
+            <select
+              value={cardType}
+              onChange={(e) => setCardType(e.target.value as any)}
+              className="border rounded px-2 py-1 text-xs"
+            >
+              <option value="article">攻略文章</option>
+              <option value="merchant">商家</option>
+              <option value="external">外部网址</option>
+            </select>
+            <input
+              placeholder={cardType === 'external' ? 'https://...' : '只填slug，比如 antler-luggage-uk'}
+              value={cardLink}
+              onChange={(e) => setCardLink(e.target.value)}
+              className="border rounded px-2 py-1 text-xs flex-1"
+            />
+          </div>
           <div className="flex gap-2">
             <button type="button" onClick={insertCard}
                     className="text-xs px-3 py-1 rounded bg-[#14171F] text-white">插入</button>
