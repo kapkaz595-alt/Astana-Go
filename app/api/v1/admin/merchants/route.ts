@@ -73,7 +73,6 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
   }
 
   const body = await request.json();
-  const {
    const {
    slug, name, description, business_type, target_audiences, cover_image, gallery_images,
     phone, whatsapp, address, latitude, longitude,
