@@ -1,6 +1,12 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { cookies } from 'next/headers';
 import MerchantTabs from '@/components/merchant/merchant-tabs';
+
+const UI_TEXT = {
+  zh: { open: '营业中', closed: '已打烊', verified: '已认证' },
+  kk: { open: 'Ашық', closed: 'Жабық', verified: 'Расталған' },
+};
 
 async function getMerchant(slug: string) {
   const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -17,6 +23,10 @@ export default async function MerchantDetailPage({
   const { slug } = await params;
   const result = await getMerchant(slug);
   if (!result || !result.success) notFound();
+
+  const cookieStore = await cookies();
+  const locale = cookieStore.get('locale')?.value === 'kk' ? 'kk' : 'zh';
+  const t = UI_TEXT[locale as 'zh' | 'kk'];
 
   const m = result.data;
   const name = m.name as Record<string, string>;
@@ -35,10 +45,10 @@ export default async function MerchantDetailPage({
             <span className={`text-[10px] font-bold px-2 py-[3px] rounded-full ${
               m.is_open_now ? 'bg-[#2E9E5B]/10 text-[#1D7A44]' : 'bg-[#B54B3A]/10 text-[#B54B3A]'
             }`}>
-              {m.is_open_now ? '营业中' : '已打烊'}
+              {m.is_open_now ? t.open : t.closed}
             </span>
             {m.verification_status === 'verified' && (
-              <span className="text-[10px] font-semibold text-[#2B8C93]">✓ 已认证</span>
+              <span className="text-[10px] font-semibold text-[#2B8C93]">✓ {t.verified}</span>
             )}
           </div>
 
@@ -46,7 +56,7 @@ export default async function MerchantDetailPage({
           <div className="text-sm text-[#6B7280] mt-1">{name?.ru} · {name?.kk}</div>
         </div>
 
-        <MerchantTabs m={m} name={name} description={description} businessHours={businessHours} slug={slug} />
+        <MerchantTabs m={m} name={name} description={description} businessHours={businessHours} slug={slug} locale={locale} />
       </main>
     </div>
   );
