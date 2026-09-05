@@ -77,16 +77,17 @@ export default function RichTextEditor({
     if (!editor || !cardTitle || !cardLink) return;
     const target = cardLink.startsWith('http') ? '_blank' : '_self';
     const html = `
-      <a href="${cardLink}" target="${target}" style="display:block;text-decoration:none;color:inherit;border:1px solid #E7E9EE;border-radius:14px;overflow:hidden;margin:16px 0;box-shadow:0 1px 6px rgba(20,23,31,0.08);">
-        ${cardImage ? `<img src="${cardImage}" style="width:100%;height:160px;object-fit:cover;display:block;" />` : ''}
-        <div style="padding:14px 16px;">
-          <div style="font-weight:800;font-size:15px;color:#14171F;line-height:1.4;">${cardTitle}</div>
-          ${cardDesc ? `<div style="font-size:12px;color:#6B7280;margin-top:6px;line-height:1.5;">${cardDesc}</div>` : ''}
-          <div style="display:inline-block;background:#B54B3A;color:#fff;font-size:12px;font-weight:700;padding:7px 16px;border-radius:999px;margin-top:10px;">立即阅读 →</div>
-        </div>
-      </a>
-      <p></p>
-    `;
+    const html = `
+  <a href="${cardLink}" target="${target}" style="display:flex;align-items:stretch;text-decoration:none;color:inherit;border:1px solid #E7E9EE;border-radius:14px;overflow:hidden;margin:16px 0;box-shadow:0 1px 6px rgba(20,23,31,0.08);">
+    ${cardImage ? `<img src="${cardImage}" style="width:35%;min-width:100px;max-width:180px;object-fit:cover;display:block;flex-shrink:0;" />` : ''}
+    <div style="padding:14px 16px;flex:1;display:flex;flex-direction:column;justify-content:center;">
+      <div style="font-weight:800;font-size:15px;color:#14171F;line-height:1.4;">${cardTitle}</div>
+      ${cardDesc ? `<div style="font-size:12px;color:#6B7280;margin-top:6px;line-height:1.5;">${cardDesc}</div>` : ''}
+      <div style="display:inline-block;background:#B54B3A;color:#fff;font-size:12px;font-weight:700;padding:7px 16px;border-radius:999px;margin-top:10px;width:fit-content;">立即阅读 →</div>
+    </div>
+  </a>
+  <p></p>
+`;
     editor.chain().focus().insertContent(html).run();
     setShowCardForm(false);
     setCardImage('');
