@@ -11,6 +11,7 @@ const UI_TEXT = {
     address: '地址', viewOn2gis: '在2GIS中查看 ›', phone: '电话', whatsapp: 'WhatsApp',
     businessHours: '营业时间', rest: '休息', views: '次浏览', currency: '坚戈',
     noPhotos: '暂无照片', noMenu: '该商家暂无菜单信息', noDetail: '暂无详情介绍',
+    noItemDetail: '暂无详情介绍',
   },
   kk: {
     weekdays: { monday: 'Дүйсенбі', tuesday: 'Сейсенбі', wednesday: 'Сәрсенбі', thursday: 'Бейсенбі', friday: 'Жұма', saturday: 'Сенбі', sunday: 'Жексенбі' },
@@ -19,6 +20,7 @@ const UI_TEXT = {
     address: 'Мекенжай', viewOn2gis: '2GIS-те қарау ›', phone: 'Телефон', whatsapp: 'WhatsApp',
     businessHours: 'Жұмыс уақыты', rest: 'Демалыс', views: 'қаралым', currency: 'теңге',
     noPhotos: 'Фотосурет жоқ', noMenu: 'Мәзір ақпараты жоқ', noDetail: 'Толығырақ ақпарат жоқ',
+    noItemDetail: 'Толығырақ ақпарат жоқ',
   },
 };
 
@@ -38,6 +40,7 @@ function MenuSection({ items, locale, t }: { items: any[]; locale: 'zh' | 'kk'; 
   ) as string[];
 
   const [activeCategory, setActiveCategory] = useState<string>(t.all);
+  const [selectedItem, setSelectedItem] = useState<any | null>(null);
 
   const filtered = activeCategory === t.all
     ? items
@@ -65,7 +68,11 @@ function MenuSection({ items, locale, t }: { items: any[]; locale: 'zh' | 'kk'; 
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
         {filtered.map((item: any) => (
-          <div key={item.id} className="bg-white rounded-xl border border-[#E7E9EE] overflow-hidden">
+          <button
+            key={item.id}
+            onClick={() => setSelectedItem(item)}
+            className="text-left bg-white rounded-xl border border-[#E7E9EE] overflow-hidden"
+          >
             {item.image_url && (
               <img src={item.image_url} alt={item.name?.[locale] ?? item.name?.zh} className="w-full aspect-square object-cover" />
             )}
@@ -75,9 +82,41 @@ function MenuSection({ items, locale, t }: { items: any[]; locale: 'zh' | 'kk'; 
                 <div className="text-xs text-[#D9A441] font-bold mt-1">{item.price} {t.currency}</div>
               )}
             </div>
-          </div>
+          </button>
         ))}
       </div>
+
+      {selectedItem && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 flex items-end md:items-center justify-center"
+          onClick={() => setSelectedItem(null)}
+        >
+          <div
+            className="bg-white rounded-t-2xl md:rounded-2xl w-full md:max-w-md max-h-[80vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {selectedItem.image_url && (
+              <img src={selectedItem.image_url} alt={selectedItem.name?.[locale] ?? selectedItem.name?.zh} className="w-full aspect-video object-cover" />
+            )}
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-base font-bold">{selectedItem.name?.[locale] ?? selectedItem.name?.zh}</div>
+                <button onClick={() => setSelectedItem(null)} className="text-[#6B7280] text-xl leading-none">×</button>
+              </div>
+              {selectedItem.price && (
+                <div className="text-sm text-[#D9A441] font-bold mb-3">{selectedItem.price} {t.currency}</div>
+              )}
+              {selectedItem.detail?.[locale] || selectedItem.detail?.zh ? (
+                <p className="text-sm text-[#14171F] leading-relaxed whitespace-pre-line">
+                  {selectedItem.detail?.[locale] || selectedItem.detail?.zh}
+                </p>
+              ) : (
+                <p className="text-sm text-[#B0B5BF]">{t.noItemDetail}</p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
