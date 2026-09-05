@@ -74,12 +74,14 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
 
   const body = await request.json();
   const {
+   const {
    slug, name, description, business_type, target_audiences, cover_image, gallery_images,
     phone, whatsapp, address, latitude, longitude,
     '2gis_url': gisUrl, website, instagram,
     business_status, verification_status,
-   category_ids, // 数组,用于写merchant_categories
-is_featured,
+   category_ids,
+   is_featured,
+   business_hours,
 } = body;
   
   if (!slug || !name || !business_type) {
@@ -93,6 +95,7 @@ is_featured,
 
  const { data: merchant, error } = await supabase
   .from('merchants')
+  .insert({
   .insert({
     slug,
     name,
@@ -112,6 +115,7 @@ is_featured,
     instagram: instagram ?? null,
     business_status: business_status ?? 'active',
     verification_status: verification_status ?? 'unverified',
+    business_hours: business_hours ?? {},
     source_type: 'manual',
   })
   .select()
