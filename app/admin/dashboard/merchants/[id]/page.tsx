@@ -45,6 +45,8 @@ export default function EditMerchantPage() {
     latitude: '',
     longitude: '',
     twogis_url: '',
+    instagram: '',
+    website: '',
     business_status: 'active',
     verification_status: 'unverified',
   });
@@ -78,6 +80,8 @@ export default function EditMerchantPage() {
           latitude: m.latitude?.toString() ?? '',
           longitude: m.longitude?.toString() ?? '',
           twogis_url: m['2gis_url'] ?? '',
+          instagram: m.instagram ?? '',
+          website: m.website ?? '',
           business_status: m.business_status ?? 'active',
           verification_status: m.verification_status ?? 'unverified',
         });
@@ -196,6 +200,8 @@ export default function EditMerchantPage() {
       latitude: form.latitude ? parseFloat(form.latitude) : null,
       longitude: form.longitude ? parseFloat(form.longitude) : null,
       '2gis_url': form.twogis_url || null,
+      instagram: form.instagram || null,
+      website: form.website || null,
       business_hours,
       business_status: form.business_status,
       verification_status: form.verification_status,
@@ -386,16 +392,16 @@ export default function EditMerchantPage() {
         </div>
 
         <div>
-  <label className="text-sm font-medium block mb-1">Instagram链接</label>
-  <input value={form.instagram} onChange={(e) => updateField('instagram', e.target.value)}
-         placeholder="https://www.instagram.com/xxx" className="w-full border rounded-lg px-3 py-2 text-sm" />
-</div>
+          <label className="text-sm font-medium block mb-1">Instagram链接</label>
+          <input value={form.instagram} onChange={(e) => updateField('instagram', e.target.value)}
+                 placeholder="https://www.instagram.com/xxx" className="w-full border rounded-lg px-3 py-2 text-sm" />
+        </div>
 
-<div>
-  <label className="text-sm font-medium block mb-1">官网/订餐网站链接</label>
-  <input value={form.website} onChange={(e) => updateField('website', e.target.value)}
-         placeholder="https://..." className="w-full border rounded-lg px-3 py-2 text-sm" />
-</div>
+        <div>
+          <label className="text-sm font-medium block mb-1">官网/订餐网站链接</label>
+          <input value={form.website} onChange={(e) => updateField('website', e.target.value)}
+                 placeholder="https://..." className="w-full border rounded-lg px-3 py-2 text-sm" />
+        </div>
 
         <div>
           <label className="text-sm font-medium block mb-1">相册图片（多选）</label>
