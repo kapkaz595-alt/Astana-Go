@@ -3,24 +3,26 @@
 import { useState } from 'react';
 import GalleryLightbox from '@/components/merchant/gallery-lightbox';
 
-const WEEKDAYS: { key: string; label: string }[] = [
-  { key: 'monday', label: '周一' },
-  { key: 'tuesday', label: '周二' },
-  { key: 'wednesday', label: '周三' },
-  { key: 'thursday', label: '周四' },
-  { key: 'friday', label: '周五' },
-  { key: 'saturday', label: '周六' },
-  { key: 'sunday', label: '周日' },
-];
+const UI_TEXT = {
+  zh: {
+    weekdays: { monday: '周一', tuesday: '周二', wednesday: '周三', thursday: '周四', friday: '周五', saturday: '周六', sunday: '周日' },
+    tabs: { info: '基本信息', photos: '照片', menu: '菜单套餐', detail: '详情' },
+    all: '全部',
+    address: '地址', viewOn2gis: '在2GIS中查看 ›', phone: '电话', whatsapp: 'WhatsApp',
+    businessHours: '营业时间', rest: '休息', views: '次浏览', currency: '坚戈',
+    noPhotos: '暂无照片', noMenu: '该商家暂无菜单信息', noDetail: '暂无详情介绍',
+  },
+  kk: {
+    weekdays: { monday: 'Дүйсенбі', tuesday: 'Сейсенбі', wednesday: 'Сәрсенбі', thursday: 'Бейсенбі', friday: 'Жұма', saturday: 'Сенбі', sunday: 'Жексенбі' },
+    tabs: { info: 'Негізгі ақпарат', photos: 'Фотосуреттер', menu: 'Мәзір', detail: 'Толығырақ' },
+    all: 'Барлығы',
+    address: 'Мекенжай', viewOn2gis: '2GIS-те қарау ›', phone: 'Телефон', whatsapp: 'WhatsApp',
+    businessHours: 'Жұмыс уақыты', rest: 'Демалыс', views: 'қаралым', currency: 'теңге',
+    noPhotos: 'Фотосурет жоқ', noMenu: 'Мәзір ақпараты жоқ', noDetail: 'Толығырақ ақпарат жоқ',
+  },
+};
 
-const TABS = [
-  { key: 'info', label: '基本信息' },
-  { key: 'photos', label: '照片' },
-  { key: 'menu', label: '菜单套餐' },
-  { key: 'detail', label: '详情' },
-] as const;
-
-type TabKey = typeof TABS[number]['key'];
+const WEEKDAY_KEYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
 
 function trackClick(slug: string, eventType: string) {
   fetch(`/api/v1/merchants/${slug}/track-click`, {
@@ -30,14 +32,14 @@ function trackClick(slug: string, eventType: string) {
   }).catch(() => {});
 }
 
-function MenuSection({ items }: { items: any[] }) {
+function MenuSection({ items, locale, t }: { items: any[]; locale: 'zh' | 'kk'; t: typeof UI_TEXT['zh'] }) {
   const categories = Array.from(
     new Set(items.map((i) => i.category).filter(Boolean))
   ) as string[];
 
-  const [activeCategory, setActiveCategory] = useState<string>('全部');
+  const [activeCategory, setActiveCategory] = useState<string>(t.all);
 
-  const filtered = activeCategory === '全部'
+  const filtered = activeCategory === t.all
     ? items
     : items.filter((i) => i.category === activeCategory);
 
@@ -45,7 +47,7 @@ function MenuSection({ items }: { items: any[] }) {
     <div>
       {categories.length > 0 && (
         <div className="flex gap-2 overflow-x-auto no-scrollbar mb-3 pb-1">
-          {['全部', ...categories].map((cat) => (
+          {[t.all, ...categories].map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
@@ -65,12 +67,12 @@ function MenuSection({ items }: { items: any[] }) {
         {filtered.map((item: any) => (
           <div key={item.id} className="bg-white rounded-xl border border-[#E7E9EE] overflow-hidden">
             {item.image_url && (
-              <img src={item.image_url} alt={item.name?.zh} className="w-full aspect-square object-cover" />
+              <img src={item.image_url} alt={item.name?.[locale] ?? item.name?.zh} className="w-full aspect-square object-cover" />
             )}
             <div className="p-2">
-              <div className="text-sm font-medium truncate">{item.name?.zh}</div>
+              <div className="text-sm font-medium truncate">{item.name?.[locale] ?? item.name?.zh}</div>
               {item.price && (
-                <div className="text-xs text-[#D9A441] font-bold mt-1">{item.price} 坚戈</div>
+                <div className="text-xs text-[#D9A441] font-bold mt-1">{item.price} {t.currency}</div>
               )}
             </div>
           </div>
@@ -80,13 +82,22 @@ function MenuSection({ items }: { items: any[] }) {
   );
 }
 
-export default function MerchantTabs({ m, name, description, businessHours, slug }: {
+export default function MerchantTabs({ m, name, description, businessHours, slug, locale }: {
   m: any;
   name: Record<string, string>;
   description: Record<string, string>;
   businessHours: Record<string, { open: string; close: string }[]>;
   slug: string;
+  locale: 'zh' | 'kk';
 }) {
+  const t = UI_TEXT[locale];
+  const TABS = [
+    { key: 'info', label: t.tabs.info },
+    { key: 'photos', label: t.tabs.photos },
+    { key: 'menu', label: t.tabs.menu },
+    { key: 'detail', label: t.tabs.detail },
+  ] as const;
+  type TabKey = typeof TABS[number]['key'];
   const [active, setActive] = useState<TabKey>('info');
 
   return (
@@ -94,17 +105,17 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
       {/* Tab导航 */}
       <div className="px-[18px] md:px-6 sticky top-0 bg-[#F7F8FA] z-10 border-b border-[#E7E9EE]">
         <div className="flex gap-1 overflow-x-auto no-scrollbar">
-          {TABS.map((t) => (
+          {TABS.map((tab) => (
             <button
-              key={t.key}
-              onClick={() => setActive(t.key)}
+              key={tab.key}
+              onClick={() => setActive(tab.key)}
               className={`shrink-0 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
-                active === t.key
+                active === tab.key
                   ? 'border-[#D9A441] text-[#14171F]'
                   : 'border-transparent text-[#6B7280]'
               }`}
             >
-              {t.label}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -115,7 +126,7 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
         <div className="px-[18px] flex flex-col md:grid md:grid-cols-2 gap-3 py-4">
           {m.address && (
             <div className="bg-white rounded-xl border border-[#E7E9EE] p-3">
-              <div className="text-xs text-[#6B7280] mb-1">📍 地址</div>
+              <div className="text-xs text-[#6B7280] mb-1">📍 {t.address}</div>
               <div className="text-sm">{m.address}</div>
               {m['2gis_url'] && (
                 <a
@@ -124,7 +135,7 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
                   onClick={() => trackClick(slug, '2gis')}
                   className="text-xs text-[#2B8C93] mt-2 inline-block"
                 >
-                  在2GIS中查看 ›
+                  {t.viewOn2gis}
                 </a>
               )}
             </div>
@@ -137,7 +148,7 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
               className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center justify-between"
             >
               <div>
-                <div className="text-xs text-[#6B7280] mb-1">📞 电话</div>
+                <div className="text-xs text-[#6B7280] mb-1">📞 {t.phone}</div>
                 <div className="text-sm font-medium">{m.phone}</div>
               </div>
               <span className="text-[#D9A441]">›</span>
@@ -152,7 +163,7 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
               className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center justify-between"
             >
               <div>
-                <div className="text-xs text-[#6B7280] mb-1">💬 WhatsApp</div>
+                <div className="text-xs text-[#6B7280] mb-1">💬 {t.whatsapp}</div>
                 <div className="text-sm font-medium">{m.whatsapp}</div>
               </div>
               <span className="text-[#D9A441]">›</span>
@@ -161,15 +172,15 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
 
           {businessHours && (
             <div className="bg-white rounded-xl border border-[#E7E9EE] p-3">
-              <div className="text-xs text-[#6B7280] mb-2">🕐 营业时间</div>
+              <div className="text-xs text-[#6B7280] mb-2">🕐 {t.businessHours}</div>
               <div className="flex flex-col gap-1">
-                {WEEKDAYS.map((d) => {
-                  const slots = businessHours[d.key];
+                {WEEKDAY_KEYS.map((key) => {
+                  const slots = businessHours[key];
                   return (
-                    <div key={d.key} className="flex justify-between text-xs">
-                      <span className="text-[#6B7280]">{d.label}</span>
+                    <div key={key} className="flex justify-between text-xs">
+                      <span className="text-[#6B7280]">{t.weekdays[key]}</span>
                       <span className={slots?.length ? 'text-[#14171F]' : 'text-[#B0B5BF]'}>
-                        {slots?.length ? slots.map((s) => `${s.open}-${s.close}`).join(', ') : '休息'}
+                        {slots?.length ? slots.map((s) => `${s.open}-${s.close}`).join(', ') : t.rest}
                       </span>
                     </div>
                   );
@@ -179,7 +190,7 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
           )}
 
           <div className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center gap-4 text-xs text-[#6B7280] tabular-nums">
-            <span>👁 {m.view_count} 次浏览</span>
+            <span>👁 {m.view_count} {t.views}</span>
           </div>
         </div>
       )}
@@ -188,9 +199,9 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
       {active === 'photos' && (
         <div className="px-[18px] md:px-6 py-4">
           {m.gallery_images && m.gallery_images.length > 0 ? (
-            <GalleryLightbox images={m.gallery_images as string[]} name={name?.zh ?? ''} />
+            <GalleryLightbox images={m.gallery_images as string[]} name={name?.[locale] ?? name?.zh ?? ''} />
           ) : (
-            <div className="text-sm text-[#B0B5BF] text-center py-12">暂无照片</div>
+            <div className="text-sm text-[#B0B5BF] text-center py-12">{t.noPhotos}</div>
           )}
         </div>
       )}
@@ -199,9 +210,9 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
       {active === 'menu' && (
         <div className="px-[18px] md:px-6 py-4">
           {m.menu_items && m.menu_items.length > 0 ? (
-            <MenuSection items={m.menu_items} />
+            <MenuSection items={m.menu_items} locale={locale} t={t} />
           ) : (
-            <div className="text-sm text-[#B0B5BF] text-center py-12">该商家暂无菜单信息</div>
+            <div className="text-sm text-[#B0B5BF] text-center py-12">{t.noMenu}</div>
           )}
         </div>
       )}
@@ -209,10 +220,10 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
       {/* 详情 */}
       {active === 'detail' && (
         <div className="px-[18px] md:px-6 py-4">
-          {description?.zh ? (
-            <p className="text-sm text-[#14171F] leading-relaxed whitespace-pre-line">{description.zh}</p>
+          {description?.[locale] || description?.zh ? (
+            <p className="text-sm text-[#14171F] leading-relaxed whitespace-pre-line">{description?.[locale] || description?.zh}</p>
           ) : (
-            <div className="text-sm text-[#B0B5BF] text-center py-12">暂无详情介绍</div>
+            <div className="text-sm text-[#B0B5BF] text-center py-12">{t.noDetail}</div>
           )}
         </div>
       )}
