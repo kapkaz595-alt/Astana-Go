@@ -218,7 +218,7 @@ function toggleLocale() {
             onClick={() => setActiveLocalPickCategory('')}
             className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap ${activeLocalPickCategory === '' ? 'bg-black text-white' : 'bg-[#EDEFF3] text-[#6B7280]'}`}
           >
-            全部
+            {t.allCategories}
           </button>
           {localPickCategories.map((c) => (
             <button
@@ -226,7 +226,7 @@ function toggleLocale() {
               onClick={() => setActiveLocalPickCategory(c.slug)}
               className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap ${activeLocalPickCategory === c.slug ? 'bg-black text-white' : 'bg-[#EDEFF3] text-[#6B7280]'}`}
             >
-              {c.name?.zh}
+              {c.name?.[locale] ?? c.name?.zh}
             </button>
           ))}
         </div>
