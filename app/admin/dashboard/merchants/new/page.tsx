@@ -46,6 +46,8 @@ export default function NewMerchantPage() {
     latitude: '',
     longitude: '',
     twogis_url: '',
+    instagram: '',
+    website: '',
   });
 
   const [hours, setHours] = useState<Record<string, { open: string; close: string; closed: boolean }>>(
@@ -57,65 +59,64 @@ export default function NewMerchantPage() {
   }
 
   async function compressImage(file: File): Promise<File> {
-  try {
-    return await imageCompression(file, {
-      maxWidthOrHeight: 1600,
-      maxSizeMB: 0.5,
-      useWebWorker: true,
-      fileType: 'image/webp',
-    });
-  } catch (err) {
-    console.error('压缩失败，使用原图', err);
-    return file;
+    try {
+      return await imageCompression(file, {
+        maxWidthOrHeight: 1600,
+        maxSizeMB: 0.5,
+        useWebWorker: true,
+        fileType: 'image/webp',
+      });
+    } catch (err) {
+      console.error('压缩失败，使用原图', err);
+      return file;
+    }
   }
-}
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-  const rawFile = e.target.files?.[0];
-if (!rawFile) return;
-const file = await compressImage(rawFile);
-  setUploading(true);
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('folder', 'merchants');
-  formData.append('entity_id', form.slug || 'temp');
-
-  const res = await fetch('/api/v1/admin/upload', {
-    method: 'POST',
-    body: formData,
-  });
-  const data = await res.json();
-  setUploading(false);
-  if (data.url) {
-    setCoverImage(data.url);
-  } else {
-    setError('图片上传失败');
-  }
-}
-
-  async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
-  const files = e.target.files;
-  if (!files || files.length === 0) return;
-  setUploading(true);
-  const uploaded: string[] = [];
- for (const rawFile of Array.from(files)) {
-  const file = await compressImage(rawFile);
-  const formData = new FormData();
-  formData.append('file', file);
+    const rawFile = e.target.files?.[0];
+    if (!rawFile) return;
+    const file = await compressImage(rawFile);
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
     formData.append('folder', 'merchants');
     formData.append('entity_id', form.slug || 'temp');
-    const res = await fetch('/api/v1/admin/upload', { method: 'POST', body: formData });
+
+    const res = await fetch('/api/v1/admin/upload', {
+      method: 'POST',
+      body: formData,
+    });
     const data = await res.json();
-    if (data.url) uploaded.push(data.url);
+    setUploading(false);
+    if (data.url) {
+      setCoverImage(data.url);
+    } else {
+      setError('图片上传失败');
+    }
   }
-  setGalleryImages((prev) => [...prev, ...uploaded]);
-  setUploading(false);
-}
 
-function removeGalleryImage(index: number) {
-  setGalleryImages((prev) => prev.filter((_, i) => i !== index));
-}
+  async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    const uploaded: string[] = [];
+    for (const rawFile of Array.from(files)) {
+      const file = await compressImage(rawFile);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'merchants');
+      formData.append('entity_id', form.slug || 'temp');
+      const res = await fetch('/api/v1/admin/upload', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.url) uploaded.push(data.url);
+    }
+    setGalleryImages((prev) => [...prev, ...uploaded]);
+    setUploading(false);
+  }
 
+  function removeGalleryImage(index: number) {
+    setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+  }
 
   function updateHour(day: string, field: 'open' | 'close' | 'closed', value: string | boolean) {
     setHours((h) => ({ ...h, [day]: { ...h[day], [field]: value } }));
@@ -132,23 +133,25 @@ function removeGalleryImage(index: number) {
     }
 
     const body = {
-  slug: form.slug,
-  cover_image: coverImage || null,
-  gallery_images: galleryImages,
-  name: { zh: form.name_zh, ru: form.name_ru, kk: form.name_kk },
-  description: { zh: form.description_zh },
-  business_type: form.business_type,
-  phone: form.phone || null,
-  whatsapp: form.whatsapp || null,
-  address: form.address || null,
-  latitude: form.latitude ? parseFloat(form.latitude) : null,
-  longitude: form.longitude ? parseFloat(form.longitude) : null,
-  '2gis_url': form.twogis_url || null,
-  business_hours,
-  business_status: 'active',
-  category_ids: selectedCategoryIds,
-  is_featured: isFeatured,
-  };
+      slug: form.slug,
+      cover_image: coverImage || null,
+      gallery_images: galleryImages,
+      name: { zh: form.name_zh, ru: form.name_ru, kk: form.name_kk },
+      description: { zh: form.description_zh },
+      business_type: form.business_type,
+      phone: form.phone || null,
+      whatsapp: form.whatsapp || null,
+      address: form.address || null,
+      latitude: form.latitude ? parseFloat(form.latitude) : null,
+      longitude: form.longitude ? parseFloat(form.longitude) : null,
+      '2gis_url': form.twogis_url || null,
+      website: form.website || null,
+      instagram: form.instagram || null,
+      business_hours,
+      business_status: 'active',
+      category_ids: selectedCategoryIds,
+      is_featured: isFeatured,
+    };
 
     const res = await fetch('/api/v1/admin/merchants', {
       method: 'POST',
@@ -178,28 +181,28 @@ function removeGalleryImage(index: number) {
         </div>
 
         <div>
-  <label className="text-sm font-medium block mb-1">封面图</label>
-  <input type="file" accept="image/*" onChange={handleImageUpload} className="text-sm" />
-  {uploading && <span className="text-xs text-gray-400 ml-2">上传中…</span>}
-  {coverImage && (
-    <img src={coverImage} alt="预览" className="mt-2 w-32 h-20 object-cover rounded-lg border" />
-  )}
-</div>
+          <label className="text-sm font-medium block mb-1">封面图</label>
+          <input type="file" accept="image/*" onChange={handleImageUpload} className="text-sm" />
+          {uploading && <span className="text-xs text-gray-400 ml-2">上传中…</span>}
+          {coverImage && (
+            <img src={coverImage} alt="预览" className="mt-2 w-32 h-20 object-cover rounded-lg border" />
+          )}
+        </div>
 
         <div>
-  <label className="text-sm font-medium block mb-1">详情图相册（可多选）</label>
-  <input type="file" accept="image/*" multiple onChange={handleGalleryUpload} className="text-sm" />
-  {uploading && <span className="text-xs text-gray-400 ml-2">上传中…</span>}
-  <div className="flex flex-wrap gap-2 mt-2">
-    {galleryImages.map((url, i) => (
-      <div key={i} className="relative">
-        <img src={url} alt="" className="w-20 h-20 object-cover rounded-lg border" />
-        <button type="button" onClick={() => removeGalleryImage(i)}
-                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs">×</button>
-      </div>
-    ))}
-  </div>
-</div>
+          <label className="text-sm font-medium block mb-1">详情图相册（可多选）</label>
+          <input type="file" accept="image/*" multiple onChange={handleGalleryUpload} className="text-sm" />
+          {uploading && <span className="text-xs text-gray-400 ml-2">上传中…</span>}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {galleryImages.map((url, i) => (
+              <div key={i} className="relative">
+                <img src={url} alt="" className="w-20 h-20 object-cover rounded-lg border" />
+                <button type="button" onClick={() => removeGalleryImage(i)}
+                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs">×</button>
+              </div>
+            ))}
+          </div>
+        </div>
 
         <div className="grid grid-cols-3 gap-3">
           <div>
@@ -228,44 +231,44 @@ function removeGalleryImage(index: number) {
         <div>
           <label className="text-sm font-medium block mb-1">商家类型</label>
           <select value={form.business_type} onChange={(e) => updateField('business_type', e.target.value)}
-         className="w-full border rounded-lg px-3 py-2 text-sm">
-         <option value="local_merchant">本地商家</option>
-         <option value="business_service">商业服务</option>
-         </select>
-         </div>
+                  className="w-full border rounded-lg px-3 py-2 text-sm">
+            <option value="local_merchant">本地商家</option>
+            <option value="business_service">商业服务</option>
+          </select>
+        </div>
 
-<div className="flex items-center gap-2">
-  <input
-    type="checkbox"
-    id="isFeatured"
-    checked={isFeatured}
-    onChange={(e) => setIsFeatured(e.target.checked)}
-    className="w-4 h-4"
-  />
-  <label htmlFor="isFeatured" className="text-sm font-medium">设为首页热门推荐</label>
-</div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="isFeatured"
+            checked={isFeatured}
+            onChange={(e) => setIsFeatured(e.target.checked)}
+            className="w-4 h-4"
+          />
+          <label htmlFor="isFeatured" className="text-sm font-medium">设为首页热门推荐</label>
+        </div>
 
-         <div>
-         <label className="text-sm font-medium block mb-1">所属分类（可多选）</label>
-         <div className="flex flex-wrap gap-2">
-         {categories.map((c) => (
-         <label key={c.id} className="flex items-center gap-1 text-xs border rounded-full px-3 py-1 cursor-pointer">
-         <input
-          type="checkbox"
-          checked={selectedCategoryIds.includes(c.id)}
-          onChange={(e) => {
-            if (e.target.checked) {
-              setSelectedCategoryIds((prev) => [...prev, c.id]);
-            } else {
-              setSelectedCategoryIds((prev) => prev.filter((id) => id !== c.id));
-            }
-          }}
-         />
-         {c.name?.zh ?? c.slug}
-         </label>
-         ))}
-         </div>
-         </div>
+        <div>
+          <label className="text-sm font-medium block mb-1">所属分类（可多选）</label>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((c) => (
+              <label key={c.id} className="flex items-center gap-1 text-xs border rounded-full px-3 py-1 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={selectedCategoryIds.includes(c.id)}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      setSelectedCategoryIds((prev) => [...prev, c.id]);
+                    } else {
+                      setSelectedCategoryIds((prev) => prev.filter((id) => id !== c.id));
+                    }
+                  }}
+                />
+                {c.name?.zh ?? c.slug}
+              </label>
+            ))}
+          </div>
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -306,6 +309,18 @@ function removeGalleryImage(index: number) {
         </div>
 
         <div>
+          <label className="text-sm font-medium block mb-1">Instagram链接</label>
+          <input value={form.instagram} onChange={(e) => updateField('instagram', e.target.value)}
+                 placeholder="https://www.instagram.com/xxx" className="w-full border rounded-lg px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium block mb-1">官网/订餐网站链接</label>
+          <input value={form.website} onChange={(e) => updateField('website', e.target.value)}
+                 placeholder="https://..." className="w-full border rounded-lg px-3 py-2 text-sm" />
+        </div>
+
+        <div>
           <label className="text-sm font-medium block mb-2">营业时间</label>
           <div className="flex flex-col gap-2">
             {WEEKDAYS.map((d) => (
@@ -317,12 +332,12 @@ function removeGalleryImage(index: number) {
                   休息
                 </label>
                 {!hours[d.key].closed && (
-  <>
-    <TimeSelect value={hours[d.key].open} onChange={(v) => updateHour(d.key, 'open', v)} />
-    <span>-</span>
-    <TimeSelect value={hours[d.key].close} onChange={(v) => updateHour(d.key, 'close', v)} />
-  </>
-)}
+                  <>
+                    <TimeSelect value={hours[d.key].open} onChange={(v) => updateHour(d.key, 'open', v)} />
+                    <span>-</span>
+                    <TimeSelect value={hours[d.key].close} onChange={(v) => updateHour(d.key, 'close', v)} />
+                  </>
+                )}
               </div>
             ))}
           </div>
