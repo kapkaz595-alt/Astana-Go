@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 interface MenuItem {
   id: string;
   name: { zh?: string; kk?: string; ru?: string };
+  detail: { zh?: string; kk?: string } | null;
   price: number | null;
   image_url: string | null;
   category: string | null;
@@ -24,6 +25,7 @@ export default function MerchantMenuPage() {
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
   const [imageUrl, setImageUrl] = useState('');
+  const [detailZh, setDetailZh] = useState('');
 
   const fetchItems = async () => {
     setLoading(true);
