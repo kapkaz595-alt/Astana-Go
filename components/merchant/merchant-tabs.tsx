@@ -12,6 +12,7 @@ const UI_TEXT = {
     businessHours: '营业时间', rest: '休息', views: '次浏览', currency: '坚戈',
     noPhotos: '暂无照片', noMenu: '该商家暂无菜单信息', noDetail: '暂无详情介绍',
     noItemDetail: '暂无详情介绍',
+    instagram: 'Instagram', website: '官网/订餐',
   },
   kk: {
     weekdays: { monday: 'Дүйсенбі', tuesday: 'Сейсенбі', wednesday: 'Сәрсенбі', thursday: 'Бейсенбі', friday: 'Жұма', saturday: 'Сенбі', sunday: 'Жексенбі' },
@@ -21,6 +22,7 @@ const UI_TEXT = {
     businessHours: 'Жұмыс уақыты', rest: 'Демалыс', views: 'қаралым', currency: 'теңге',
     noPhotos: 'Фотосурет жоқ', noMenu: 'Мәзір ақпараты жоқ', noDetail: 'Толығырақ ақпарат жоқ',
     noItemDetail: 'Толығырақ ақпарат жоқ',
+    instagram: 'Instagram', website: 'Сайт/тапсырыс',
   },
 };
 
@@ -206,6 +208,36 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
                 <div className="text-sm font-medium">{m.whatsapp}</div>
               </div>
               <span className="text-[#D9A441]">›</span>
+            </a>
+          )}
+
+          {m.instagram && (
+            <a
+              href={m.instagram}
+              target="_blank"
+              onClick={() => trackClick(slug, 'instagram')}
+              className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center justify-between"
+            >
+              <div className="min-w-0">
+                <div className="text-xs text-[#6B7280] mb-1">📷 {t.instagram}</div>
+                <div className="text-sm font-medium truncate">{m.instagram}</div>
+              </div>
+              <span className="text-[#D9A441] shrink-0">›</span>
+            </a>
+          )}
+
+          {m.website && (
+            <a
+              href={m.website}
+              target="_blank"
+              onClick={() => trackClick(slug, 'website')}
+              className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center justify-between"
+            >
+              <div className="min-w-0">
+                <div className="text-xs text-[#6B7280] mb-1">🌐 {t.website}</div>
+                <div className="text-sm font-medium truncate">{m.website}</div>
+              </div>
+              <span className="text-[#D9A441] shrink-0">›</span>
             </a>
           )}
 
