@@ -40,7 +40,7 @@ export const POST = withAdminAuth(async (_session, request: NextRequest, context
   const supabase = await getClient();
   const body = await request.json();
 
-  const { name, price, image_url, category, sort_order } = body;
+  const { name, price, image_url, category, sort_order, detail } = body;
 
   if (!name) {
     return NextResponse.json({ success: false, error: { message: 'name必填' } }, { status: 400 });
@@ -55,6 +55,7 @@ export const POST = withAdminAuth(async (_session, request: NextRequest, context
       image_url: image_url ?? null,
       category: category ?? null,
       sort_order: sort_order ?? 0,
+      detail: detail ?? null,
     })
     .select()
     .single();
