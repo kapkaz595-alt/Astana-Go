@@ -28,6 +28,8 @@ export default function EditMerchantPage() {
   const [error, setError] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [coverImage, setCoverImage] = useState('');
+  const [coverUploading, setCoverUploading] = useState(false);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [galleryUploading, setGalleryUploading] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
@@ -79,7 +81,8 @@ export default function EditMerchantPage() {
           business_status: m.business_status ?? 'active',
           verification_status: m.verification_status ?? 'unverified',
         });
-        
+
+        setCoverImage(m.cover_image ?? '');
         setGalleryImages(m.gallery_images ?? []);
         setIsFeatured(m.is_featured ?? false);
         if (m.business_hours) {
@@ -110,43 +113,66 @@ export default function EditMerchantPage() {
   }
 
   async function compressImage(file: File): Promise<File> {
-  try {
-    return await imageCompression(file, {
-      maxWidthOrHeight: 1600,
-      maxSizeMB: 0.5,
-      useWebWorker: true,
-      fileType: 'image/webp',
-    });
-  } catch (err) {
-    console.error('压缩失败，使用原图', err);
-    return file;
+    try {
+      return await imageCompression(file, {
+        maxWidthOrHeight: 1600,
+        maxSizeMB: 0.5,
+        useWebWorker: true,
+        fileType: 'image/webp',
+      });
+    } catch (err) {
+      console.error('压缩失败，使用原图', err);
+      return file;
+    }
   }
-}
+
+  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const rawFile = e.target.files?.[0];
+    if (!rawFile) return;
+    const file = await compressImage(rawFile);
+    setCoverUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', 'merchants');
+    formData.append('entity_id', id);
+
+    const res = await fetch('/api/v1/admin/upload', {
+      method: 'POST',
+      body: formData,
+    });
+    const data = await res.json();
+    setCoverUploading(false);
+    if (data.url) {
+      setCoverImage(data.url);
+    } else {
+      setError('封面图上传失败');
+    }
+  }
 
   async function handleGalleryUpload(e: React.ChangeEvent<HTMLInputElement>) {
-  const files = e.target.files;
-  if (!files || files.length === 0) return;
-  setGalleryUploading(true);
-  try {
-    const uploadedUrls: string[] = [];
-    for (const rawFile of Array.from(files)) {
-  const file = await compressImage(rawFile);
-  const formData = new FormData();
-  formData.append('file', file);
-      formData.append('folder', 'merchants');
-      const res = await fetch('/api/v1/admin/upload', { method: 'POST', body: formData });
-      const data = await res.json();
-      if (data.url) uploadedUrls.push(data.url);
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    setGalleryUploading(true);
+    try {
+      const uploadedUrls: string[] = [];
+      for (const rawFile of Array.from(files)) {
+        const file = await compressImage(rawFile);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('folder', 'merchants');
+        const res = await fetch('/api/v1/admin/upload', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (data.url) uploadedUrls.push(data.url);
+      }
+      setGalleryImages((prev) => [...prev, ...uploadedUrls]);
+    } finally {
+      setGalleryUploading(false);
     }
-    setGalleryImages((prev) => [...prev, ...uploadedUrls]);
-  } finally {
-    setGalleryUploading(false);
   }
-}
 
-function removeGalleryImage(index: number) {
-  setGalleryImages((prev) => prev.filter((_, i) => i !== index));
-}
+  function removeGalleryImage(index: number) {
+    setGalleryImages((prev) => prev.filter((_, i) => i !== index));
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -160,6 +186,7 @@ function removeGalleryImage(index: number) {
 
     const body = {
       slug: form.slug,
+      cover_image: coverImage || null,
       name: { zh: form.name_zh, ru: form.name_ru, kk: form.name_kk },
       description: { zh: form.description_zh },
       business_type: form.business_type,
@@ -175,7 +202,7 @@ function removeGalleryImage(index: number) {
       category_ids: selectedCategoryIds,
       gallery_images: galleryImages,
       is_featured: isFeatured,
-      };
+    };
 
     const res = await fetch(`/api/v1/admin/merchants/${id}`, {
       method: 'PATCH',
@@ -223,6 +250,15 @@ function removeGalleryImage(index: number) {
           <label className="text-sm font-medium block mb-1">Slug（英文标识）*</label>
           <input required value={form.slug} onChange={(e) => updateField('slug', e.target.value)}
                  className="w-full border rounded-lg px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium block mb-1">封面图</label>
+          <input type="file" accept="image/*" onChange={handleCoverUpload} className="text-sm" disabled={coverUploading} />
+          {coverUploading && <span className="text-xs text-gray-400 ml-2">上传中…</span>}
+          {coverImage && (
+            <img src={coverImage} alt="预览" className="mt-2 w-32 h-20 object-cover rounded-lg border" />
+          )}
         </div>
 
         <div className="grid grid-cols-3 gap-3">
@@ -300,16 +336,16 @@ function removeGalleryImage(index: number) {
           </div>
         </div>
 
-<div className="flex items-center gap-2">
-  <input
-    type="checkbox"
-    id="isFeatured"
-    checked={isFeatured}
-    onChange={(e) => setIsFeatured(e.target.checked)}
-    className="w-4 h-4"
-  />
-  <label htmlFor="isFeatured" className="text-sm font-medium">设为首页热门推荐</label>
-</div>
+        <div className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            id="isFeatured"
+            checked={isFeatured}
+            onChange={(e) => setIsFeatured(e.target.checked)}
+            className="w-4 h-4"
+          />
+          <label htmlFor="isFeatured" className="text-sm font-medium">设为首页热门推荐</label>
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -350,25 +386,25 @@ function removeGalleryImage(index: number) {
         </div>
 
         <div>
-  <label className="text-sm font-medium block mb-1">相册图片（多选）</label>
-  <input
-    type="file"
-    accept="image/jpeg,image/png,image/webp,image/gif"
-    multiple
-    onChange={handleGalleryUpload}
-    disabled={galleryUploading}
-  />
-  {galleryUploading && <p className="text-sm text-gray-500">上传中…</p>}
-  <div className="flex flex-wrap gap-2 mt-2">
-    {galleryImages.map((url, i) => (
-      <div key={i} className="relative">
-        <img src={url} className="w-20 h-20 object-cover rounded" />
-        <button type="button" onClick={() => removeGalleryImage(i)}
-                className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs">×</button>
-      </div>
-    ))}
-  </div>
-</div>
+          <label className="text-sm font-medium block mb-1">相册图片（多选）</label>
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            multiple
+            onChange={handleGalleryUpload}
+            disabled={galleryUploading}
+          />
+          {galleryUploading && <p className="text-sm text-gray-500">上传中…</p>}
+          <div className="flex flex-wrap gap-2 mt-2">
+            {galleryImages.map((url, i) => (
+              <div key={i} className="relative">
+                <img src={url} className="w-20 h-20 object-cover rounded" />
+                <button type="button" onClick={() => removeGalleryImage(i)}
+                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs">×</button>
+              </div>
+            ))}
+          </div>
+        </div>
 
         <div>
           <label className="text-sm font-medium block mb-2">营业时间</label>
@@ -382,12 +418,12 @@ function removeGalleryImage(index: number) {
                   休息
                 </label>
                 {!hours[d.key].closed && (
-  <>
-    <TimeSelect value={hours[d.key].open} onChange={(v) => updateHour(d.key, 'open', v)} />
-    <span>-</span>
-    <TimeSelect value={hours[d.key].close} onChange={(v) => updateHour(d.key, 'close', v)} />
-  </>
-)}
+                  <>
+                    <TimeSelect value={hours[d.key].open} onChange={(v) => updateHour(d.key, 'open', v)} />
+                    <span>-</span>
+                    <TimeSelect value={hours[d.key].close} onChange={(v) => updateHour(d.key, 'close', v)} />
+                  </>
+                )}
               </div>
             ))}
           </div>
