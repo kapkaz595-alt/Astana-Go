@@ -95,7 +95,6 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
  const { data: merchant, error } = await supabase
   .from('merchants')
   .insert({
-  .insert({
     slug,
     name,
     cover_image: cover_image ?? null,
