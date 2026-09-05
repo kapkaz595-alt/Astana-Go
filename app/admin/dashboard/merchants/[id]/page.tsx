@@ -386,6 +386,18 @@ export default function EditMerchantPage() {
         </div>
 
         <div>
+  <label className="text-sm font-medium block mb-1">Instagram链接</label>
+  <input value={form.instagram} onChange={(e) => updateField('instagram', e.target.value)}
+         placeholder="https://www.instagram.com/xxx" className="w-full border rounded-lg px-3 py-2 text-sm" />
+</div>
+
+<div>
+  <label className="text-sm font-medium block mb-1">官网/订餐网站链接</label>
+  <input value={form.website} onChange={(e) => updateField('website', e.target.value)}
+         placeholder="https://..." className="w-full border rounded-lg px-3 py-2 text-sm" />
+</div>
+
+        <div>
           <label className="text-sm font-medium block mb-1">相册图片（多选）</label>
           <input
             type="file"
