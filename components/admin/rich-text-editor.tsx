@@ -23,6 +23,7 @@ export default function RichTextEditor({
   const [cardTitle, setCardTitle] = useState('');
   const [cardDesc, setCardDesc] = useState('');
   const [cardLink, setCardLink] = useState('');
+  const [cardType, setCardType] = useState<'merchant' | 'article' | 'external'>('article');
 
   const editor = useEditor({
     extensions: [StarterKit, Image, TextStyle, Color, Link.configure({ openOnClick: false }), RecommendCard],
