@@ -78,6 +78,7 @@ export default function HomePage() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [localPickCategories, setLocalPickCategories] = useState<LocalPickCategory[]>([]);
   const [activeLocalPickCategory, setActiveLocalPickCategory] = useState<string>('');
+  const [testResult, setTestResult] = useState<string>('');
 
   const [locale, setLocale] = useState<'zh' | 'kk'>('zh');
   const t = UI_TEXT[locale];
@@ -246,6 +247,24 @@ function toggleLocale() {
         <div className="px-[18px]">
           <MasonryFeed initialItems={feedItems} initialHasMore={feedHasMore} key={activeLocalPickCategory} />
         </div>
+
+    <div className="px-[18px] pb-2">
+  <button
+    onClick={async () => {
+      const res = await fetch('/api/v1/track-view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page_path: '/test', visitor_id: 'test-visitor' }),
+      });
+      const json = await res.json();
+      setTestResult(JSON.stringify(json));
+    }}
+    className="bg-red-500 text-white text-xs px-3 py-2 rounded"
+  >
+    测试访问统计
+  </button>
+  {testResult && <p className="text-xs mt-2 break-all">{testResult}</p>}
+</div>
 
       {/* Footer */}
       <footer className="mt-7 bg-white border-t border-[#E7E9EE] px-[18px] pt-[26px] pb-6">
