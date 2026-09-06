@@ -16,6 +16,14 @@ const s3 = new S3Client({
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
 
+// 用 MIME 类型决定扩展名，不依赖 file.name（粘贴/分享上传时 file.name 可能是 "blob" 且没有点号）
+const MIME_EXT_MAP: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+};
+
 export const POST = withAdminAuth(async (
   session: AdminSession,
   request: NextRequest
@@ -43,7 +51,7 @@ export const POST = withAdminAuth(async (
       return NextResponse.json({ error: 'File too large' }, { status: 400 });
     }
 
-    const ext = file.name.split('.').pop();
+    const ext = MIME_EXT_MAP[file.type] || 'jpg';
     const key = `${folder}/${entityId}/${randomUUID()}.${ext}`;
     const buffer = Buffer.from(await file.arrayBuffer());
 
