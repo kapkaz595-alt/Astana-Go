@@ -27,7 +27,7 @@ export function BannerSlot({ banners }: { banners: Banner[] }) {
 
   return (
     <>
-      <div className="relative w-full aspect-[3/1] rounded-xl overflow-hidden">
+      <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden">
         {banners.map((b, i) => (
           <img
             key={b.id}
