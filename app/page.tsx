@@ -93,6 +93,19 @@ function toggleLocale() {
   document.cookie = `locale=${next}; path=/; max-age=31536000`;
 }
 
+  useEffect(() => {
+  let visitorId = localStorage.getItem('visitor_id');
+  if (!visitorId) {
+    visitorId = crypto.randomUUID();
+    localStorage.setItem('visitor_id', visitorId);
+  }
+  fetch('/api/v1/track-view', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ page_path: '/', visitor_id: visitorId }),
+  }).catch(() => {});
+}, []);
+
  useEffect(() => {
     fetch(`/api/v1/categories?locale=${locale}`).then(r => r.json()).then(d => setCategories(d.data ?? []));
     fetch(`/api/v1/merchants?page_size=10&locale=${locale}&featured=true`).then(r => r.json()).then(d => setMerchants(d.data ?? []));
