@@ -27,13 +27,13 @@ export function BannerSlot({ banners }: { banners: Banner[] }) {
 
   return (
     <>
-      <div className="relative w-full h-[140px] md:h-[160px] rounded-xl overflow-hidden">
+      <div className="relative w-full aspect-[3/1] rounded-xl overflow-hidden">
         {banners.map((b, i) => (
           <img
             key={b.id}
             src={b.image_url}
             onClick={() => handleClick(b)}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 cursor-pointer ${i === current ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-500 cursor-pointer ${i === current ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           />
         ))}
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
