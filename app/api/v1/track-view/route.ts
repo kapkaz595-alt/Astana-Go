@@ -16,11 +16,16 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { page_path, visitor_id } = body;
 
-  await supabase.from('page_views').insert({
+  const { error } = await supabase.from('page_views').insert({
     page_path: page_path || '/',
     visitor_id: visitor_id || null,
     user_agent: request.headers.get('user-agent') || null,
   });
+
+  if (error) {
+    console.error('page_views insert error:', error);
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+  }
 
   return NextResponse.json({ success: true });
 }
