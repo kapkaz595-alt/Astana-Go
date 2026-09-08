@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { NoticeBar } from '@/components/home/notice-bar';
 import { BannerSlot } from '@/components/home/banner-slot';
 import { MasonryFeed } from '@/components/home/masonry-feed';
-import FooterSocial from '@/components/footer-social';
+import WechatQRTrigger from '@/components/wechat-qr-trigger';
 
 const UI_TEXT = {
   zh: {
