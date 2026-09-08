@@ -6,9 +6,9 @@ export default function WechatQRTrigger({ className }: { className?: string }) {
   const [showQR, setShowQR] = useState(false);
 
   return (
-    <div className="relative inline-block">
+    <>
       <button
-        onClick={() => setShowQR(!showQR)}
+        onClick={() => setShowQR(true)}
         className={className}
       >
         · 微信客服
@@ -16,13 +16,18 @@ export default function WechatQRTrigger({ className }: { className?: string }) {
 
       {showQR && (
         <div
-          className="absolute bottom-full mb-2 left-0 bg-white p-3 rounded-lg shadow-xl z-50 border border-[#E7E9EE]"
-          onMouseLeave={() => setShowQR(false)}
+          className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center"
+          onClick={() => setShowQR(false)}
         >
-          <Image src="/wechat-qrcode.png" alt="微信公众号二维码" width={160} height={160} />
-          <p className="text-xs text-center mt-1 text-gray-500">扫码关注</p>
+          <div
+            className="bg-white p-6 rounded-2xl shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Image src="/wechat-qrcode.png" alt="微信公众号二维码" width={260} height={260} />
+            <p className="text-sm text-center mt-3 text-gray-500">扫码关注</p>
+          </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
