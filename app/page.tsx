@@ -26,6 +26,11 @@ const UI_TEXT = {
     privacy: '隐私政策',
     contactUs: '联系我们',
     followUs: '关注我们',
+    cooperation: '商务合作',
+    merchantApply: '商家入驻',
+    adCooperation: '广告合作',
+    wechatContact: '微信客服',
+    emailLabel: '邮箱',
     whatsappContact: 'WhatsApp 联系',
     copyright: '© 2026 Astana Go · 保留所有权利',
   },
@@ -47,6 +52,11 @@ const UI_TEXT = {
     privacy: 'Құпиялылық саясаты',
     contactUs: 'Байланыс',
     followUs: 'Бізді қадағалаңыз',
+    cooperation: 'Сауда селбестік',
+    merchantApply: 'Дүкен қосу',
+    adCooperation: 'Жарнама серіктестігі',
+    wechatContact: 'WeChat',
+    emailLabel: 'Email',
     whatsappContact: 'WhatsApp арқылы хабарласу',
     copyright: '© 2026 Astana Go · Барлық құқықтар қорғалған',
   },
@@ -249,26 +259,28 @@ function toggleLocale() {
 
       {/* Footer */}
       <footer className="mt-7 bg-white border-t border-[#E7E9EE] px-[18px] pt-[26px] pb-6">
-        <div className="flex gap-[14px] justify-between">
-          <div className="flex-1 min-w-0">
-            <h4 className="text-[11.5px] font-bold mb-[10px]">{t.aboutUs}</h4>
-            <a href="/about" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.platformIntro}</a>
-            <a href="/terms" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.terms}</a>
-            <a href="/privacy" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.privacy}</a>
-          </div>
-          <div className="flex-1 min-w-0">
-           <h4 className="text-[11.5px] font-bold mb-[10px]">{t.contactUs}</h4>
-            <a href="/contact" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">■ {t.contactUs}</a>
-          </div>
-          <div className="flex-1 min-w-0">
-            <h4 className="text-[11.5px] font-bold mb-[10px]">{t.followUs}</h4>
-           <FooterSocial />
-          </div>
-        </div>
-        <div className="mt-[22px] pt-4 border-t border-[#E7E9EE] text-[10.5px] text-[#9AA0AC] text-center">
-          {t.copyright}
-        </div>
-      </footer>
+  <div className="flex gap-[14px] justify-between">
+    <div className="flex-1 min-w-0">
+      <h4 className="text-[11.5px] font-bold mb-[10px]">{t.aboutUs}</h4>
+      <a href="/about" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.platformIntro}</a>
+      <a href="/terms" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.terms}</a>
+      <a href="/privacy" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.privacy}</a>
+    </div>
+    <div className="flex-1 min-w-0">
+      <h4 className="text-[11.5px] font-bold mb-[10px]">{t.contactUs}</h4>
+      <a href="/contact" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.wechatContact}</a>
+      <a href="/contact" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.emailLabel}</a>
+    </div>
+    <div className="flex-1 min-w-0">
+      <h4 className="text-[11.5px] font-bold mb-[10px]">{t.cooperation}</h4>
+      <a href="/merchant-apply" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.merchantApply}</a>
+      <a href="/ad-cooperation" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.adCooperation}</a>
+    </div>
+  </div>
+  <div className="mt-[22px] pt-4 border-t border-[#E7E9EE] text-[10.5px] text-[#9AA0AC] text-center">
+    {t.copyright}
+  </div>
+</footer>
     </main>
     </div>
   );
