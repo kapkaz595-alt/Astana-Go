@@ -268,7 +268,7 @@ function toggleLocale() {
     </div>
     <div className="flex-1 min-w-0">
       <h4 className="text-[11.5px] font-bold mb-[10px]">{t.contactUs}</h4>
-      <a href="/contact" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.wechatContact}</a>
+      <WechatQRTrigger className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline text-left" />
       <a href="/contact" className="block text-[10.5px] text-[#6B7280] mb-2 hover:underline">· {t.emailLabel}</a>
     </div>
     <div className="flex-1 min-w-0">
