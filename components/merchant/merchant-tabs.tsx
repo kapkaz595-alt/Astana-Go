@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import GalleryLightbox from '@/components/merchant/gallery-lightbox';
 
 const UI_TEXT = {
@@ -13,6 +13,7 @@ const UI_TEXT = {
     noPhotos: '暂无照片', noMenu: '该商家暂无菜单信息', noDetail: '暂无详情介绍',
     noItemDetail: '暂无详情介绍',
     instagram: 'Instagram', website: '官网/订餐',
+    likeLabel: '好评', dislikeLabel: '差评', alreadyReacted: '您已评价过',
   },
   kk: {
     weekdays: { monday: 'Дүйсенбі', tuesday: 'Сейсенбі', wednesday: 'Сәрсенбі', thursday: 'Бейсенбі', friday: 'Жұма', saturday: 'Сенбі', sunday: 'Жексенбі' },
@@ -23,6 +24,7 @@ const UI_TEXT = {
     noPhotos: 'Фотосурет жоқ', noMenu: 'Мәзір ақпараты жоқ', noDetail: 'Толығырақ ақпарат жоқ',
     noItemDetail: 'Толығырақ ақпарат жоқ',
     instagram: 'Instagram', website: 'Сайт/тапсырыс',
+    likeLabel: 'Ұнатты', dislikeLabel: 'Ұнатпады', alreadyReacted: 'Сіз бұрын бағалағансыз',
   },
 };
 
@@ -98,8 +100,8 @@ function MenuSection({ items, locale, t }: { items: any[]; locale: 'zh' | 'kk'; 
             onClick={(e) => e.stopPropagation()}
           >
             {selectedItem.image_url && (
-           <img src={selectedItem.image_url} alt={selectedItem.name?.[locale] ?? selectedItem.name?.zh} className="w-full object-contain" />
-         )}
+              <img src={selectedItem.image_url} alt={selectedItem.name?.[locale] ?? selectedItem.name?.zh} className="w-full object-contain" />
+            )}
             <div className="p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-base font-bold">{selectedItem.name?.[locale] ?? selectedItem.name?.zh}</div>
@@ -119,6 +121,73 @@ function MenuSection({ items, locale, t }: { items: any[]; locale: 'zh' | 'kk'; 
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function ReactionButtons({ slug, t }: { slug: string; t: typeof UI_TEXT['zh'] }) {
+  const [likeCount, setLikeCount] = useState(0);
+  const [dislikeCount, setDislikeCount] = useState(0);
+  const [myReaction, setMyReaction] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let visitorId = localStorage.getItem('visitor_id');
+    if (!visitorId) {
+      visitorId = crypto.randomUUID();
+      localStorage.setItem('visitor_id', visitorId);
+    }
+    fetch(`/api/v1/merchants/${slug}/reaction?visitor_id=${visitorId}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.success) {
+          setLikeCount(d.data.like_count);
+          setDislikeCount(d.data.dislike_count);
+          setMyReaction(d.data.my_reaction);
+        }
+        setLoading(false);
+      });
+  }, [slug]);
+
+  async function handleReact(type: 'like' | 'dislike') {
+    if (myReaction) return;
+    const visitorId = localStorage.getItem('visitor_id');
+    const res = await fetch(`/api/v1/merchants/${slug}/reaction`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ visitor_id: visitorId, reaction_type: type }),
+    });
+    const d = await res.json();
+    if (d.success) {
+      setMyReaction(type);
+      if (type === 'like') setLikeCount((c) => c + 1);
+      else setDislikeCount((c) => c + 1);
+    }
+  }
+
+  if (loading) return null;
+
+  return (
+    <div className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center gap-4">
+      <button
+        onClick={() => handleReact('like')}
+        disabled={!!myReaction}
+        className={`flex items-center gap-1.5 text-sm font-medium ${
+          myReaction === 'like' ? 'text-[#2E9E5B]' : myReaction ? 'text-[#B0B5BF]' : 'text-[#6B7280]'
+        }`}
+      >
+        👍 {likeCount}
+      </button>
+      <button
+        onClick={() => handleReact('dislike')}
+        disabled={!!myReaction}
+        className={`flex items-center gap-1.5 text-sm font-medium ${
+          myReaction === 'dislike' ? 'text-[#B54B3A]' : myReaction ? 'text-[#B0B5BF]' : 'text-[#6B7280]'
+        }`}
+      >
+        👎 {dislikeCount}
+      </button>
+      {myReaction && <span className="text-xs text-[#B0B5BF]">{t.alreadyReacted}</span>}
     </div>
   );
 }
@@ -263,6 +332,8 @@ export default function MerchantTabs({ m, name, description, businessHours, slug
           <div className="bg-white rounded-xl border border-[#E7E9EE] p-3 flex items-center gap-4 text-xs text-[#6B7280] tabular-nums">
             <span>👁 {m.view_count} {t.views}</span>
           </div>
+
+          <ReactionButtons slug={slug} t={t} />
         </div>
       )}
 
