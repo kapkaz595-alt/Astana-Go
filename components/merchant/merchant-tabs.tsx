@@ -172,20 +172,20 @@ function ReactionButtons({ slug, t }: { slug: string; t: typeof UI_TEXT['zh'] })
       <button
         onClick={() => handleReact('like')}
         disabled={!!myReaction}
-        className={`flex items-center gap-1.5 text-sm font-medium ${
+        className={`flex items-center gap-2 text-2xl font-medium ${
           myReaction === 'like' ? 'text-[#2E9E5B]' : myReaction ? 'text-[#B0B5BF]' : 'text-[#6B7280]'
         }`}
       >
-        👍 {likeCount}
+        👍 <span className="text-base">{likeCount}</span>
       </button>
       <button
         onClick={() => handleReact('dislike')}
         disabled={!!myReaction}
-        className={`flex items-center gap-2 text-base font-medium ${
+        className={`flex items-center gap-2 text-2xl font-medium ${
           myReaction === 'dislike' ? 'text-[#B54B3A]' : myReaction ? 'text-[#B0B5BF]' : 'text-[#6B7280]'
         }`}
       >
-        👎 {dislikeCount}
+        👎 <span className="text-base">{dislikeCount}</span>
       </button>
       {myReaction && <span className="text-xs text-[#B0B5BF]">{t.alreadyReacted}</span>}
     </div>
