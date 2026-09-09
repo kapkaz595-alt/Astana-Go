@@ -181,7 +181,7 @@ function ReactionButtons({ slug, t }: { slug: string; t: typeof UI_TEXT['zh'] })
       <button
         onClick={() => handleReact('dislike')}
         disabled={!!myReaction}
-        className={`flex items-center gap-1.5 text-sm font-medium ${
+        className={`flex items-center gap-2 text-base font-medium ${
           myReaction === 'dislike' ? 'text-[#B54B3A]' : myReaction ? 'text-[#B0B5BF]' : 'text-[#6B7280]'
         }`}
       >
