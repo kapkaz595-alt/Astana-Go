@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
 
   const supabase = await getClient();
   const terms = await expandKeywords(supabase, keyword);
-  const orFilter = terms.map((t) => `search_text.ilike.%${t}%`).join(',');
+  const orFilter = terms.map((t) => `search_text.ilike.%${t}%,address.ilike.%${t}%`).join(',');
 
   // 搜索商家
   const { data: merchants, error: merchantError } = await supabase
