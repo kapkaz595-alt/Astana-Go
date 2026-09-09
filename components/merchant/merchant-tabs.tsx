@@ -98,8 +98,8 @@ function MenuSection({ items, locale, t }: { items: any[]; locale: 'zh' | 'kk'; 
             onClick={(e) => e.stopPropagation()}
           >
             {selectedItem.image_url && (
-              <img src={selectedItem.image_url} alt={selectedItem.name?.[locale] ?? selectedItem.name?.zh} className="w-full aspect-video object-cover" />
-            )}
+           <img src={selectedItem.image_url} alt={selectedItem.name?.[locale] ?? selectedItem.name?.zh} className="w-full object-contain" />
+         )}
             <div className="p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-base font-bold">{selectedItem.name?.[locale] ?? selectedItem.name?.zh}</div>
