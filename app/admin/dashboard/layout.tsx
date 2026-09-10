@@ -2,6 +2,21 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getAdminSession } from '@/lib/supabase/admin-session';
 import LogoutButton from './logout-button';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Astana Go 后台管理',
+  manifest: '/admin-manifest.json',
+  icons: {
+    icon: '/admin-icon.png',
+    apple: '/admin-icon.png',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'AG Admin',
+  },
+};
 
 const NAV_ITEMS = [
   { href: '/admin/dashboard', label: '概览' },
