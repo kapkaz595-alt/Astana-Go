@@ -1,5 +1,5 @@
 'use client';
-
+import Image from 'next/image';
 import { useState, useEffect, useCallback } from 'react';
 
 export default function GalleryLightbox({ images, name }: { images: string[]; name: string }) {
@@ -33,7 +33,7 @@ export default function GalleryLightbox({ images, name }: { images: string[]; na
           onClick={() => setOpenIndex(i)}
           className="relative aspect-square rounded-lg overflow-hidden"
         >
-          <img src={url} alt={`${name} ${i + 1}`} className="w-full h-full object-cover" />
+          <Image src={url} alt={`${name} ${i + 1}`} fill sizes="(max-width: 480px) 33vw, 150px" className="object-cover" />
         </button>
       ))}
     </div>
