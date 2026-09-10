@@ -1,0 +1,11 @@
+{
+  "name": "Astana Go - 阿斯塔纳本地生活",
+  "short_name": "Astana Go",
+  "icons": [
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7F8FA",
+  "theme_color": "#E8722C"
+}
