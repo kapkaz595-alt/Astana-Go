@@ -2,8 +2,14 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Astana Local Life",
+  title: "Astana Go - 阿斯塔纳本地生活",
   description: "阿斯塔纳本地生活服务平台",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Astana Go",
+  },
 };
 
 export const viewport: Viewport = {
