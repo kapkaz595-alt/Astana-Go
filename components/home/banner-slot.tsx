@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 type Banner = { id: string; image_url: string; link_url: string | null };
 
@@ -29,11 +30,15 @@ export function BannerSlot({ banners }: { banners: Banner[] }) {
     <>
       <div className="relative w-full aspect-[21/9] rounded-xl overflow-hidden">
         {banners.map((b, i) => (
-          <img
+          <Image
             key={b.id}
             src={b.image_url}
+            alt=""
+            fill
+            sizes="(max-width: 480px) 100vw, 480px"
+            priority={i === 0}
             onClick={() => handleClick(b)}
-            className={`absolute inset-0 w-full h-full object-cover object-top transition-opacity duration-500 cursor-pointer ${i === current ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`object-cover object-top transition-opacity duration-500 cursor-pointer ${i === current ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
           />
         ))}
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
