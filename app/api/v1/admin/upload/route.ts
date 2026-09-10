@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { randomUUID } from 'crypto';
+import sharp from 'sharp';
 import { withAdminAuth, requireAdminRole } from '@/lib/supabase/admin-auth-middleware';
 import type { AdminSession } from '@/lib/supabase/admin-session';
 
@@ -15,14 +16,7 @@ const s3 = new S3Client({
 
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-
-// 用 MIME 类型决定扩展名，不依赖 file.name（粘贴/分享上传时 file.name 可能是 "blob" 且没有点号）
-const MIME_EXT_MAP: Record<string, string> = {
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-  'image/webp': 'webp',
-  'image/gif': 'gif',
-};
+const MAX_DIMENSION = 1600; // 最长边不超过1600px
 
 export const POST = withAdminAuth(async (
   session: AdminSession,
@@ -51,16 +45,34 @@ export const POST = withAdminAuth(async (
       return NextResponse.json({ error: 'File too large' }, { status: 400 });
     }
 
-    const ext = MIME_EXT_MAP[file.type] || 'jpg';
-    const key = `${folder}/${entityId}/${randomUUID()}.${ext}`;
-    const buffer = Buffer.from(await file.arrayBuffer());
+    const originalBuffer = Buffer.from(await file.arrayBuffer());
+
+    // GIF保持原样不压缩（sharp处理GIF会丢失动画），其余格式统一压缩为webp
+    let outputBuffer: Buffer;
+    let outputExt: string;
+    let outputContentType: string;
+
+    if (file.type === 'image/gif') {
+      outputBuffer = originalBuffer;
+      outputExt = 'gif';
+      outputContentType = 'image/gif';
+    } else {
+      outputBuffer = await sharp(originalBuffer)
+        .resize({ width: MAX_DIMENSION, height: MAX_DIMENSION, fit: 'inside', withoutEnlargement: true })
+        .webp({ quality: 85 })
+        .toBuffer();
+      outputExt = 'webp';
+      outputContentType = 'image/webp';
+    }
+
+    const key = `${folder}/${entityId}/${randomUUID()}.${outputExt}`;
 
     await s3.send(
       new PutObjectCommand({
         Bucket: process.env.R2_BUCKET_NAME,
         Key: key,
-        Body: buffer,
-        ContentType: file.type,
+        Body: outputBuffer,
+        ContentType: outputContentType,
       })
     );
 
