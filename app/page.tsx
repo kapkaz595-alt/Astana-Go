@@ -204,7 +204,7 @@ function toggleLocale() {
           ];
           return (
            <Link key={m.id} href={`/merchants/${m.slug}`} className="shrink-0 md:shrink md:w-auto w-[148px] bg-white rounded-[14px] overflow-hidden border bo..." style={{ scrollSnapAlign: 'start' }}>
-             <div className="relative h-[104px] flex items-end p-2 overflow-hidden">
+             <div className="relative w-full h-[104px] flex items-end p-2 overflow-hidden">
               {m.cover_image ? (
                 <Image
                   src={m.cover_image}
