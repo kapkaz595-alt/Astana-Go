@@ -139,7 +139,7 @@ function toggleLocale() {
       {/* Header */}
       <header className="flex items-center justify-between px-[18px] pt-[18px] pb-[14px]">
         <div className="flex items-center gap-2">
-         <img src="/logo.png" alt="Astana Go" className="h-[60px] w-auto" />
+         <Image src="/logo.png" alt="Astana Go" width={180} height={60} className="h-[60px] w-auto" priority />
         </div>
        <button onClick={toggleLocale} className="bg-white/90 rounded-full px-[13px] py-[6px] text-xs font-semibold">
   {locale === 'zh' ? '中 / Қаз' : 'Қаз / 中'}
