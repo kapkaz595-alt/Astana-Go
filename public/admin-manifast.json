@@ -1,0 +1,11 @@
+{
+  "name": "Astana Go 后台管理",
+  "short_name": "AG Admin",
+  "icons": [
+    { "src": "/admin-icon.png", "sizes": "512x512", "type": "image/png" }
+  ],
+  "start_url": "/admin/dashboard/contents",
+  "display": "standalone",
+  "background_color": "#F7F8FA",
+  "theme_color": "#14171F"
+}
