@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   title: "Astana Go - 阿斯塔纳本地生活",
   description: "阿斯塔纳本地生活服务平台",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
