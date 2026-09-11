@@ -33,7 +33,7 @@ export default function EditMerchantPage() {
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
   const [galleryUploading, setGalleryUploading] = useState(false);
   const [isFeatured, setIsFeatured] = useState(false);
-
+  
   const [form, setForm] = useState({
     slug: '',
     name_zh: '', name_ru: '', name_kk: '',
@@ -47,6 +47,7 @@ export default function EditMerchantPage() {
     twogis_url: '',
     instagram: '',
     website: '',
+    price_range: '',
     business_status: 'active',
     verification_status: 'unverified',
   });
@@ -82,6 +83,7 @@ export default function EditMerchantPage() {
           twogis_url: m['2gis_url'] ?? '',
           instagram: m.instagram ?? '',
           website: m.website ?? '',
+          price_range: m.price_range ?? '',
           business_status: m.business_status ?? 'active',
           verification_status: m.verification_status ?? 'unverified',
         });
@@ -202,6 +204,7 @@ export default function EditMerchantPage() {
       '2gis_url': form.twogis_url || null,
       instagram: form.instagram || null,
       website: form.website || null,
+      price_range: form.price_range || null,
       business_hours,
       business_status: form.business_status,
       verification_status: form.verification_status,
@@ -401,6 +404,12 @@ export default function EditMerchantPage() {
           <label className="text-sm font-medium block mb-1">官网/订餐网站链接</label>
           <input value={form.website} onChange={(e) => updateField('website', e.target.value)}
                  placeholder="https://..." className="w-full border rounded-lg px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium block mb-1">人均价格</label>
+          <input value={form.price_range} onChange={(e) => updateField('price_range', e.target.value)}
+                 placeholder="例如：3000тг/人" className="w-full border rounded-lg px-3 py-2 text-sm" />
         </div>
 
         <div>
