@@ -35,7 +35,7 @@ export async function GET(request: NextRequest) {
     .select(
   `id, slug, name, cover_image, description, business_type, target_audiences,
   phone, whatsapp, address, latitude, longitude, "2gis_url", website, instagram,
-  business_hours, verification_status, view_count, created_at, is_featured,
+  business_hours, verification_status, view_count, created_at, is_featured, price_range,
   merchant_categories(categories(id, slug, name))`,
   { count: 'exact' }
 )
