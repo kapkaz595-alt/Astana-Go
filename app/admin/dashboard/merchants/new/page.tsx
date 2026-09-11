@@ -48,6 +48,7 @@ export default function NewMerchantPage() {
     twogis_url: '',
     instagram: '',
     website: '',
+    price_range: '',
   });
 
   const [hours, setHours] = useState<Record<string, { open: string; close: string; closed: boolean }>>(
@@ -147,6 +148,7 @@ export default function NewMerchantPage() {
       '2gis_url': form.twogis_url || null,
       website: form.website || null,
       instagram: form.instagram || null,
+      price_range: form.price_range || null,
       business_hours,
       business_status: 'active',
       category_ids: selectedCategoryIds,
@@ -318,6 +320,12 @@ export default function NewMerchantPage() {
           <label className="text-sm font-medium block mb-1">官网/订餐网站链接</label>
           <input value={form.website} onChange={(e) => updateField('website', e.target.value)}
                  placeholder="https://..." className="w-full border rounded-lg px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium block mb-1">人均价格</label>
+          <input value={form.price_range} onChange={(e) => updateField('price_range', e.target.value)}
+                 placeholder="例如：3000тг/人" className="w-full border rounded-lg px-3 py-2 text-sm" />
         </div>
 
         <div>
