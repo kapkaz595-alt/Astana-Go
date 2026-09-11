@@ -70,6 +70,7 @@ type Category = { id: string; slug: string; name: string; icon: string | null; i
 type Merchant = {
   id: string; slug: string; name: string; cover_image: string | null;
   view_count: number; verification_status: string; is_open_now: boolean;
+  price_range: string | null;
 };
 type ContentItem = {
   id: string; slug: string; cover_image: string | null; published_at: string;
@@ -232,6 +233,9 @@ function toggleLocale() {
                   <span className="text-[#B0B5BF]">○ {t.unverified}</span>
                   )}
                 </div>
+                {m.price_range && (
+                  <div className="text-[10px] text-[#D9A441] font-medium mt-1">{m.price_range}</div>
+                )}
               </div>
             </Link>
           );
