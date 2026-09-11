@@ -84,8 +84,10 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                     {m.is_open_now ? t.open : t.closed}
                   </span>
                   {m.verification_status === 'verified' && <span>✓{t.verified}</span>}
-                  {m.price_range && <span>{m.price_range}</span>}
                 </div>
+                {m.price_range && (
+                  <div className="text-[10.5px] text-[#D9A441] font-medium mt-1">{m.price_range}</div>
+                )}
               </div>
             </a>
           ))}
