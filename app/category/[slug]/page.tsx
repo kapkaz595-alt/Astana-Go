@@ -14,6 +14,7 @@ type Merchant = {
   is_open_now: boolean;
   cover_image: string | null;
   price_range: string | null;
+  location_note: string | null;
 };
 
 type Category = {
@@ -72,19 +73,22 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
               href={`/merchants/${m.slug}`}
               className="flex md:flex-col gap-3 bg-white rounded-xl p-3 border border-[#E7E9EE]"
             >
-              <div className="w-20 h-20 md:w-full md:h-32 rounded-lg overflow-hidden bg-[#EDEFF3] flex-shrink-0">
+              <div className="relative w-20 h-20 md:w-full md:h-32 rounded-lg overflow-hidden bg-[#EDEFF3] flex-shrink-0">
                 {m.cover_image && (
                   <img src={m.cover_image} className="w-full h-full object-cover" />
+                )}
+                {m.verification_status === 'verified' && (
+                  <span className="absolute top-1 right-1 w-[16px] h-[16px] rounded-full bg-[#2B8C93] text-white flex items-center justify-center text-[9px] font-bold">✓</span>
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-[14px] truncate">{m.name}</p>
-                <div className="flex items-center gap-2 mt-1 text-[10.5px] text-[#6B7280]">
-                  <span className={m.is_open_now ? 'text-[#2B8C93]' : 'text-[#B54B3A]'}>
-                    {m.is_open_now ? t.open : t.closed}
-                  </span>
-                  {m.verification_status === 'verified' && <span>✓{t.verified}</span>}
-                </div>
+                <span className={`text-[10.5px] ${m.is_open_now ? 'text-[#2B8C93]' : 'text-[#B54B3A]'}`}>
+                  {m.is_open_now ? t.open : t.closed}
+                </span>
+                {m.location_note && (
+                  <div className="text-[10.5px] text-[#6B7280] mt-1">📍{m.location_note}</div>
+                )}
                 {m.price_range && (
                   <div className="text-[10.5px] text-[#D9A441] font-medium mt-1">{m.price_range}</div>
                 )}
