@@ -76,7 +76,7 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
    const {
    slug, name, description, business_type, target_audiences, cover_image, gallery_images,
     phone, whatsapp, address, latitude, longitude,
-    '2gis_url': gisUrl, website, instagram, price_range,
+    '2gis_url': gisUrl, website, instagram, price_range, location_note,
     business_status, verification_status,
    category_ids,
    is_featured,
@@ -112,6 +112,7 @@ export const POST = withAdminAuth(async (session: AdminSession, request: NextReq
     website: website ?? null,
     instagram: instagram ?? null,
     price_range: price_range ?? null,
+    location_note: location_note ?? null,
     business_status: business_status ?? 'active',
     verification_status: verification_status ?? 'unverified',
     business_hours: business_hours ?? {},
