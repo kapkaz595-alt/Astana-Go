@@ -71,6 +71,7 @@ type Merchant = {
   id: string; slug: string; name: string; cover_image: string | null;
   view_count: number; verification_status: string; is_open_now: boolean;
   price_range: string | null;
+  location_note: string | null;
 };
 type ContentItem = {
   id: string; slug: string; cover_image: string | null; published_at: string;
