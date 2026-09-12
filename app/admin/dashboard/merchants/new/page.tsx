@@ -49,6 +49,7 @@ export default function NewMerchantPage() {
     instagram: '',
     website: '',
     price_range: '',
+    location_note: '',
   });
 
   const [hours, setHours] = useState<Record<string, { open: string; close: string; closed: boolean }>>(
@@ -149,6 +150,7 @@ export default function NewMerchantPage() {
       website: form.website || null,
       instagram: form.instagram || null,
       price_range: form.price_range || null,
+      location_note: form.location_note || null,
       business_hours,
       business_status: 'active',
       category_ids: selectedCategoryIds,
@@ -326,6 +328,12 @@ export default function NewMerchantPage() {
           <label className="text-sm font-medium block mb-1">人均价格</label>
           <input value={form.price_range} onChange={(e) => updateField('price_range', e.target.value)}
                  placeholder="例如：3000тг/人" className="w-full border rounded-lg px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium block mb-1">位置说明</label>
+          <input value={form.location_note} onChange={(e) => updateField('location_note', e.target.value)}
+                 placeholder="例如：距阿斯塔纳塔500m" className="w-full border rounded-lg px-3 py-2 text-sm" />
         </div>
 
         <div>
