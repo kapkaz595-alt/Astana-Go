@@ -90,6 +90,7 @@ export default function HomePage() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [localPickCategories, setLocalPickCategories] = useState<LocalPickCategory[]>([]);
   const [activeLocalPickCategory, setActiveLocalPickCategory] = useState<string>('');
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const [locale, setLocale] = useState<'zh' | 'kk'>('zh');
   const t = UI_TEXT[locale];
@@ -132,6 +133,18 @@ function toggleLocale() {
       setFeedHasMore(d.pagination?.has_more ?? false);
     });
   }, [locale, activeLocalPickCategory]);
+
+  useEffect(() => {
+    function handleScroll() {
+      setShowBackToTop(window.scrollY > 600);
+    }
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
    return (
    <div className="min-h-screen bg-[#DEE1E6] flex justify-center md:pb-8">
@@ -291,6 +304,15 @@ function toggleLocale() {
     {t.copyright}
   </div>
 </footer>
+
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full bg-[#14171F] text-white shadow-lg flex items-center justify-center text-xl"
+        >
+          ↑
+        </button>
+      )}
     </main>
     </div>
   );
