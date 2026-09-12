@@ -57,12 +57,12 @@ export async function GET(request: NextRequest) {
 
   const supabase = await getClient();
   const terms = await expandKeywords(supabase, keyword);
-  const orFilter = terms.map((t) => `search_text.ilike.%${t}%,address.ilike.%${t}%`).join(',');
+  const orFilter = terms.map((t) => `search_text.ilike.%${t}%,address.ilike.%${t}%,price_range.ilike.%${t}%`).join(',');
 
   // 搜索商家
   const { data: merchants, error: merchantError } = await supabase
     .from('merchants')
-    .select('id, slug, name, description, business_type, view_count, created_at, verification_status, business_hours, search_text')
+    .select('id, slug, name, description, business_type, view_count, created_at, verification_status, business_hours, search_text, price_range')
     .eq('business_status', 'active')
     .or(orFilter);
 
