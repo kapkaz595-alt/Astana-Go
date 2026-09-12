@@ -37,7 +37,7 @@ export function MasonryFeed({ initialItems, initialHasMore, category }: { initia
       (entries) => {
         if (entries[0].isIntersecting) loadMore();
       },
-      { rootMargin: '200px' }
+      { rootMargin: '400px', threshold: 0 }
     );
     observer.observe(el);
     return () => observer.disconnect();
