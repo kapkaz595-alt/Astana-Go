@@ -48,6 +48,7 @@ export default function EditMerchantPage() {
     instagram: '',
     website: '',
     price_range: '',
+    location_note: '',
     business_status: 'active',
     verification_status: 'unverified',
   });
@@ -84,6 +85,7 @@ export default function EditMerchantPage() {
           instagram: m.instagram ?? '',
           website: m.website ?? '',
           price_range: m.price_range ?? '',
+          location_note: m.location_note ?? '',
           business_status: m.business_status ?? 'active',
           verification_status: m.verification_status ?? 'unverified',
         });
@@ -205,6 +207,7 @@ export default function EditMerchantPage() {
       instagram: form.instagram || null,
       website: form.website || null,
       price_range: form.price_range || null,
+      location_note: form.location_note || null,
       business_hours,
       business_status: form.business_status,
       verification_status: form.verification_status,
@@ -410,6 +413,12 @@ export default function EditMerchantPage() {
           <label className="text-sm font-medium block mb-1">人均价格</label>
           <input value={form.price_range} onChange={(e) => updateField('price_range', e.target.value)}
                  placeholder="例如：3000тг/人" className="w-full border rounded-lg px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium block mb-1">位置说明</label>
+          <input value={form.location_note} onChange={(e) => updateField('location_note', e.target.value)}
+                 placeholder="例如：距阿斯塔纳塔500m" className="w-full border rounded-lg px-3 py-2 text-sm" />
         </div>
 
         <div>
