@@ -218,7 +218,7 @@ function toggleLocale() {
           ];
           return (
            <Link key={m.id} href={`/merchants/${m.slug}`} className="shrink-0 md:shrink md:w-auto w-[148px] bg-white rounded-[14px] overflow-hidden border bo..." style={{ scrollSnapAlign: 'start' }}>
-             <div className="relative w-full h-[104px] flex items-end p-2 overflow-hidden">
+             <div className="relative w-full h-[104px] flex items-end justify-between p-2 overflow-hidden">
               {m.cover_image ? (
                 <Image
                   src={m.cover_image}
@@ -235,17 +235,15 @@ function toggleLocale() {
                   <span className={`w-[6px] h-[6px] rounded-full ${m.is_open_now ? 'bg-[#2E9E5B]' : 'bg-[#B54B3A]'}`} />
                  {m.is_open_now ? t.open : t.closed}
                 </span>
+                {m.verification_status === 'verified' && (
+                  <span className="relative w-[18px] h-[18px] rounded-full bg-[#2B8C93] text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                )}
               </div>
               <div className="px-[10px] pt-[9px] pb-[10px]">
                <div className="text-[13px] font-bold">{m.name}</div>
-                <div className="flex items-center gap-2 mt-[7px] text-[10px] text-[#6B7280] tabular-nums">
-                  <span>👁 {m.view_count}</span>
-                  {m.verification_status === 'verified' ? (
-                  <span className="text-[#2B8C93] font-semibold">✓ {t.verified}</span>
-                  ) : (
-                  <span className="text-[#B0B5BF]">○ {t.unverified}</span>
-                  )}
-                </div>
+                {m.location_note && (
+                  <div className="text-[10px] text-[#6B7280] mt-1">📍{m.location_note}</div>
+                )}
                 {m.price_range && (
                   <div className="text-[10px] text-[#D9A441] font-medium mt-1">{m.price_range}</div>
                 )}
