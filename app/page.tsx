@@ -277,7 +277,7 @@ function toggleLocale() {
           ))}
         </div>
         <div className="px-[18px]">
-          <MasonryFeed initialItems={feedItems} initialHasMore={feedHasMore} key={activeLocalPickCategory} />
+          <MasonryFeed initialItems={feedItems} initialHasMore={feedHasMore} category={activeLocalPickCategory || undefined} key={activeLocalPickCategory} />
         </div>
 
       {/* Footer */}
