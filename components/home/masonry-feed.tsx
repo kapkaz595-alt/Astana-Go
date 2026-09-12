@@ -15,7 +15,9 @@ export function MasonryFeed({ initialItems, initialHasMore, category }: { initia
 
   useEffect(() => {
   setItems(initialItems);
-}, [initialItems]);
+  setHasMore(initialHasMore);
+  setPage(1);
+}, [initialItems, initialHasMore]);
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return;
