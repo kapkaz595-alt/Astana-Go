@@ -57,8 +57,7 @@ export async function GET(request: NextRequest) {
       query = query.in('id', filteredIds);
     }
 
-    const { data: contents, error: contentsError } = await query.order('published_at', { ascending: false });
-    console.log('contents count:', contents?.length, 'error:', contentsError);
+    const { data: contents } = await query.order('published_at', { ascending: false });
 
   const contentItems = (contents ?? []).map((c) => ({
     type: 'content' as const,
@@ -80,6 +79,5 @@ export async function GET(request: NextRequest) {
     success: true,
     data: pageItems,
     pagination: { page, page_size: pageSize, total: merged.length, has_more: to < merged.length },
-    debug_total_from_query: contents?.length,
   });
 }
