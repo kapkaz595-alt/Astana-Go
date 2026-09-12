@@ -62,7 +62,7 @@ export const PATCH = withAdminAuth(async (
   const {
     slug, name, description, business_type, target_audiences,
     phone, whatsapp, address, latitude, longitude,
-    '2gis_url': gisUrl, website, instagram, price_range,
+    '2gis_url': gisUrl, website, instagram, price_range, location_note,
     business_status, verification_status, business_hours,
 category_ids, gallery_images, is_featured,
 } = body;
@@ -82,6 +82,7 @@ category_ids, gallery_images, is_featured,
   if (website !== undefined) updateData.website = website;
   if (instagram !== undefined) updateData.instagram = instagram;
   if (price_range !== undefined) updateData.price_range = price_range;
+  if (location_note !== undefined) updateData.location_note = location_note;
   if (business_status !== undefined) updateData.business_status = business_status;
   if (verification_status !== undefined) updateData.verification_status = verification_status;
   if (business_hours !== undefined) updateData.business_hours = business_hours;
