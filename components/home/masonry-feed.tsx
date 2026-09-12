@@ -58,7 +58,7 @@ export function MasonryFeed({ initialItems, initialHasMore, category }: { initia
       </div>
       <div ref={sentinelRef} className="h-10 flex items-center justify-center">
         {loading && <span className="text-xs" style={{ color: '#14171F99' }}>加载中…</span>}
-        {!hasMore && !loading && <span className="text-xs text-gray-400">没有更多了 (page:{page}, hasMore:{String(hasMore)})</span>}
+        {!hasMore && !loading && <span className="text-xs text-gray-400">没有更多了</span>}
       </div>
     </div>
   );
