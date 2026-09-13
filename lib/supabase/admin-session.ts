@@ -16,7 +16,16 @@ export async function getAdminSession(): Promise<AdminSession | null> {
     {
       cookies: {
         getAll: () => cookieStore.getAll(),
-        setAll: () => {},
+        setAll: (list) => {
+          try {
+            list.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {
+            // Server Component 里可能无法写cookie，忽略即可
+            // （只要中间件/Route Handler里能正常写，session就能续上）
+          }
+        },
       },
     }
   );
