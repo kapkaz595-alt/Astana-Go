@@ -19,7 +19,7 @@ async function getClient() {
   );
 }
 
-// GET 列表:支持分页、business_type/status筛选、关键词搜索
+// GET 列表:支持分页、business_type/status筛选、关键词搜索、分类筛选
 export const GET = withAdminAuth(async (_session: AdminSession, request: NextRequest) => {
   const supabase = await getClient();
   const { searchParams } = new URL(request.url);
@@ -31,6 +31,17 @@ export const GET = withAdminAuth(async (_session: AdminSession, request: NextReq
   const keyword = searchParams.get('keyword');
   const categoryId = searchParams.get('category_id');
 
+  // 两步查询法：先查merchant_categories关联表拿符合条件的merchant_id列表
+  // (点号筛选关联表 .eq('merchant_categories.category_id', ...) 不生效，T021已踩过此坑)
+  let filterIds: string[] | null = null;
+  if (categoryId) {
+    const { data: rels } = await supabase
+      .from('merchant_categories')
+      .select('merchant_id')
+      .eq('category_id', categoryId);
+    filterIds = rels?.map((r) => r.merchant_id) ?? [];
+  }
+
   let query = supabase
     .from('merchants')
     .select('*, merchant_categories(category_id)', { count: 'exact' });
@@ -38,9 +49,7 @@ export const GET = withAdminAuth(async (_session: AdminSession, request: NextReq
   if (businessType) query = query.eq('business_type', businessType);
   if (businessStatus) query = query.eq('business_status', businessStatus);
   if (keyword) query = query.ilike('search_text', `%${keyword}%`);
-  if (categoryId) {
-    query = query.eq('merchant_categories.category_id', categoryId);
-  }
+  if (filterIds) query = query.in('id', filterIds);
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
