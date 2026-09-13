@@ -83,7 +83,8 @@ type LocalPickCategory = { id: string; slug: string; name: { zh?: string; kk?: s
 
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [merchants, setMerchants] = useState<Merchant[]>([]);
+  // 按分类slug分组存储热门商家
+  const [merchantsByCategory, setMerchantsByCategory] = useState<Record<string, Merchant[]>>({});
   const [contents, setContents] = useState<ContentItem[]>([]);
   const [activeTab, setActiveTab] = useState(0);
   const [feedItems, setFeedItems] = useState<any[]>([]);
@@ -122,10 +123,22 @@ function toggleLocale() {
 
  useEffect(() => {
     fetch(`/api/v1/categories?locale=${locale}`).then(r => r.json()).then(d => setCategories(d.data ?? []));
-    fetch(`/api/v1/merchants?page_size=10&locale=${locale}&featured=true`).then(r => r.json()).then(d => setMerchants(d.data ?? []));
     fetch('/api/v1/banners?position=homepage_top').then(r => r.json()).then(d => setBanners(d.data ?? []));
     fetch('/api/v1/local-pick-categories').then(r => r.json()).then(d => setLocalPickCategories(d.data ?? []));
   }, [locale]);
+
+  // 分类加载完成后，逐个分类拉取该分类下的热门商家
+  useEffect(() => {
+    if (categories.length === 0) return;
+
+    categories.forEach((c) => {
+      fetch(`/api/v1/merchants?page_size=10&locale=${locale}&featured=true&category_slug=${c.slug}`)
+        .then((r) => r.json())
+        .then((d) => {
+          setMerchantsByCategory((prev) => ({ ...prev, [c.slug]: d.data ?? [] }));
+        });
+    });
+  }, [categories, locale]);
 
   useEffect(() => {
     const categoryParam = activeLocalPickCategory ? `&category=${activeLocalPickCategory}` : '';
@@ -145,6 +158,51 @@ function toggleLocale() {
 
   function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const gradients = [
+    'linear-gradient(135deg,#6B5B4A,#3D3227)',
+    'linear-gradient(135deg,#8A6A4A,#4A3A28)',
+    'linear-gradient(135deg,#4A6B5A,#2A3F34)',
+    'linear-gradient(135deg,#3A4550,#1E252C)',
+  ];
+
+  // 抽出商家卡片渲染函数，各分类区块复用
+  function renderMerchantCard(m: Merchant, i: number) {
+    return (
+      <Link key={m.id} href={`/merchants/${m.slug}`} className="shrink-0 md:shrink md:w-auto w-[148px] bg-white rounded-[14px] overflow-hidden border" style={{ scrollSnapAlign: 'start' }}>
+        <div className="relative w-full h-[104px] flex items-end justify-between p-2 overflow-hidden">
+          {m.cover_image ? (
+            <Image
+              src={m.cover_image}
+              alt={m.name}
+              fill
+              sizes="148px"
+              className="object-cover"
+              priority={i < 4}
+            />
+          ) : (
+            <div className="absolute inset-0" style={{ background: gradients[i % gradients.length] }} />
+          )}
+          <span className={`relative text-[9.5px] font-bold px-2 py-[3px] rounded-full flex items-center gap-1 bg-white/95 ${m.is_open_now ? 'text-[#1D7A44]' : 'text-[#B54B3A]'}`}>
+            <span className={`w-[6px] h-[6px] rounded-full ${m.is_open_now ? 'bg-[#2E9E5B]' : 'bg-[#B54B3A]'}`} />
+            {m.is_open_now ? t.open : t.closed}
+          </span>
+          {m.verification_status === 'verified' && (
+            <span className="relative w-[18px] h-[18px] rounded-full bg-[#2B8C93] text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+          )}
+        </div>
+        <div className="px-[10px] pt-[9px] pb-[10px]">
+          <div className="text-[13px] font-bold">{m.name}</div>
+          {m.location_note && (
+            <div className="text-[10px] text-[#6B7280] mt-1">📍{m.location_note}</div>
+          )}
+          {m.price_range && (
+            <div className="text-[10px] text-[#D9A441] font-medium mt-1">{m.price_range}</div>
+          )}
+        </div>
+      </Link>
+    );
   }
 
    return (
@@ -196,63 +254,31 @@ function toggleLocale() {
   <BannerSlot banners={banners} />
 </div>
 
-      {/* Hot merchants */}
-      <div className="flex items-center justify-between px-[18px] pt-[20px] pb-3">
-        <div className="flex items-center gap-[7px] font-extrabold text-[16px]" style={{ fontFamily: 'Manrope' }}>
-         {t.hotPicks}
-          <span className="flex items-center gap-1 text-[10.5px] font-semibold text-[#2B8C93]">
-            <span className="w-[5px] h-[5px] rounded-full bg-[#2B8C93]" />{t.liveUpdate}
-          </span>
-        </div>
-        <Link href="/merchants?filter=open" className="text-xs text-[#6B7280] font-medium py-2 px-1 -mr-1">{t.viewAll}</Link>
-      </div>
-     <div
-  className="flex md:grid md:grid-cols-6 gap-[11px] overflow-x-auto md:overflow-visible px-[18px] pb-1 no-scrollbar"
-  style={{ WebkitOverflowScrolling: 'touch', scrollSnapType: 'x proximity' }}
->
-        {merchants.map((m, i) => {
-          const gradients = [
-            'linear-gradient(135deg,#6B5B4A,#3D3227)',
-            'linear-gradient(135deg,#8A6A4A,#4A3A28)',
-            'linear-gradient(135deg,#4A6B5A,#2A3F34)',
-            'linear-gradient(135deg,#3A4550,#1E252C)',
-          ];
-          return (
-           <Link key={m.id} href={`/merchants/${m.slug}`} className="shrink-0 md:shrink md:w-auto w-[148px] bg-white rounded-[14px] overflow-hidden border bo..." style={{ scrollSnapAlign: 'start' }}>
-             <div className="relative w-full h-[104px] flex items-end justify-between p-2 overflow-hidden">
-              {m.cover_image ? (
-                <Image
-                  src={m.cover_image}
-                  alt={m.name}
-                  fill
-                  sizes="148px"
-                  className="object-cover"
-                  priority={i < 4}
-                />
-              ) : (
-                <div className="absolute inset-0" style={{ background: gradients[i % gradients.length] }} />
-              )}
-                <span className={`relative text-[9.5px] font-bold px-2 py-[3px] rounded-full flex items-center gap-1 bg-white/95 ${m.is_open_now ? 'text-[#1D7A44]' : 'text-[#B54B3A]'}`}>
-                  <span className={`w-[6px] h-[6px] rounded-full ${m.is_open_now ? 'bg-[#2E9E5B]' : 'bg-[#B54B3A]'}`} />
-                 {m.is_open_now ? t.open : t.closed}
+      {/* Hot merchants — 按分类分区块展示 */}
+      {categories.map((c) => {
+        const list = merchantsByCategory[c.slug] ?? [];
+        if (list.length === 0) return null;
+
+        return (
+          <div key={c.id}>
+            <div className="flex items-center justify-between px-[18px] pt-[20px] pb-3">
+              <div className="flex items-center gap-[7px] font-extrabold text-[16px]" style={{ fontFamily: 'Manrope' }}>
+                {locale === 'zh' ? `热门${c.name ?? c.slug}` : c.name ?? c.slug}
+                <span className="flex items-center gap-1 text-[10.5px] font-semibold text-[#2B8C93]">
+                  <span className="w-[5px] h-[5px] rounded-full bg-[#2B8C93]" />{t.liveUpdate}
                 </span>
-                {m.verification_status === 'verified' && (
-                  <span className="relative w-[18px] h-[18px] rounded-full bg-[#2B8C93] text-white flex items-center justify-center text-[10px] font-bold">✓</span>
-                )}
               </div>
-              <div className="px-[10px] pt-[9px] pb-[10px]">
-               <div className="text-[13px] font-bold">{m.name}</div>
-                {m.location_note && (
-                  <div className="text-[10px] text-[#6B7280] mt-1">📍{m.location_note}</div>
-                )}
-                {m.price_range && (
-                  <div className="text-[10px] text-[#D9A441] font-medium mt-1">{m.price_range}</div>
-                )}
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+              <Link href={`/category/${c.slug}?filter=open`} className="text-xs text-[#6B7280] font-medium py-2 px-1 -mr-1">{t.viewAll}</Link>
+            </div>
+            <div
+              className="flex md:grid md:grid-cols-6 gap-[11px] overflow-x-auto md:overflow-visible px-[18px] pb-1 no-scrollbar"
+              style={{ WebkitOverflowScrolling: 'touch', scrollSnapType: 'x proximity' }}
+            >
+              {list.map((m, i) => renderMerchantCard(m, i))}
+            </div>
+          </div>
+        );
+      })}
 
     {/* Local picks */}
         <div className="flex items-center justify-between px-[18px] pt-[22px] pb-3">
