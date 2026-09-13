@@ -30,7 +30,7 @@ const UI_TEXT = {
     cooperation: '商务合作',
     merchantApply: '商家入驻',
     adCooperation: '广告合作',
-    wechatContact: '微信客服',
+    wechatContact: '微信',
     emailLabel: '邮箱',
     whatsappContact: 'WhatsApp 联系',
     copyright: '© 2026 Astana Go · 保留所有权利',
