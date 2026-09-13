@@ -11,7 +11,7 @@ export default function WechatQRTrigger({ className }: { className?: string }) {
         onClick={() => setShowQR(true)}
         className={className}
       >
-        · 微信客服
+        · 微信
       </button>
 
       {showQR && (
