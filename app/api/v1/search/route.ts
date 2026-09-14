@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { getCityId } from '@/lib/utils/city-cache';
 
 async function getClient() {
   const cookieStore = await cookies();
@@ -48,24 +49,9 @@ export async function GET(request: NextRequest) {
   const page = parseInt(searchParams.get('page') || '1');
   const pageSize = Math.min(parseInt(searchParams.get('page_size') || '20'), 50);
   const citySlug = searchParams.get('city_slug') || 'astana';
+  const cityId = await getCityId(supabase, citySlug);
 
-  if (!keyword) {
-    return NextResponse.json(
-      { success: false, error: { code: 'INVALID_INPUT', message: 'keyword为必填参数' } },
-      { status: 400 }
-    );
-  }
-
-  const supabase = await getClient();
-
-  // 解析城市slug拿city_id
-  const { data: city } = await supabase
-    .from('cities')
-    .select('id')
-    .eq('slug', citySlug)
-    .single();
-
-  if (!city) {
+  if (!cityId) {
     return NextResponse.json({
       success: true,
       data: [],
@@ -82,7 +68,7 @@ export async function GET(request: NextRequest) {
     .from('merchants')
     .select('id, slug, name, description, business_type, view_count, created_at, verification_status, business_hours, search_text, price_range')
     .eq('business_status', 'active')
-    .eq('city_id', city.id)
+    .eq('city_id', cityId);
     .or(orFilter);
 
   if (merchantError) {
@@ -112,7 +98,7 @@ export async function GET(request: NextRequest) {
   const contents = (translationMatches || [])
     .filter((row: any) => {
       const rowCityId = row.contents?.city_id;
-      if (rowCityId !== null && rowCityId !== city.id) return false;
+      if (rowCityId !== null && rowCityId !== cityId) return false;
       if (seenContentIds.has(row.content_id)) return false;
       seenContentIds.add(row.content_id);
       return true;
