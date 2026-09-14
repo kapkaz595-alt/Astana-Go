@@ -30,6 +30,7 @@ export async function GET(
       `id, slug, name, cover_image, gallery_images, description, business_type, target_audiences,
       phone, whatsapp, address, latitude, longitude, "2gis_url", website, instagram,
       business_hours, verification_status, view_count, created_at, price_range, location_note,
+      city_id, cities(slug, name_zh, name_kk, name_ru),
       merchant_categories(categories(id, slug, name))`
     )
     .eq('slug', slug)
