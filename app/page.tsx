@@ -7,6 +7,7 @@ import { NoticeBar } from '@/components/home/notice-bar';
 import { BannerSlot } from '@/components/home/banner-slot';
 import { MasonryFeed } from '@/components/home/masonry-feed';
 import WechatQRTrigger from '@/components/wechat-qr-trigger';
+import CitySelector from '@/components/city-selector';
 
 const UI_TEXT = {
   zh: {
@@ -80,6 +81,7 @@ type ContentItem = {
 
 type Banner = { id: string; image_url: string; link_url: string | null };
 type LocalPickCategory = { id: string; slug: string; name: { zh?: string; kk?: string; ru?: string } };
+type City = { id: string; slug: string; name_zh: string; name_kk: string; name_ru: string; is_active: boolean; sort_order: number };
 
 export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -97,15 +99,37 @@ export default function HomePage() {
   const [locale, setLocale] = useState<'zh' | 'kk'>('zh');
   const t = UI_TEXT[locale];
 
+  const [citySlug, setCitySlug] = useState('astana');
+  const [cities, setCities] = useState<City[]>([]);
+  const [citySelectorOpen, setCitySelectorOpen] = useState(false);
+
+  // 根据当前citySlug + locale动态计算城市显示名
+  const currentCity = cities.find((c) => c.slug === citySlug);
+  const cityName = currentCity
+    ? (locale === 'kk' ? currentCity.name_kk : currentCity.name_zh)
+    : '阿斯塔纳';
+
 useEffect(() => {
-  const saved = document.cookie.split('; ').find(c => c.startsWith('locale='))?.split('=')[1];
-  if (saved === 'kk' || saved === 'zh') setLocale(saved);
+  const savedLocale = document.cookie.split('; ').find(c => c.startsWith('locale='))?.split('=')[1];
+  if (savedLocale === 'kk' || savedLocale === 'zh') setLocale(savedLocale);
+
+  const savedCity = document.cookie.split('; ').find(c => c.startsWith('city_slug='))?.split('=')[1];
+  if (savedCity) setCitySlug(savedCity);
+}, []);
+
+useEffect(() => {
+  fetch('/api/v1/cities').then(r => r.json()).then(d => setCities(d.data ?? []));
 }, []);
 
 function toggleLocale() {
   const next = locale === 'zh' ? 'kk' : 'zh';
   setLocale(next);
   document.cookie = `locale=${next}; path=/; max-age=31536000`;
+}
+
+function handleCityChange(slug: string) {
+  setCitySlug(slug);
+  document.cookie = `city_slug=${slug}; path=/; max-age=31536000`;
 }
 
   useEffect(() => {
@@ -132,21 +156,21 @@ function toggleLocale() {
     if (categories.length === 0) return;
 
     categories.forEach((c) => {
-      fetch(`/api/v1/merchants?page_size=10&locale=${locale}&featured=true&category_slug=${c.slug}`)
+      fetch(`/api/v1/merchants?page_size=10&locale=${locale}&featured=true&category_slug=${c.slug}&city_slug=${citySlug}`)
         .then((r) => r.json())
         .then((d) => {
           setMerchantsByCategory((prev) => ({ ...prev, [c.slug]: d.data ?? [] }));
         });
     });
-  }, [categories, locale]);
+  }, [categories, locale, citySlug]);
 
   useEffect(() => {
     const categoryParam = activeLocalPickCategory ? `&category=${activeLocalPickCategory}` : '';
-    fetch(`/api/v1/feed?page=1&page_size=6&locale=${locale}${categoryParam}`).then(r => r.json()).then(d => {
+    fetch(`/api/v1/feed?page=1&page_size=6&locale=${locale}${categoryParam}&city_slug=${citySlug}`).then(r => r.json()).then(d => {
       setFeedItems(d.data ?? []);
       setFeedHasMore(d.pagination?.has_more ?? false);
     });
-  }, [locale, activeLocalPickCategory]);
+  }, [locale, activeLocalPickCategory, citySlug]);
 
   useEffect(() => {
     function handleScroll() {
@@ -214,9 +238,14 @@ function toggleLocale() {
         <div className="flex items-center gap-2">
          <Image src="/logo.png" alt="Astana Go" width={180} height={60} className="h-[60px] w-auto" priority />
         </div>
-       <button onClick={toggleLocale} className="bg-white/90 rounded-full px-[13px] py-[6px] text-xs font-semibold">
-  {locale === 'zh' ? '中 / Қаз' : 'Қаз / 中'}
-</button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setCitySelectorOpen(true)} className="bg-white/90 rounded-full px-[13px] py-[6px] text-xs font-semibold">
+            📍{cityName} ▼
+          </button>
+          <button onClick={toggleLocale} className="bg-white/90 rounded-full px-[13px] py-[6px] text-xs font-semibold">
+            {locale === 'zh' ? '中 / Қаз' : 'Қаз / 中'}
+          </button>
+        </div>
       </header>
 
       <NoticeBar locale={locale} />
@@ -338,6 +367,14 @@ function toggleLocale() {
           ↑
         </button>
       )}
+
+      <CitySelector
+        isOpen={citySelectorOpen}
+        onClose={() => setCitySelectorOpen(false)}
+        currentCitySlug={citySlug}
+        locale={locale}
+        onSelect={handleCityChange}
+      />
     </main>
     </div>
   );
