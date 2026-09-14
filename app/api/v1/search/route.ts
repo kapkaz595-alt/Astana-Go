@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
   const keyword = searchParams.get('keyword')?.trim();
   const page = parseInt(searchParams.get('page') || '1');
   const pageSize = Math.min(parseInt(searchParams.get('page_size') || '20'), 50);
+  const citySlug = searchParams.get('city_slug') || 'astana';
 
   if (!keyword) {
     return NextResponse.json(
@@ -56,14 +57,32 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = await getClient();
+
+  // 解析城市slug拿city_id
+  const { data: city } = await supabase
+    .from('cities')
+    .select('id')
+    .eq('slug', citySlug)
+    .single();
+
+  if (!city) {
+    return NextResponse.json({
+      success: true,
+      data: [],
+      matched_terms: [],
+      pagination: { page, page_size: pageSize, total: 0, has_more: false },
+    });
+  }
+
   const terms = await expandKeywords(supabase, keyword);
   const orFilter = terms.map((t) => `search_text.ilike.%${t}%,address.ilike.%${t}%,price_range.ilike.%${t}%`).join(',');
 
-  // 搜索商家
+  // 搜索商家：强制按城市过滤
   const { data: merchants, error: merchantError } = await supabase
     .from('merchants')
     .select('id, slug, name, description, business_type, view_count, created_at, verification_status, business_hours, search_text, price_range')
     .eq('business_status', 'active')
+    .eq('city_id', city.id)
     .or(orFilter);
 
   if (merchantError) {
@@ -77,7 +96,7 @@ export async function GET(request: NextRequest) {
   const contentOrFilter = terms.map((t) => `title.ilike.%${t}%,body.ilike.%${t}%`).join(',');
   const { data: translationMatches, error: contentError } = await supabase
     .from('content_translations')
-    .select('content_id, locale, title, body, contents!inner(id, slug, content_type, status, cover_image, published_at)')
+    .select('content_id, locale, title, body, contents!inner(id, slug, content_type, status, cover_image, published_at, city_id)')
     .or(contentOrFilter)
     .eq('contents.status', 'published');
 
@@ -88,10 +107,12 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // 去重
+  // 去重 + 按城市过滤(该城市专属内容 或 city_id为空的通用内容)
   const seenContentIds = new Set<string>();
   const contents = (translationMatches || [])
-    .filter((row) => {
+    .filter((row: any) => {
+      const rowCityId = row.contents?.city_id;
+      if (rowCityId !== null && rowCityId !== city.id) return false;
       if (seenContentIds.has(row.content_id)) return false;
       seenContentIds.add(row.content_id);
       return true;
@@ -103,6 +124,8 @@ export async function GET(request: NextRequest) {
       matched_terms: [...findMatchedTerms(row.title, terms), ...findMatchedTerms(row.body, terms)],
       ...row.contents,
     }));
+
+  // ... 以下merchantWeight、merged、排序、分页逻辑完全不变
 
   // 商家排序权重：已认证+营业中的排前面
   function merchantWeight(m: any): number {
