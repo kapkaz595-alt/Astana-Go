@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 
 interface City {
   id: string;
@@ -18,14 +17,15 @@ export default function CitySelector({
   onClose,
   currentCitySlug,
   locale,
+  onSelect,
 }: {
   isOpen: boolean;
   onClose: () => void;
   currentCitySlug: string;
   locale: string;
+  onSelect: (slug: string) => void;
 }) {
   const [cities, setCities] = useState<City[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     if (isOpen) {
@@ -39,18 +39,16 @@ export default function CitySelector({
 
   const cityName = (c: City) => {
     if (locale === 'kk') return c.name_kk;
-    if (locale === 'ru') return c.name_ru;
     return c.name_zh;
   };
 
-  const handleSelect = (city: City) => {
+  const handleClick = (city: City) => {
     if (!city.is_active) {
       alert('该城市即将开放，敬请期待');
       return;
     }
-    document.cookie = `city_slug=${city.slug}; path=/; max-age=31536000`;
+    onSelect(city.slug);
     onClose();
-    router.refresh();
   };
 
   return (
@@ -65,7 +63,7 @@ export default function CitySelector({
           {cities.map((city) => (
             <button
               key={city.id}
-              onClick={() => handleSelect(city)}
+              onClick={() => handleClick(city)}
               disabled={city.slug === currentCitySlug}
               className={`text-left py-3 px-4 rounded-lg border ${
                 city.is_active
