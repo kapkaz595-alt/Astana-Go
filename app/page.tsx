@@ -151,18 +151,14 @@ function handleCityChange(slug: string) {
     fetch('/api/v1/local-pick-categories').then(r => r.json()).then(d => setLocalPickCategories(d.data ?? []));
   }, [locale]);
 
-  // 分类加载完成后，逐个分类拉取该分类下的热门商家
+  // 一次性拉取所有分类的热门商家(合并接口,替代原来的N次循环请求)
   useEffect(() => {
-    if (categories.length === 0) return;
-
-    categories.forEach((c) => {
-      fetch(`/api/v1/merchants?page_size=10&locale=${locale}&featured=true&category_slug=${c.slug}&city_slug=${citySlug}`)
-        .then((r) => r.json())
-        .then((d) => {
-          setMerchantsByCategory((prev) => ({ ...prev, [c.slug]: d.data ?? [] }));
-        });
-    });
-  }, [categories, locale, citySlug]);
+    fetch(`/api/v1/merchants/by-categories?locale=${locale}&city_slug=${citySlug}&per_category_limit=10`)
+      .then((r) => r.json())
+      .then((d) => {
+        setMerchantsByCategory(d.data ?? {});
+      });
+  }, [locale, citySlug]);
 
   useEffect(() => {
     const categoryParam = activeLocalPickCategory ? `&category=${activeLocalPickCategory}` : '';
