@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { isOpenNow } from '@/lib/utils/business-hours';
+import { getCityId } from '@/lib/utils/city-cache';
 
 async function getClient() {
   const cookieStore = await cookies();
@@ -26,14 +27,9 @@ export async function GET(request: NextRequest) {
 
   const supabase = await getClient();
 
-  // 解析城市slug拿city_id
-  const { data: city } = await supabase
-    .from('cities')
-    .select('id')
-    .eq('slug', citySlug)
-    .single();
+  const cityId = await getCityId(supabase, citySlug);
 
-  if (!city) {
+  if (!cityId) {
     return NextResponse.json({ success: true, data: [], pagination: { page, page_size: pageSize, total: 0, has_more: false } });
   }
 
@@ -64,15 +60,13 @@ export async function GET(request: NextRequest) {
       .from('contents')
       .select('id, slug, cover_image, published_at, content_type, city_id, content_translations(locale, title)')
       .eq('status', 'published')
-      .or(`city_id.eq.${city.id},city_id.is.null`);
+      .or(`city_id.eq.${cityId},city_id.is.null`);
 
     if (filteredIds) {
       query = query.in('id', filteredIds);
     }
 
     const { data: contents } = await query.order('published_at', { ascending: false });
-
-  // ... 以下 contentItems/merged/分页逻辑完全不变
 
   const contentItems = (contents ?? []).map((c) => ({
     type: 'content' as const,
