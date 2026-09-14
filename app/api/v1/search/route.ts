@@ -48,9 +48,18 @@ export async function GET(request: NextRequest) {
   const keyword = searchParams.get('keyword')?.trim();
   const page = parseInt(searchParams.get('page') || '1');
   const pageSize = Math.min(parseInt(searchParams.get('page_size') || '20'), 50);
+
+  if (!keyword) {
+    return NextResponse.json(
+      { success: false, error: { code: 'INVALID_INPUT', message: 'keyword为必填参数' } },
+      { status: 400 }
+    );
+  }
+
   const supabase = await getClient();
   const citySlug = searchParams.get('city_slug') || 'astana';
   const cityId = await getCityId(supabase, citySlug);
+
   if (!cityId) {
     return NextResponse.json({
       success: true,
@@ -110,8 +119,6 @@ export async function GET(request: NextRequest) {
       matched_terms: [...findMatchedTerms(row.title, terms), ...findMatchedTerms(row.body, terms)],
       ...row.contents,
     }));
-
-  // ... 以下merchantWeight、merged、排序、分页逻辑完全不变
 
   // 商家排序权重：已认证+营业中的排前面
   function merchantWeight(m: any): number {
