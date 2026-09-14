@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { pickTranslation } from '@/lib/utils/i18n-fallback';
+import { getCityId } from '@/lib/utils/city-cache';
 
 async function getClient() {
   const cookieStore = await cookies();
@@ -29,14 +30,9 @@ export async function GET(request: NextRequest) {
   const locale = searchParams.get('locale') || 'zh';
   const citySlug = searchParams.get('city_slug') || 'astana';
 
-  // 解析城市slug拿city_id
-  const { data: city } = await supabase
-    .from('cities')
-    .select('id')
-    .eq('slug', citySlug)
-    .single();
+  const cityId = await getCityId(supabase, citySlug);
 
-  if (!city) {
+  if (!cityId) {
     return NextResponse.json({ success: true, data: [], meta: { requested_locale: locale }, pagination: { page, page_size: pageSize, total: 0 } });
   }
 
@@ -49,7 +45,7 @@ export async function GET(request: NextRequest) {
       { count: 'exact' }
     )
     .eq('status', 'published')
-    .or(`city_id.eq.${city.id},city_id.is.null`);
+    .or(`city_id.eq.${cityId},city_id.is.null`);
 
   let filteredIds: string[] | null = null;
     if (localPickCategory) {
@@ -77,8 +73,6 @@ export async function GET(request: NextRequest) {
   if (contentType) query = query.eq('content_type', contentType);
   if (tag) query = query.eq('topic_tag', tag);
   if (filteredIds) query = query.in('id', filteredIds);
-
-  // ... 以下 from/to/order/range/error处理/responseData 逻辑完全不变
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
