@@ -22,8 +22,20 @@ export async function GET(request: NextRequest) {
   const page = parseInt(searchParams.get('page') || '1');
   const pageSize = parseInt(searchParams.get('page_size') || '6');
   const category = searchParams.get('category');
+  const citySlug = searchParams.get('city_slug') || 'astana';
 
   const supabase = await getClient();
+
+  // 解析城市slug拿city_id
+  const { data: city } = await supabase
+    .from('cities')
+    .select('id')
+    .eq('slug', citySlug)
+    .single();
+
+  if (!city) {
+    return NextResponse.json({ success: true, data: [], pagination: { page, page_size: pageSize, total: 0, has_more: false } });
+  }
 
   let filteredIds: string[] | null = null;
     if (category) {
@@ -50,14 +62,17 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
       .from('contents')
-      .select('id, slug, cover_image, published_at, content_type, content_translations(locale, title)')
-      .eq('status', 'published');
+      .select('id, slug, cover_image, published_at, content_type, city_id, content_translations(locale, title)')
+      .eq('status', 'published')
+      .or(`city_id.eq.${city.id},city_id.is.null`);
 
     if (filteredIds) {
       query = query.in('id', filteredIds);
     }
 
     const { data: contents } = await query.order('published_at', { ascending: false });
+
+  // ... 以下 contentItems/merged/分页逻辑完全不变
 
   const contentItems = (contents ?? []).map((c) => ({
     type: 'content' as const,
