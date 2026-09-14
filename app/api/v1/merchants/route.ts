@@ -29,6 +29,22 @@ export async function GET(request: NextRequest) {
   const categorySlug = searchParams.get('category_slug');
   const featured = searchParams.get('featured');
   const locale = searchParams.get('locale') || 'zh';
+  const citySlug = searchParams.get('city_slug') || 'astana';
+
+  // 解析城市slug拿city_id
+  const { data: city } = await supabase
+    .from('cities')
+    .select('id')
+    .eq('slug', citySlug)
+    .single();
+
+  if (!city) {
+    return NextResponse.json({
+      success: true,
+      data: [],
+      pagination: { page, page_size: pageSize, total: 0 },
+    });
+  }
 
   let query = supabase
     .from('merchants')
@@ -39,12 +55,14 @@ export async function GET(request: NextRequest) {
   merchant_categories(categories(id, slug, name))`,
   { count: 'exact' }
 )
-    .eq('business_status', 'active');
+    .eq('business_status', 'active')
+    .eq('city_id', city.id);
   
   if (featured === 'true') query = query.eq('is_featured', true);
   if (businessType) query = query.eq('business_type', businessType);
   if (keyword) query = query.ilike('search_text', `%${keyword}%`);
   
+  // ... 以下categorySlug逻辑和render逻辑不变
 
   if (categorySlug) {
     // 先按slug查category_id，再筛选
