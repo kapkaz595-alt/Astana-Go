@@ -27,16 +27,29 @@ export async function GET(request: NextRequest) {
   const contentType = searchParams.get('content_type');
   const tag = searchParams.get('tag');
   const locale = searchParams.get('locale') || 'zh';
+  const citySlug = searchParams.get('city_slug') || 'astana';
+
+  // 解析城市slug拿city_id
+  const { data: city } = await supabase
+    .from('cities')
+    .select('id')
+    .eq('slug', citySlug)
+    .single();
+
+  if (!city) {
+    return NextResponse.json({ success: true, data: [], meta: { requested_locale: locale }, pagination: { page, page_size: pageSize, total: 0 } });
+  }
 
   let query = supabase
     .from('contents')
     .select(
-      `id, slug, content_type, cover_image, published_at, created_at, content_updated_at,
+      `id, slug, content_type, cover_image, published_at, created_at, content_updated_at, city_id,
        content_translations(locale, title, meta_description),
        content_categories(categories(id, slug, name))`,
       { count: 'exact' }
     )
-    .eq('status', 'published');
+    .eq('status', 'published')
+    .or(`city_id.eq.${city.id},city_id.is.null`);
 
   let filteredIds: string[] | null = null;
     if (localPickCategory) {
@@ -64,6 +77,8 @@ export async function GET(request: NextRequest) {
   if (contentType) query = query.eq('content_type', contentType);
   if (tag) query = query.eq('topic_tag', tag);
   if (filteredIds) query = query.in('id', filteredIds);
+
+  // ... 以下 from/to/order/range/error处理/responseData 逻辑完全不变
 
   const from = (page - 1) * pageSize;
   const to = from + pageSize - 1;
