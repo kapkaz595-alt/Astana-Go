@@ -3,6 +3,7 @@ import { isOpenNow } from '@/lib/utils/business-hours';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { pickLocaleField } from '@/lib/utils/i18n-fallback';
+import { getCityId } from '@/lib/utils/city-cache';
 
 async function getClient() {
   const cookieStore = await cookies();
@@ -30,15 +31,10 @@ export async function GET(request: NextRequest) {
   const featured = searchParams.get('featured');
   const locale = searchParams.get('locale') || 'zh';
   const citySlug = searchParams.get('city_slug') || 'astana';
+  const citySlug = searchParams.get('city_slug') || 'astana';
+  const cityId = await getCityId(supabase, citySlug);
 
-  // 解析城市slug拿city_id
-  const { data: city } = await supabase
-    .from('cities')
-    .select('id')
-    .eq('slug', citySlug)
-    .single();
-
-  if (!city) {
+  if (!cityId) {
     return NextResponse.json({
       success: true,
       data: [],
@@ -56,7 +52,7 @@ export async function GET(request: NextRequest) {
   { count: 'exact' }
 )
     .eq('business_status', 'active')
-    .eq('city_id', city.id);
+    .eq('city_id', cityId);
   
   if (featured === 'true') query = query.eq('is_featured', true);
   if (businessType) query = query.eq('business_type', businessType);
