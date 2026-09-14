@@ -31,7 +31,6 @@ export async function GET(request: NextRequest) {
   const featured = searchParams.get('featured');
   const locale = searchParams.get('locale') || 'zh';
   const citySlug = searchParams.get('city_slug') || 'astana';
-  const citySlug = searchParams.get('city_slug') || 'astana';
   const cityId = await getCityId(supabase, citySlug);
 
   if (!cityId) {
