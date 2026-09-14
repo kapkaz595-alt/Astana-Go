@@ -48,9 +48,9 @@ export async function GET(request: NextRequest) {
   const keyword = searchParams.get('keyword')?.trim();
   const page = parseInt(searchParams.get('page') || '1');
   const pageSize = Math.min(parseInt(searchParams.get('page_size') || '20'), 50);
+  const supabase = await getClient();
   const citySlug = searchParams.get('city_slug') || 'astana';
   const cityId = await getCityId(supabase, citySlug);
-
   if (!cityId) {
     return NextResponse.json({
       success: true,
@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
     .from('merchants')
     .select('id, slug, name, description, business_type, view_count, created_at, verification_status, business_hours, search_text, price_range')
     .eq('business_status', 'active')
-    .eq('city_id', cityId);
+    .eq('city_id', cityId)
     .or(orFilter);
 
   if (merchantError) {
