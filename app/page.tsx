@@ -87,6 +87,7 @@ export default function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
   // 按分类slug分组存储热门商家
   const [merchantsByCategory, setMerchantsByCategory] = useState<Record<string, Merchant[]>>({});
+  const [merchantsLoaded, setMerchantsLoaded] = useState(false);
   const [contents, setContents] = useState<ContentItem[]>([]);
   const [activeTab, setActiveTab] = useState(0);
   const [feedItems, setFeedItems] = useState<any[]>([]);
@@ -153,10 +154,12 @@ function handleCityChange(slug: string) {
 
   // 一次性拉取所有分类的热门商家(合并接口,替代原来的N次循环请求)
   useEffect(() => {
+    setMerchantsLoaded(false);
     fetch(`/api/v1/merchants/by-categories?locale=${locale}&city_slug=${citySlug}&per_category_limit=10`)
       .then((r) => r.json())
       .then((d) => {
         setMerchantsByCategory(d.data ?? {});
+        setMerchantsLoaded(true);
       });
   }, [locale, citySlug]);
 
@@ -282,6 +285,22 @@ function handleCityChange(slug: string) {
       {/* Hot merchants — 按分类分区块展示 */}
       {categories.map((c) => {
         const list = merchantsByCategory[c.slug] ?? [];
+
+        if (!merchantsLoaded) {
+          return (
+            <div key={c.id}>
+              <div className="flex items-center justify-between px-[18px] pt-[20px] pb-3">
+                <div className="h-[16px] w-[100px] bg-gray-200 rounded animate-pulse" />
+              </div>
+              <div className="flex gap-[11px] overflow-x-auto px-[18px] pb-1 no-scrollbar">
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="shrink-0 w-[148px] h-[172px] bg-gray-200 rounded-[14px] animate-pulse" />
+                ))}
+              </div>
+            </div>
+          );
+        }
+
         if (list.length === 0) return null;
 
         return (
