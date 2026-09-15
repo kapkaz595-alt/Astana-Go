@@ -26,7 +26,7 @@ type Category = {
 };
 
 async function getCategory(slug: string, locale: string): Promise<Category | null> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/api/v1/categories?locale=${locale}`, { cache: 'no-store' });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/api/v1/categories?locale=${locale}`, { next: { revalidate: 60 } });
   const data = await res.json();
   const list: Category[] = data.data ?? [];
   return list.find((c) => c.slug === slug) ?? null;
@@ -35,7 +35,7 @@ async function getCategory(slug: string, locale: string): Promise<Category | nul
 async function getMerchants(slug: string, locale: string) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_SITE_URL ?? ''}/api/v1/merchants?category_slug=${slug}&page_size=50&locale=${locale}`,
-    { cache: 'no-store' }
+    { next: { revalidate: 60 } }
   );
   const data = await res.json();
   return (data.data ?? []) as Merchant[];
