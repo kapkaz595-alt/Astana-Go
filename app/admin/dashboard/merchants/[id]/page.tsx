@@ -49,6 +49,7 @@ export default function EditMerchantPage() {
     website: '',
     price_range: '',
     location_note: '',
+    rating: '',
     business_status: 'active',
     verification_status: 'unverified',
   });
@@ -86,6 +87,7 @@ export default function EditMerchantPage() {
           website: m.website ?? '',
           price_range: m.price_range ?? '',
           location_note: m.location_note ?? '',
+          rating: m.rating?.toString() ?? '',
           business_status: m.business_status ?? 'active',
           verification_status: m.verification_status ?? 'unverified',
         });
@@ -208,6 +210,7 @@ export default function EditMerchantPage() {
       website: form.website || null,
       price_range: form.price_range || null,
       location_note: form.location_note || null,
+      rating: form.rating ? parseFloat(form.rating) : null,
       business_hours,
       business_status: form.business_status,
       verification_status: form.verification_status,
@@ -419,6 +422,12 @@ export default function EditMerchantPage() {
           <label className="text-sm font-medium block mb-1">位置说明</label>
           <input value={form.location_note} onChange={(e) => updateField('location_note', e.target.value)}
                  placeholder="例如：距阿斯塔纳塔500m" className="w-full border rounded-lg px-3 py-2 text-sm" />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium block mb-1">评分（参考2GIS等平台，留空则详情页不显示星星）</label>
+          <input type="number" step="0.1" min="0" max="5" value={form.rating} onChange={(e) => updateField('rating', e.target.value)}
+                 placeholder="例如：4.5" className="w-full border rounded-lg px-3 py-2 text-sm" />
         </div>
 
         <div>
