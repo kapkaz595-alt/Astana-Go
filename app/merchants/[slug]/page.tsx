@@ -54,6 +54,16 @@ export default async function MerchantDetailPage({
 
           <h1 className="text-xl font-extrabold" style={{ fontFamily: 'Manrope' }}>{name?.zh}</h1>
           <div className="text-sm text-[#6B7280] mt-1">{name?.ru} · {name?.kk}</div>
+          {m.rating != null && (
+            <div className="flex items-center gap-1 mt-2">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <span key={i} className="text-[15px]" style={{ color: i <= Math.round(m.rating) ? '#F4A83D' : '#E0E0E0' }}>
+                  ★
+                </span>
+              ))}
+              <span className="text-sm font-semibold text-[#6B7280] ml-1">{m.rating}</span>
+            </div>
+          )}
         </div>
 
         <MerchantTabs m={m} name={name} description={description} businessHours={businessHours} slug={slug} locale={locale} />
