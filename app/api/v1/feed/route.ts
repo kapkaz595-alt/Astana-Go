@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
 
   let query = supabase
       .from('contents')
-      .select('id, slug, cover_image, published_at, content_type, city_id, content_translations(locale, title)')
+      .select('id, slug, cover_image, published_at, content_type, city_id, view_count, content_translations(locale, title)')
       .eq('status', 'published')
       .or(`city_id.eq.${cityId},city_id.is.null`);
 
@@ -76,6 +76,7 @@ export async function GET(request: NextRequest) {
     cover_image: c.cover_image,
     content_type: c.content_type,
     published_at: c.published_at,
+    view_count: c.view_count,
   }));
 
   const merged = contentItems;
