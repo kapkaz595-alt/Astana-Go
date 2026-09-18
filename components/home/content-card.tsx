@@ -17,9 +17,14 @@ export function ContentCard({ item }: { item: any }) {
       <div className="p-2.5">
         <div className="text-sm font-medium line-clamp-2" style={{ color: '#14171F' }}>{item.title}</div>
         {item.excerpt && <div className="text-xs text-gray-400 line-clamp-2 mt-1">{item.excerpt}</div>}
-        {item.published_at && (
-          <div className="text-xs text-gray-400 mt-1">{formatRelativeTime(item.published_at)}</div>
-        )}
+        <div className="flex items-center justify-between mt-1">
+          {item.published_at && (
+            <div className="text-xs text-gray-400">{formatRelativeTime(item.published_at)}</div>
+          )}
+          {typeof item.view_count === 'number' && (
+            <div className="text-xs text-gray-400">👁 {item.view_count}</div>
+          )}
+        </div>
       </div>
     </Link>
   );
