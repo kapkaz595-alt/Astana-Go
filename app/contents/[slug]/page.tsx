@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { ContentViewTracker } from '@/components/content-view-tracker';
 
 async function getContent(slug: string, locale: string) {
   const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -35,6 +36,7 @@ export default async function ContentDetailPage({
   return (
     <div className="min-h-screen bg-[#DEE1E6] flex justify-center py-8">
       <main className="min-h-screen bg-[#F7F8FA] max-w-[480px] w-full mx-auto shadow-2xl rounded-3xl overflow-hidden">
+        <ContentViewTracker contentId={c.id} />
         <div className="px-[18px] pt-[18px] pb-4">
           <Link href="/" className="text-[#6B7280] text-lg">‹</Link>
         </div>
