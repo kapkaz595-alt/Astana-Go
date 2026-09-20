@@ -15,7 +15,7 @@ export function ContentCard({ item }: { item: any }) {
         </div>
       )}
       <div className="p-2.5">
-        <div className="text-sm font-medium line-clamp-2" style={{ color: '#14171F' }}>{item.title}</div>
+        <div className="text-sm font-medium line-clamp-2 leading-snug" style={{ color: '#14171F', minHeight: '2.75em' }}>{item.title}</div>
         {item.excerpt && <div className="text-xs text-gray-400 line-clamp-2 mt-1">{item.excerpt}</div>}
         <div className="flex items-center justify-between mt-1">
           {item.published_at && (
