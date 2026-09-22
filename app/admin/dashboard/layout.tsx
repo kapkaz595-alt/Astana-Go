@@ -26,6 +26,7 @@ const NAV_ITEMS = [
   { href: '/admin/banners', label: '广告管理' },
   { href: '/admin/dashboard/local-pick-categories', label: '本地精选分类' },
   { href: '/admin/dashboard/emergency-numbers', label: '紧急求助号码' },
+  { href: '/admin/dashboard/messages', label: '留言管理' },
   { href: '/admin/dashboard/page-stats', label: '网站访问统计' },
 ];
 
