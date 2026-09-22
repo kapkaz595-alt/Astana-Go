@@ -8,6 +8,7 @@ import { BannerSlot } from '@/components/home/banner-slot';
 import { MasonryFeed } from '@/components/home/masonry-feed';
 import WechatQRTrigger from '@/components/wechat-qr-trigger';
 import CitySelector from '@/components/city-selector';
+import { MessageMarquee } from '@/components/home/message-marquee';
 
 const UI_TEXT = {
   zh: {
@@ -281,6 +282,8 @@ function handleCityChange(slug: string) {
       <div className="mx-[18px] mb-1">
   <BannerSlot banners={banners} />
 </div>
+
+      <MessageMarquee />
 
       {/* Hot merchants — 按分类分区块展示 */}
       {categories.map((c) => {
