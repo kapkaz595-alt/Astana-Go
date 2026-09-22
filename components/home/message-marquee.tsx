@@ -36,34 +36,39 @@ export function MessageMarquee() {
 
   return (
     <>
-      <div className="mx-[18px] mt-4 mb-5 rounded-2xl bg-gradient-to-r from-[#FFF3E6] to-[#FFEBDA] border border-[#FFD9B8] px-4 py-3 flex items-center gap-3 shadow-sm">
-  <div className="w-8 h-8 rounded-full bg-[#F4A83D] flex items-center justify-center text-white text-sm shrink-0">
-    💬
-  </div>
-        {current ? (
-          <div key={current.id} className="flex-1 min-w-0">
-            <p className="text-[11.5px] font-semibold text-[#B45F1E] mb-0.5">{current.nickname}</p>
-            <p className="text-[12.5px] text-[#4A4A4A] truncate">{current.content}</p>
-          </div>
-        ) : (
-          <div className="flex-1 min-w-0">
-            <p className="text-[13px] text-[#8A6A4A]">还没有留言，来说两句吧～</p>
-          </div>
-        )}
-        <div className="flex flex-col items-end gap-1 shrink-0">
-          <button
-            onClick={() => setShowForm(true)}
-            className="text-[11px] font-semibold text-white bg-[#E8722C] rounded-full px-3 py-1 whitespace-nowrap"
-          >
-            我要留言
-          </button>
-          {messages.length > 0 && (
-            <button onClick={openAll} className="text-[10px] text-[#9AA0AC] whitespace-nowrap">
-              查看全部 ›
-            </button>
-          )}
-        </div>
+      <div className="mx-[18px] mt-4 mb-5">
+  <div className="rounded-2xl bg-gradient-to-r from-[#FFF3E6] to-[#FFEBDA] border border-[#FFD9B8] px-4 py-3 flex items-center gap-3 shadow-sm">
+    <div className="w-8 h-8 rounded-full bg-[#F4A83D] flex items-center justify-center text-white text-sm shrink-0">
+      💬
+    </div>
+    {current ? (
+      <div key={current.id} className="flex-1 min-w-0">
+        <p className="text-[11.5px] font-semibold text-[#B45F1E] mb-0.5">{current.nickname}</p>
+        <p className="text-[12.5px] text-[#4A4A4A] truncate">{current.content}</p>
       </div>
+    ) : (
+      <div className="flex-1 min-w-0">
+        <p className="text-[13px] text-[#8A6A4A]">还没有留言，来说两句吧～</p>
+      </div>
+    )}
+    <div className="flex flex-col items-end gap-1 shrink-0">
+      <button
+        onClick={() => setShowForm(true)}
+        className="text-[11px] font-semibold text-white bg-[#E8722C] rounded-full px-3 py-1 whitespace-nowrap"
+      >
+        我要留言
+      </button>
+      {messages.length > 0 && (
+        <button onClick={openAll} className="text-[10px] text-[#9AA0AC] whitespace-nowrap">
+          查看全部 ›
+        </button>
+      )}
+    </div>
+  </div>
+  <p className="text-[10px] text-[#9AA0AC] text-center mt-1.5">
+    文明留言，理性发言，网络不是法外之地
+  </p>
+</div>
 
       {showAll && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-end" onClick={() => setShowAll(false)}>
