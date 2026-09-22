@@ -26,7 +26,7 @@ export function MessageMarquee() {
   }, [messages]);
 
   function openAll() {
-    fetch('/api/v1/messages/approved?page=1&limit=50')
+    fetch('/api/v1/messages/approved?page=1&limit=100')
       .then((r) => r.json())
       .then((d) => setAllList(d.data ?? []));
     setShowAll(true);
