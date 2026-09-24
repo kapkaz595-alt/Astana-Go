@@ -66,37 +66,37 @@ export function MessageMarquee() {
     </div>
   </div>
   <p className="text-[10px] text-[#9AA0AC] text-center mt-1.5">
-    文明留言，理性发言，网络不是法外之地
+    文明留言，理性发言
   </p>
 </div>
 
       {showAll && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-end" onClick={() => setShowAll(false)}>
-          <div
-            className="bg-white w-full max-w-[480px] mx-auto max-h-[75vh] rounded-t-2xl overflow-y-auto p-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="font-bold text-[15px]">全部留言</h3>
-              <button onClick={() => setShowAll(false)} className="text-[#9AA0AC] text-lg">✕</button>
-            </div>
-            <div className="space-y-3">
-              {allList.map((m) => (
-                <div key={m.id} className="border-b border-[#E7E9EE] pb-2">
-                  <p className="text-[11px] text-[#6B7280]">{m.nickname}</p>
-                  <p className="text-[13px] text-[#14171F] mt-0.5">{m.content}</p>
-                  <p className="text-[10px] text-[#9AA0AC] mt-1">
-                    {new Date(m.created_at).toLocaleString('zh-CN')}
-                  </p>
-                </div>
-              ))}
-              {allList.length === 0 && (
-                <p className="text-sm text-[#9AA0AC] text-center py-6">暂无留言</p>
-              )}
-            </div>
+  <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4" onClick={() => setShowAll(false)}>
+    <div
+      className="bg-white w-full max-w-[420px] max-h-[75vh] rounded-2xl overflow-y-auto p-4"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="flex justify-between items-center mb-3">
+        <h3 className="font-bold text-[15px]">全部留言</h3>
+        <button onClick={() => setShowAll(false)} className="text-[#9AA0AC] text-lg">✕</button>
+      </div>
+      <div className="space-y-3">
+        {allList.map((m) => (
+          <div key={m.id} className="border-b border-[#E7E9EE] pb-2">
+            <p className="text-[11px] text-[#6B7280]">{m.nickname}</p>
+            <p className="text-[13px] text-[#14171F] mt-0.5">{m.content}</p>
+            <p className="text-[10px] text-[#9AA0AC] mt-1">
+              {new Date(m.created_at).toLocaleString('zh-CN')}
+            </p>
           </div>
-        </div>
-      )}
+        ))}
+        {allList.length === 0 && (
+          <p className="text-sm text-[#9AA0AC] text-center py-6">暂无留言</p>
+        )}
+      </div>
+    </div>
+  </div>
+)}
 
       {showForm && <MessageForm onClose={() => setShowForm(false)} />}
     </>
