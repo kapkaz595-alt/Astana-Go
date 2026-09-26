@@ -20,27 +20,22 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { id } = await params;
-    const { device_id } = await request.json();
-    const supabase = await getClient();
+  const { id } = await params;
+  const { device_id } = await request.json();
+  const supabase = await getClient();
 
-    const { error } = await supabase
-      .from('message_likes')
-      .insert({ message_id: id, device_id });
+  const { error } = await supabase
+    .from('message_likes')
+    .insert({ message_id: id, device_id });
 
-    if (error) {
-      return NextResponse.json({ error: 'INSERT_ERROR: ' + error.message, code: error.code }, { status: 500 });
+  if (error) {
+    if (error.code === '23505') {
+      return NextResponse.json({ error: '已经点过赞' }, { status: 409 });
     }
-
-    const { error: rpcError } = await supabase.rpc('increment_like_count', { msg_id: id });
-
-    if (rpcError) {
-      return NextResponse.json({ error: 'RPC_ERROR: ' + rpcError.message }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true });
-  } catch (e: any) {
-    return NextResponse.json({ error: 'CATCH_ERROR: ' + e.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  await supabase.rpc('increment_like_count', { msg_id: id });
+
+  return NextResponse.json({ success: true });
 }
