@@ -28,6 +28,7 @@ export async function GET(request: NextRequest) {
     .from('user_messages')
     .select('id, content, nickname, created_at, like_count')
     .eq('status', 'approved')
+    .is('parent_id', null)
     .order('created_at', { ascending: false })
     .range(from, to);
 
@@ -38,5 +39,27 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  return NextResponse.json({ success: true, data: data ?? [] });
+  const ids = (data ?? []).map((m) => m.id);
+  let repliesByParent: Record<string, any[]> = {};
+
+  if (ids.length > 0) {
+    const { data: replies } = await supabase
+      .from('user_messages')
+      .select('id, content, nickname, created_at, like_count, parent_id')
+      .eq('status', 'approved')
+      .in('parent_id', ids)
+      .order('created_at', { ascending: true });
+
+    (replies ?? []).forEach((r) => {
+      if (!repliesByParent[r.parent_id]) repliesByParent[r.parent_id] = [];
+      repliesByParent[r.parent_id].push(r);
+    });
+  }
+
+  const result = (data ?? []).map((m) => ({
+    ...m,
+    replies: repliesByParent[m.id] ?? [],
+  }));
+
+  return NextResponse.json({ success: true, data: result });
 }
