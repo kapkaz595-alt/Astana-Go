@@ -21,8 +21,8 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const { content, nickname } = await request.json();
-
+  const { content, nickname, device_id } = await request.json();
+  const finalNickname = nickname || `游客${(device_id || '').slice(-6)}`;
   if (!content || !content.trim()) {
     return NextResponse.json(
       { success: false, error: { code: 'INVALID', message: '内容不能为空' } },
@@ -34,7 +34,7 @@ export async function POST(
 
   const { error } = await supabase.from('user_messages').insert({
     content,
-    nickname: nickname || '匿名',
+    nickname: finalNickname,
     parent_id: id,
     status: 'pending',
   });
