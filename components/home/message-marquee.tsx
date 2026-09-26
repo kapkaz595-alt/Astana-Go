@@ -40,31 +40,33 @@ export function MessageMarquee() {
   }
 
   async function handleLike(messageId: string, isReply: boolean, parentId?: string) {
-    const deviceId = getDeviceId();
-    const res = await fetch(`/api/v1/messages/${messageId}/like`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ device_id: deviceId }),
-    });
-    if (res.ok) {
-      setAllList((list) =>
-        list.map((m) => {
-          if (!isReply && m.id === messageId) {
-            return { ...m, like_count: (m.like_count ?? 0) + 1 };
-          }
-          if (isReply && m.id === parentId) {
-            return {
-              ...m,
-              replies: (m.replies ?? []).map((r) =>
-                r.id === messageId ? { ...r, like_count: (r.like_count ?? 0) + 1 } : r
-              ),
-            };
-          }
-          return m;
-        })
-      );
-    }
+  alert('按钮被点击了,ID: ' + messageId);
+  const deviceId = getDeviceId();
+  const res = await fetch(`/api/v1/messages/${messageId}/like`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ device_id: deviceId }),
+  });
+  alert('请求状态: ' + res.status);
+  if (res.ok) {
+    setAllList((list) =>
+      list.map((m) => {
+        if (!isReply && m.id === messageId) {
+          return { ...m, like_count: (m.like_count ?? 0) + 1 };
+        }
+        if (isReply && m.id === parentId) {
+          return {
+            ...m,
+            replies: (m.replies ?? []).map((r) =>
+              r.id === messageId ? { ...r, like_count: (r.like_count ?? 0) + 1 } : r
+            ),
+          };
+        }
+        return m;
+      })
+    );
   }
+}
 
   async function submitReply(parentId: string) {
     if (!replyContent.trim()) return;
