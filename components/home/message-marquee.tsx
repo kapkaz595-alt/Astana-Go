@@ -46,8 +46,6 @@ export function MessageMarquee() {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ device_id: deviceId }),
   });
-  const json = await res.json();
-  alert('状态: ' + res.status + ' 内容: ' + JSON.stringify(json));
   if (res.ok) {
     setAllList((list) =>
       list.map((m) => {
