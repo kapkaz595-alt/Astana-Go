@@ -82,10 +82,11 @@ export function MessageMarquee() {
     setReplySubmitting(true);
     try {
       const finalContent = replyToNickname ? `回复 @${replyToNickname}: ${replyContent}` : replyContent;
+      const deviceId = getDeviceId();
       const res = await fetch(`/api/v1/messages/${parentId}/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: finalContent, nickname: replyNickname }),
+        body: JSON.stringify({ content: finalContent, nickname: replyNickname, device_id: deviceId }),
       });
       if (res.ok) {
         setReplyDoneId(parentId);
