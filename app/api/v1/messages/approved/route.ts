@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
 
   const { data, error } = await supabase
     .from('user_messages')
-    .select('id, content, nickname, created_at')
+    .select('id, content, nickname, created_at, like_count')
     .eq('status', 'approved')
     .order('created_at', { ascending: false })
     .range(from, to);
