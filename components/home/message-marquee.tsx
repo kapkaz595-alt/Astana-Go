@@ -40,14 +40,14 @@ export function MessageMarquee() {
   }
 
   async function handleLike(messageId: string, isReply: boolean, parentId?: string) {
-  alert('按钮被点击了,ID: ' + messageId);
   const deviceId = getDeviceId();
   const res = await fetch(`/api/v1/messages/${messageId}/like`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ device_id: deviceId }),
   });
-  alert('请求状态: ' + res.status);
+  const json = await res.json();
+  alert('状态: ' + res.status + ' 内容: ' + JSON.stringify(json));
   if (res.ok) {
     setAllList((list) =>
       list.map((m) => {
