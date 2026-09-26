@@ -18,14 +18,15 @@ async function getClient() {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   const { device_id } = await request.json();
   const supabase = await getClient();
 
   const { error } = await supabase
     .from('message_likes')
-    .insert({ message_id: params.id, device_id });
+    .insert({ message_id: id, device_id });
 
   if (error) {
     if (error.code === '23505') {
@@ -34,7 +35,7 @@ export async function POST(
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  await supabase.rpc('increment_like_count', { msg_id: params.id });
+  await supabase.rpc('increment_like_count', { msg_id: id });
 
   return NextResponse.json({ success: true });
 }
