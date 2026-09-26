@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { getDeviceId } from '@/lib/utils/device-id';
 
-type Msg = { id: string; content: string; nickname: string };
+type Msg = { id: string; content: string; nickname: string; like_count?: number };
 
 export function MessageMarquee() {
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -30,6 +31,22 @@ export function MessageMarquee() {
       .then((r) => r.json())
       .then((d) => setAllList(d.data ?? []));
     setShowAll(true);
+  }
+
+  async function handleLike(messageId: string) {
+    const deviceId = getDeviceId();
+    const res = await fetch(`/api/v1/messages/${messageId}/like`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ device_id: deviceId }),
+    });
+    if (res.ok) {
+      setAllList((list) =>
+        list.map((m) =>
+          m.id === messageId ? { ...m, like_count: (m.like_count ?? 0) + 1 } : m
+        )
+      );
+    }
   }
 
   const current = messages[index];
@@ -85,9 +102,17 @@ export function MessageMarquee() {
           <div key={m.id} className="border-b border-[#E7E9EE] pb-2">
             <p className="text-[11px] text-[#6B7280]">{m.nickname}</p>
             <p className="text-[13px] text-[#14171F] mt-0.5">{m.content}</p>
-            <p className="text-[10px] text-[#9AA0AC] mt-1">
-              {new Date(m.created_at).toLocaleString('zh-CN')}
-            </p>
+            <div className="flex items-center justify-between mt-1">
+              <p className="text-[10px] text-[#9AA0AC]">
+                {new Date(m.created_at).toLocaleString('zh-CN')}
+              </p>
+              <button
+                onClick={() => handleLike(m.id)}
+                className="text-[11px] text-[#6B7280] flex items-center gap-1"
+              >
+                👍 {m.like_count ?? 0}
+              </button>
+            </div>
           </div>
         ))}
         {allList.length === 0 && (
