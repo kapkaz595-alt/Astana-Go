@@ -13,6 +13,7 @@ export function MessageMarquee() {
   const [showForm, setShowForm] = useState(false);
   const [allList, setAllList] = useState<Msg[]>([]);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [replyToNickname, setReplyToNickname] = useState<string>('');
   const [replyContent, setReplyContent] = useState('');
   const [replyNickname, setReplyNickname] = useState('');
   const [replySubmitting, setReplySubmitting] = useState(false);
@@ -40,40 +41,51 @@ export function MessageMarquee() {
   }
 
   async function handleLike(messageId: string, isReply: boolean, parentId?: string) {
-  const deviceId = getDeviceId();
-  const res = await fetch(`/api/v1/messages/${messageId}/like`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ device_id: deviceId }),
-  });
-  if (res.ok) {
-    setAllList((list) =>
-      list.map((m) => {
-        if (!isReply && m.id === messageId) {
-          return { ...m, like_count: (m.like_count ?? 0) + 1 };
-        }
-        if (isReply && m.id === parentId) {
-          return {
-            ...m,
-            replies: (m.replies ?? []).map((r) =>
-              r.id === messageId ? { ...r, like_count: (r.like_count ?? 0) + 1 } : r
-            ),
-          };
-        }
-        return m;
-      })
-    );
+    const deviceId = getDeviceId();
+    const res = await fetch(`/api/v1/messages/${messageId}/like`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ device_id: deviceId }),
+    });
+    if (res.ok) {
+      setAllList((list) =>
+        list.map((m) => {
+          if (!isReply && m.id === messageId) {
+            return { ...m, like_count: (m.like_count ?? 0) + 1 };
+          }
+          if (isReply && m.id === parentId) {
+            return {
+              ...m,
+              replies: (m.replies ?? []).map((r) =>
+                r.id === messageId ? { ...r, like_count: (r.like_count ?? 0) + 1 } : r
+              ),
+            };
+          }
+          return m;
+        })
+      );
+    }
   }
-}
+
+  function openReplyBox(topLevelId: string, targetNickname: string) {
+    if (replyingTo === topLevelId && replyToNickname === targetNickname) {
+      setReplyingTo(null);
+    } else {
+      setReplyingTo(topLevelId);
+      setReplyToNickname(targetNickname);
+      setReplyDoneId(null);
+    }
+  }
 
   async function submitReply(parentId: string) {
     if (!replyContent.trim()) return;
     setReplySubmitting(true);
     try {
+      const finalContent = replyToNickname ? `回复 @${replyToNickname}: ${replyContent}` : replyContent;
       const res = await fetch(`/api/v1/messages/${parentId}/reply`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content: replyContent, nickname: replyNickname }),
+        body: JSON.stringify({ content: finalContent, nickname: replyNickname }),
       });
       if (res.ok) {
         setReplyDoneId(parentId);
@@ -143,7 +155,7 @@ export function MessageMarquee() {
                     </p>
                     <div className="flex items-center gap-3">
                       <button
-                        onClick={() => setReplyingTo(replyingTo === m.id ? null : m.id)}
+                        onClick={() => openReplyBox(m.id, m.nickname)}
                         className="text-[11px] text-[#6B7280]"
                       >
                         回复
@@ -168,12 +180,20 @@ export function MessageMarquee() {
                             <p className="text-[9.5px] text-[#9AA0AC]">
                               {new Date(r.created_at).toLocaleString('zh-CN')}
                             </p>
-                            <button
-                              onClick={() => handleLike(r.id, true, m.id)}
-                              className="text-[10px] text-[#6B7280] flex items-center gap-1"
-                            >
-                              👍 {r.like_count ?? 0}
-                            </button>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => openReplyBox(m.id, r.nickname)}
+                                className="text-[10px] text-[#6B7280]"
+                              >
+                                回复
+                              </button>
+                              <button
+                                onClick={() => handleLike(r.id, true, m.id)}
+                                className="text-[10px] text-[#6B7280] flex items-center gap-1"
+                              >
+                                👍 {r.like_count ?? 0}
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -187,6 +207,7 @@ export function MessageMarquee() {
                         <p className="text-[11px] text-[#6B7280]">回复已提交，审核通过后展示</p>
                       ) : (
                         <>
+                          <p className="text-[10.5px] text-[#9AA0AC] mb-1">回复 @{replyToNickname}</p>
                           <input
                             value={replyNickname}
                             onChange={(e) => setReplyNickname(e.target.value)}
