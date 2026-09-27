@@ -268,7 +268,7 @@ function MessageForm({ onClose, merchantId }: { onClose: () => void; merchantId?
       const res = await fetch('/api/v1/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, nickname, merchant_id: merchantId }),
+        body: JSON.stringify({ content, nickname, merchant_id: merchantId, device_id: getDeviceId() }),
       });
       const json = await res.json();
       if (!res.ok) {
