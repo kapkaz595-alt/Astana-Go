@@ -69,7 +69,7 @@ export default async function MerchantDetailPage({
 
         <MerchantTabs m={m} name={name} description={description} businessHours={businessHours} slug={slug} locale={locale} />
 
-        <MessageMarquee merchantId={m.id} />
+        <MessageMarquee merchantId={m.id} variant="merchant" />
       </main>
     </div>
   );
