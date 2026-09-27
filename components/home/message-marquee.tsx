@@ -6,7 +6,10 @@ import { getDeviceId } from '@/lib/utils/device-id';
 type Reply = { id: string; content: string; nickname: string; created_at: string; like_count?: number };
 type Msg = { id: string; content: string; nickname: string; like_count?: number; created_at?: string; replies?: Reply[] };
 
- export function MessageMarquee({ merchantId }: { merchantId?: string } = {}) {
+export function MessageMarquee({
+  merchantId,
+  variant = 'home',
+}: { merchantId?: string; variant?: 'home' | 'merchant' } = {}) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [index, setIndex] = useState(0);
   const [showAll, setShowAll] = useState(false);
@@ -34,7 +37,7 @@ type Msg = { id: string; content: string; nickname: string; like_count?: number;
   }, [messages]);
 
   function openAll() {
-   fetch(`/api/v1/messages/approved?page=1&limit=100${merchantId ? `&merchant_id=${merchantId}` : ''}`)
+    fetch(`/api/v1/messages/approved?page=1&limit=100${merchantId ? `&merchant_id=${merchantId}` : ''}`)
       .then((r) => r.json())
       .then((d) => setAllList(d.data ?? []));
     setShowAll(true);
@@ -102,44 +105,75 @@ type Msg = { id: string; content: string; nickname: string; like_count?: number;
   return (
     <>
       <div className="mx-[18px] mt-4 mb-5">
-  <div className="relative rounded-2xl bg-gradient-to-br from-[#FFF6EA] to-[#FFEAD1] border border-[#FFDFB0] px-5 pt-4 pb-4 shadow-sm overflow-hidden">
-    {messages.length > 0 && (
-      <button
-        onClick={openAll}
-        className="absolute top-3 right-4 text-[10.5px] text-[#B08050] font-medium"
-      >
-        查看全部 ›
-      </button>
-    )}
-
-    <div className="flex items-start gap-3">
-      <div className="w-10 h-10 rounded-full bg-[#F4A83D] flex items-center justify-center text-white text-base shrink-0 shadow-sm">
-        💬
-      </div>
-      <div className="flex-1 min-w-0 pr-10">
-        <p className="text-[13px] font-bold text-[#3A2A18] mb-1">我想留言</p>
-        {current ? (
-          <div key={current.id}>
-            <p className="text-[11px] font-semibold text-[#B45F1E] mb-0.5">{current.nickname}</p>
-            <p className="text-[12px] text-[#5A4A38] truncate">{current.content}</p>
+        {variant === 'home' ? (
+          <div className="relative rounded-2xl bg-gradient-to-br from-[#FFF6EA] to-[#FFEAD1] border border-[#FFDFB0] px-5 pt-4 pb-4 shadow-sm overflow-hidden">
+            {messages.length > 0 && (
+              <button
+                onClick={openAll}
+                className="absolute top-3 right-4 text-[10.5px] text-[#B08050] font-medium"
+              >
+                查看全部 ›
+              </button>
+            )}
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#F4A83D] flex items-center justify-center text-white text-base shrink-0 shadow-sm">
+                💬
+              </div>
+              <div className="flex-1 min-w-0 pr-10">
+                <p className="text-[13px] font-bold text-[#3A2A18] mb-1">我想留言</p>
+                {current ? (
+                  <div key={current.id}>
+                    <p className="text-[11px] font-semibold text-[#B45F1E] mb-0.5">{current.nickname}</p>
+                    <p className="text-[12px] text-[#5A4A38] truncate">{current.content}</p>
+                  </div>
+                ) : (
+                  <p className="text-[12px] text-[#8A6A4A]">还没有留言，来说两句吧～</p>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={() => setShowForm(true)}
+              className="mt-3 text-[12px] font-bold text-white bg-[#F0A93E] rounded-full px-4 py-2 whitespace-nowrap flex items-center gap-1.5 shadow-sm"
+            >
+              ✏️ 去留言
+            </button>
           </div>
         ) : (
-          <p className="text-[12px] text-[#8A6A4A]">还没有留言，来说两句吧～</p>
+          <div className="rounded-xl bg-white border border-[#E7E9EE] px-4 py-3 flex items-center gap-3 shadow-sm">
+            <div className="w-7 h-7 rounded-full bg-[#EDEFF3] flex items-center justify-center text-sm shrink-0">
+              💬
+            </div>
+            {current ? (
+              <div key={current.id} className="flex-1 min-w-0">
+                <p className="text-[11px] font-semibold text-[#14171F] mb-0.5">{current.nickname}</p>
+                <p className="text-[12px] text-[#6B7280] truncate">{current.content}</p>
+              </div>
+            ) : (
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] text-[#9AA0AC]">对这家店有什么想说的？</p>
+              </div>
+            )}
+            <div className="flex flex-col items-end gap-1 shrink-0">
+              <button
+                onClick={() => setShowForm(true)}
+                className="text-[10.5px] font-semibold text-white bg-[#14171F] rounded-full px-3 py-1 whitespace-nowrap"
+              >
+                写评论
+              </button>
+              {messages.length > 0 && (
+                <button onClick={openAll} className="text-[9.5px] text-[#9AA0AC] whitespace-nowrap">
+                  全部 ›
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+        {variant === 'home' && (
+          <p className="text-[10px] text-[#9AA0AC] text-center mt-1.5">
+            文明留言，理性发言
+          </p>
         )}
       </div>
-    </div>
-
-    <button
-      onClick={() => setShowForm(true)}
-      className="mt-3 text-[12px] font-bold text-white bg-[#F0A93E] rounded-full px-4 py-2 whitespace-nowrap flex items-center gap-1.5 shadow-sm"
-    >
-      ✏️ 去留言
-    </button>
-  </div>
-  <p className="text-[10px] text-[#9AA0AC] text-center mt-1.5">
-    文明留言，理性发言
-  </p>
-</div>
 
       {showAll && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4" onClick={() => setShowAll(false)}>
@@ -176,7 +210,6 @@ type Msg = { id: string; content: string; nickname: string; like_count?: number;
                     </div>
                   </div>
 
-                  {/* 回复列表 */}
                   {(m.replies ?? []).length > 0 && (
                     <div className="mt-2 ml-3 pl-2 border-l-2 border-[#F0F0F0] space-y-2">
                       {m.replies!.map((r) => (
@@ -207,7 +240,6 @@ type Msg = { id: string; content: string; nickname: string; like_count?: number;
                     </div>
                   )}
 
-                  {/* 回复输入框 */}
                   {replyingTo === m.id && (
                     <div className="mt-2 ml-3">
                       {replyDoneId === m.id ? (
