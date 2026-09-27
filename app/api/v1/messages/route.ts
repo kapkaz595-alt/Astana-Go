@@ -18,7 +18,7 @@ async function getClient() {
 
 export async function POST(request: NextRequest) {
   const supabase = await getClient();
-  const { content, nickname } = await request.json();
+  const { content, nickname, merchant_id } = await request.json();
 
   if (!content?.trim()) {
     return NextResponse.json(
@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
     content: content.trim().slice(0, 100),
     nickname: nickname?.trim().slice(0, 20) || '匿名用户',
     ip,
+    merchant_id: merchant_id || null,
   });
 
   if (error) {
