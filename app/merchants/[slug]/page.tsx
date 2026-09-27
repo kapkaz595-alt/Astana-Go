@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cookies } from 'next/headers';
 import MerchantTabs from '@/components/merchant/merchant-tabs';
+import { MessageMarquee } from '@/components/home/message-marquee';
 
 const UI_TEXT = {
   zh: { open: '营业中', closed: '已打烊', verified: '已认证' },
@@ -67,6 +68,8 @@ export default async function MerchantDetailPage({
         </div>
 
         <MerchantTabs m={m} name={name} description={description} businessHours={businessHours} slug={slug} locale={locale} />
+
+        <MessageMarquee merchantId={m.id} />
       </main>
     </div>
   );
