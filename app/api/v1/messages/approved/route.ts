@@ -21,14 +21,21 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const page = Number(searchParams.get('page') ?? '1');
   const limit = Number(searchParams.get('limit') ?? '20');
+  const merchantId = searchParams.get('merchant_id');
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('user_messages')
     .select('id, content, nickname, created_at, like_count')
     .eq('status', 'approved')
-    .is('parent_id', null)
+    .is('parent_id', null);
+
+  query = merchantId
+    ? query.eq('merchant_id', merchantId)
+    : query.is('merchant_id', null);
+
+  const { data, error } = await query
     .order('created_at', { ascending: false })
     .range(from, to);
 
