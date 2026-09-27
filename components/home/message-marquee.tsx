@@ -6,7 +6,7 @@ import { getDeviceId } from '@/lib/utils/device-id';
 type Reply = { id: string; content: string; nickname: string; created_at: string; like_count?: number };
 type Msg = { id: string; content: string; nickname: string; like_count?: number; created_at?: string; replies?: Reply[] };
 
-export function MessageMarquee() {
+ export function MessageMarquee({ merchantId }: { merchantId?: string } = {}) {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [index, setIndex] = useState(0);
   const [showAll, setShowAll] = useState(false);
@@ -20,7 +20,7 @@ export function MessageMarquee() {
   const [replyDoneId, setReplyDoneId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch('/api/v1/messages/approved?page=1&limit=20')
+    fetch(`/api/v1/messages/approved?page=1&limit=20${merchantId ? `&merchant_id=${merchantId}` : ''}`)
       .then((r) => r.json())
       .then((d) => setMessages(d.data ?? []));
   }, []);
@@ -34,7 +34,7 @@ export function MessageMarquee() {
   }, [messages]);
 
   function openAll() {
-    fetch('/api/v1/messages/approved?page=1&limit=100')
+   fetch(`/api/v1/messages/approved?page=1&limit=100${merchantId ? `&merchant_id=${merchantId}` : ''}`)
       .then((r) => r.json())
       .then((d) => setAllList(d.data ?? []));
     setShowAll(true);
@@ -245,12 +245,12 @@ export function MessageMarquee() {
         </div>
       )}
 
-      {showForm && <MessageForm onClose={() => setShowForm(false)} />}
+      {showForm && <MessageForm onClose={() => setShowForm(false)} merchantId={merchantId} />}
     </>
   );
 }
 
-function MessageForm({ onClose }: { onClose: () => void }) {
+function MessageForm({ onClose, merchantId }: { onClose: () => void; merchantId?: string }) {
   const [nickname, setNickname] = useState('');
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -268,7 +268,7 @@ function MessageForm({ onClose }: { onClose: () => void }) {
       const res = await fetch('/api/v1/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, nickname }),
+        body: JSON.stringify({ content, nickname, merchant_id: merchantId }),
       });
       const json = await res.json();
       if (!res.ok) {
