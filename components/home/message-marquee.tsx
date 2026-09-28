@@ -8,8 +8,14 @@ type Msg = { id: string; content: string; nickname: string; like_count?: number;
 
 export function MessageMarquee({
   merchantId,
+  contentId,
   variant = 'home',
-}: { merchantId?: string; variant?: 'home' | 'merchant' } = {}) {
+}: { merchantId?: string; contentId?: string; variant?: 'home' | 'merchant' } = {}) {
+  const scope = merchantId
+    ? `&merchant_id=${merchantId}`
+    : contentId
+    ? `&content_id=${contentId}`
+    : '';
   const [messages, setMessages] = useState<Msg[]>([]);
   const [index, setIndex] = useState(0);
   const [showAll, setShowAll] = useState(false);
@@ -23,7 +29,7 @@ export function MessageMarquee({
   const [replyDoneId, setReplyDoneId] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`/api/v1/messages/approved?page=1&limit=20${merchantId ? `&merchant_id=${merchantId}` : ''}`)
+    fetch(`/api/v1/messages/approved?page=1&limit=20${scope}`)
       .then((r) => r.json())
       .then((d) => setMessages(d.data ?? []));
   }, []);
@@ -37,7 +43,7 @@ export function MessageMarquee({
   }, [messages]);
 
   function openAll() {
-    fetch(`/api/v1/messages/approved?page=1&limit=100${merchantId ? `&merchant_id=${merchantId}` : ''}`)
+    fetch(`/api/v1/messages/approved?page=1&limit=100${scope}`)
       .then((r) => r.json())
       .then((d) => setAllList(d.data ?? []));
     setShowAll(true);
