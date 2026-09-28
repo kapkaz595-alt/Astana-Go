@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ContentViewTracker } from '@/components/content-view-tracker';
+import { MessageMarquee } from '@/components/home/message-marquee'; // 新增
 
 async function getContent(slug: string, locale: string) {
   const base = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
@@ -51,6 +52,11 @@ export default async function ContentDetailPage({
   className="text-sm text-[#14171F] mt-4 leading-relaxed prose prose-sm max-w-none"
   dangerouslySetInnerHTML={{ __html: t?.body || '' }}
 />
+        </div>
+
+        {/* 新增 */}
+        <div className="pb-8">
+          <MessageMarquee contentId={c.id} variant="merchant" />
         </div>
       </main>
     </div>
