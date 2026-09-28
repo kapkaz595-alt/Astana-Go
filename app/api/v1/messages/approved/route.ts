@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
   const page = Number(searchParams.get('page') ?? '1');
   const limit = Number(searchParams.get('limit') ?? '20');
   const merchantId = searchParams.get('merchant_id');
+  const contentId = searchParams.get('content_id');
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
@@ -31,9 +32,13 @@ export async function GET(request: NextRequest) {
     .eq('status', 'approved')
     .is('parent_id', null);
 
-  query = merchantId
-    ? query.eq('merchant_id', merchantId)
-    : query.is('merchant_id', null);
+  if (merchantId) {
+    query = query.eq('merchant_id', merchantId);
+  } else if (contentId) {
+    query = query.eq('content_id', contentId);
+  } else {
+    query = query.is('merchant_id', null).is('content_id', null);
+  }
 
   const { data, error } = await query
     .order('created_at', { ascending: false })
