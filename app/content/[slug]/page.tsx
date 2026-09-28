@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import DOMPurify from 'isomorphic-dompurify';
+import { MessageMarquee } from '@/components/message-marquee';
 
 function sanitizeHtml(html: string) {
   return DOMPurify.sanitize(html, {
@@ -67,6 +68,10 @@ export default async function ContentDetailPage({
             className="px-[18px] md:px-8 pb-8 text-sm md:text-base leading-relaxed md:leading-loose text-[#14171F] prose prose-sm max-w-none"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(t.body) }}
           />
+
+        <div className="pb-8">
+          <MessageMarquee contentId={c.id} variant="merchant" />
+        </div>
       </main>
     </div>
   );
