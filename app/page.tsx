@@ -9,6 +9,7 @@ import { MasonryFeed } from '@/components/home/masonry-feed';
 import WechatQRTrigger from '@/components/wechat-qr-trigger';
 import CitySelector from '@/components/city-selector';
 import NearbySection from '@/components/home/nearby-section';
+import { useUserPosition, haversine } from '@/lib/hooks/use-user-position';
 import { MessageMarquee } from '@/components/home/message-marquee';
 
 const UI_TEXT = {
@@ -66,6 +67,14 @@ const UI_TEXT = {
   },
 };
 
+const userPos = useUserPosition();
+
+  function formatDist(m: number) {
+    const r = Math.round(m);
+    if (locale === 'kk') return r < 1000 ? `${r} м` : `${(r / 1000).toFixed(1)} км`;
+    return r < 1000 ? `${r} 米` : `${(r / 1000).toFixed(1)} 公里`;
+  }
+
 const CONTENT_TABS = ['攻略 & 资讯'];
 const TAB_TAGS = ['guide'];
 
@@ -75,6 +84,8 @@ type Merchant = {
   view_count: number; verification_status: string; is_open_now: boolean;
   price_range: string | null;
   location_note: string | null;
+  latitude: number | null;
+  longitude: number | null;
 };
 type ContentItem = {
   id: string; slug: string; cover_image: string | null; published_at: string;
@@ -219,8 +230,15 @@ function handleCityChange(slug: string) {
         </div>
         <div className="px-[10px] pt-[9px] pb-[10px]">
           <div className="text-[13px] font-bold">{m.name}</div>
-          {m.location_note && (
-            <div className="text-[10px] text-[#6B7280] mt-1">📍{m.location_note}</div>
+          {userPos && m.latitude != null && m.longitude != null ? (
+            <div className="text-[10px] text-[#2B8C93] font-medium mt-1">
+              📍{locale === 'kk' ? 'Сізден ' : '距你 '}
+              {formatDist(haversine(userPos, { lat: m.latitude, lng: m.longitude }))}
+            </div>
+          ) : (
+            m.location_note && (
+              <div className="text-[10px] text-[#6B7280] mt-1">📍{m.location_note}</div>
+            )
           )}
           {m.price_range && (
             <div className="text-[10px] text-[#D9A441] font-medium mt-1">{m.price_range}</div>
