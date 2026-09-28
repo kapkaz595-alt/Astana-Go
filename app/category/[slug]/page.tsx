@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import DistanceLabel from '@/components/distance-label';
 
 const UI_TEXT = {
   zh: { back: '返回', noMerchants: '该分类下暂无商家', open: '营业中', closed: '休息中', verified: '已认证' },
@@ -15,6 +16,8 @@ type Merchant = {
   cover_image: string | null;
   price_range: string | null;
   location_note: string | null;
+  latitude: number | null;
+  longitude: number | null;
 };
 
 type Category = {
@@ -86,9 +89,12 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
                 <span className={`text-[10.5px] ${m.is_open_now ? 'text-[#2B8C93]' : 'text-[#B54B3A]'}`}>
                   {m.is_open_now ? t.open : t.closed}
                 </span>
-                {m.location_note && (
-                  <div className="text-[10.5px] text-[#6B7280] mt-1">📍{m.location_note}</div>
-                )}
+                <DistanceLabel
+                  lat={m.latitude}
+                  lng={m.longitude}
+                  note={m.location_note}
+                  locale={locale as 'zh' | 'kk'}
+                />
                 {m.price_range && (
                   <div className="text-[10.5px] text-[#D9A441] font-medium mt-1">{m.price_range}</div>
                 )}
