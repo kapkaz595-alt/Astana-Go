@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { cookies } from 'next/headers';
-import MerchantTabs from '@/components/merchant/merchant-tabs';
+import { MessageMarquee } from '@/components/home/message-marquee';
 import { MessageMarquee } from '@/components/home/message-marquee';
 
 const UI_TEXT = {
