@@ -8,6 +8,7 @@ import { BannerSlot } from '@/components/home/banner-slot';
 import { MasonryFeed } from '@/components/home/masonry-feed';
 import WechatQRTrigger from '@/components/wechat-qr-trigger';
 import CitySelector from '@/components/city-selector';
+import NearbySection from '@/components/home/nearby-section';
 import { MessageMarquee } from '@/components/home/message-marquee';
 
 const UI_TEXT = {
@@ -284,6 +285,7 @@ function handleCityChange(slug: string) {
 </div>
 
       <MessageMarquee />
+    <NearbySection locale={locale} citySlug={citySlug} />
 
       {/* Hot merchants — 按分类分区块展示 */}
       {categories.map((c) => {
