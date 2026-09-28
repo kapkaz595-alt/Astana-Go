@@ -289,12 +289,12 @@ export function MessageMarquee({
         </div>
       )}
 
-      {showForm && <MessageForm onClose={() => setShowForm(false)} merchantId={merchantId} />}
+      {showForm && <MessageForm onClose={() => setShowForm(false)} merchantId={merchantId} contentId={contentId} />}
     </>
   );
 }
 
-function MessageForm({ onClose, merchantId }: { onClose: () => void; merchantId?: string }) {
+function MessageForm({ onClose, merchantId, contentId }: { onClose: () => void; merchantId?: string; contentId?: string }) {
   const [nickname, setNickname] = useState('');
   const [content, setContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -312,7 +312,7 @@ function MessageForm({ onClose, merchantId }: { onClose: () => void; merchantId?
       const res = await fetch('/api/v1/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, nickname, merchant_id: merchantId, device_id: getDeviceId() }),
+        body: JSON.stringify({ content, nickname, merchant_id: merchantId, content_id: contentId, device_id: getDeviceId() }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -340,7 +340,7 @@ function MessageForm({ onClose, merchantId }: { onClose: () => void; merchantId?
         {done ? (
           <div className="py-8 text-center">
             <p className="text-[14px] text-[#14171F] font-medium">留言已提交</p>
-            <p className="text-[12px] text-[#6B7280] mt-1">审核通过后会展示在首页</p>
+            <p className="text-[12px] text-[#6B7280] mt-1">审核通过后会展示</p>
             <button
               onClick={onClose}
               className="mt-4 px-5 py-2 bg-[#E8722C] text-white text-sm rounded-full"
