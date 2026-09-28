@@ -67,14 +67,6 @@ const UI_TEXT = {
   },
 };
 
-const userPos = useUserPosition();
-
-  function formatDist(m: number) {
-    const r = Math.round(m);
-    if (locale === 'kk') return r < 1000 ? `${r} м` : `${(r / 1000).toFixed(1)} км`;
-    return r < 1000 ? `${r} 米` : `${(r / 1000).toFixed(1)} 公里`;
-  }
-
 const CONTENT_TABS = ['攻略 & 资讯'];
 const TAB_TAGS = ['guide'];
 
@@ -112,6 +104,13 @@ export default function HomePage() {
 
   const [locale, setLocale] = useState<'zh' | 'kk'>('zh');
   const t = UI_TEXT[locale];
+  const userPos = useUserPosition();
+
+  function formatDist(m: number) {
+    const r = Math.round(m);
+    if (locale === 'kk') return r < 1000 ? `${r} м` : `${(r / 1000).toFixed(1)} км`;
+    return r < 1000 ? `${r} 米` : `${(r / 1000).toFixed(1)} 公里`;
+  }
 
   const [citySlug, setCitySlug] = useState('astana');
   const [cities, setCities] = useState<City[]>([]);
