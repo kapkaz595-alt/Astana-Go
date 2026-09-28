@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { compressImage } from '@/lib/utils/compress-image';
 
 interface MenuItem {
   id: string;
@@ -46,20 +47,31 @@ export default function MerchantMenuPage() {
 
   const handleImageUpload = async (file: File) => {
     setUploading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', 'merchants');
-    formData.append('entity_id', merchantId);
+    try {
+      const compressed = await compressImage(file);
+      const formData = new FormData();
+      formData.append('file', compressed);
+      formData.append('folder', 'merchants');
+      formData.append('entity_id', merchantId);
 
-    const res = await fetch('/api/v1/admin/upload', {
-      method: 'POST',
-      body: formData,
-    });
-    const json = await res.json();
-    setUploading(false);
-    if (json.url) setImageUrl(json.url);
+      const res = await fetch('/api/v1/admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const json = await res.json();
+      if (json.url) {
+        setImageUrl(json.url);
+      } else {
+        alert('上传失败：' + (json.error?.message || json.error || '未知错误'));
+      }
+    } catch (err) {
+      console.error('upload error:', err);
+      alert('上传失败，请换一张图片或稍后再试');
+    } finally {
+      setUploading(false);
+    }
   };
-
+  
   const handleAdd = async () => {
     if (!nameZh) return;
     const res = await fetch(`/api/v1/admin/merchants/${merchantId}/menu-items`, {
