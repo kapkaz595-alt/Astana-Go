@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import DOMPurify from 'isomorphic-dompurify';
-import { MessageMarquee } from '@/components/message-marquee';
+import { MessageMarquee } from '@/components/home/message-marquee';
 
 function sanitizeHtml(html: string) {
   return DOMPurify.sanitize(html, {
