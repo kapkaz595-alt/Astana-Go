@@ -302,7 +302,7 @@ function handleCityChange(slug: string) {
 </div>
 
       <MessageMarquee />
-    <NearbySection locale={locale} citySlug={citySlug} />
+    <NearbySection locale={locale} citySlug={citySlug} categories={categories} />
 
       {/* Hot merchants — 按分类分区块展示 */}
       {categories.map((c) => {
