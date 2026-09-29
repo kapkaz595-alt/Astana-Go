@@ -19,6 +19,7 @@ type Pos = { lat: number; lng: number };
 const TEXT = {
   zh: {
     title: '附近商家',
+    allCategories: '全部',
     idleTitle: '看看你附近有什么',
     idleDesc: '开启定位，自动显示 3 公里内的商家',
     idleBtn: '📍 查看附近商家',
@@ -35,6 +36,7 @@ const TEXT = {
   },
   kk: {
     title: 'Жақын маңдағы дүкендер',
+    allCategories: 'Барлығы',
     idleTitle: 'Жақын маңда не бар екенін көріңіз',
     idleBtn: '📍 Жақын маңдағы дүкендер',
     idleDesc: '3 км ішіндегі дүкендер автоматты түрде көрсетіледі',
@@ -65,12 +67,15 @@ function distanceBetween(a: Pos, b: Pos) {
 export default function NearbySection({
   locale,
   citySlug,
+  categories,
 }: {
   locale: 'zh' | 'kk';
   citySlug: string;
+  categories: { id: string; slug: string; name: string }[];
 }) {
   const t = TEXT[locale];
   const [status, setStatus] = useState<'idle' | 'locating' | 'ready' | 'denied' | 'error'>('idle');
+  const [activeCategory, setActiveCategory] = useState('');
   const [list, setList] = useState<NearbyMerchant[]>([]);
   const [loading, setLoading] = useState(false);
   const lastPosRef = useRef<Pos | null>(null);
@@ -81,7 +86,7 @@ export default function NearbySection({
       setLoading(true);
       try {
         const res = await fetch(
-          `/api/v1/merchants/nearby?lat=${p.lat}&lng=${p.lng}&radius=3000&limit=20&locale=${locale}&city_slug=${citySlug}`
+          `/api/v1/merchants/nearby?lat=${p.lat}&lng=${p.lng}&radius=3000&limit=20&locale=${locale}&city_slug=${citySlug}${activeCategory ? `&category_slug=${activeCategory}` : ''}`
         );
         const json = await res.json();
         if (json.success) {
@@ -96,7 +101,7 @@ export default function NearbySection({
         setLoading(false);
       }
     },
-    [locale, citySlug]
+    [locale, citySlug, activeCategory]
   );
 
   const start = useCallback(() => {
@@ -141,6 +146,10 @@ export default function NearbySection({
     if (lastPosRef.current) load(lastPosRef.current);
   }, [locale, citySlug, load]);
 
+  useEffect(() => {
+    if (lastPosRef.current) load(lastPosRef.current);
+  }, [activeCategory, load]);
+
   function refresh() {
     if (lastPosRef.current) load(lastPosRef.current);
     else start();
@@ -166,6 +175,26 @@ export default function NearbySection({
           </button>
         )}
       </div>
+
+      {status === 'ready' && (
+        <div className="flex gap-2 overflow-x-auto px-[18px] pb-3" style={{ WebkitOverflowScrolling: 'touch' }}>
+          <button
+            onClick={() => setActiveCategory('')}
+            className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap ${activeCategory === '' ? 'bg-black text-white' : 'bg-[#EDEFF3] text-[#6B7280]'}`}
+          >
+            {t.allCategories}
+          </button>
+          {categories.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => setActiveCategory(c.slug)}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap ${activeCategory === c.slug ? 'bg-black text-white' : 'bg-[#EDEFF3] text-[#6B7280]'}`}
+            >
+              {c.name}
+            </button>
+          ))}
+        </div>
+      )}
 
       {status === 'idle' && (
         <div className="mx-[18px] rounded-2xl bg-white border border-[#E7E9EE] p-4 shadow-sm">
