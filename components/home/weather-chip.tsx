@@ -126,7 +126,7 @@ export default function WeatherChip({
   if (state === 'loading' || !data || !advice) {
     return (
       <div
-        className="h-8 w-[6.5rem] shrink-0 animate-pulse rounded-full bg-gray-200"
+        className="h-8 w-[4.5rem] shrink-0 animate-pulse rounded-full bg-gray-200 md:w-[6.5rem]"
         aria-hidden
       />
     )
@@ -139,7 +139,7 @@ export default function WeatherChip({
       ? 'border-red-300 bg-red-50 text-red-700'
       : advice.severity === 'warn'
         ? 'border-amber-300 bg-amber-50 text-amber-800'
-        : 'border-gray-200 bg-white text-gray-800'
+        : 'border-white/60 bg-white/90 text-gray-800'
   const tagTone =
     advice.severity === 'danger'
       ? 'bg-red-100 text-red-700'
@@ -151,23 +151,23 @@ export default function WeatherChip({
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className={`flex h-8 min-w-[6.5rem] items-center justify-center gap-1.5 rounded-full border px-3 text-xs font-medium ${tone}`}
+        className={`flex h-8 min-w-[4.5rem] items-center justify-center gap-1 rounded-full border px-2.5 text-xs font-semibold md:min-w-[6.5rem] md:gap-1.5 md:px-3 ${tone}`}
       >
         <span aria-hidden>{iconEmoji(data.icon)}</span>
         <span>{data.temp}°</span>
-        <span className="opacity-60">·</span>
-        <span>{advice.windLabel}</span>
+        <span className="hidden opacity-60 md:inline">·</span>
+        <span className="hidden md:inline">{advice.windLabel}</span>
       </button>
 
       {open && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/20 sm:bg-transparent"
+            className="fixed inset-0 z-40 bg-black/20 md:bg-transparent"
             onClick={() => setOpen(false)}
           />
           <div
             role="dialog"
-            className="fixed left-4 right-4 top-20 z-50 rounded-2xl border border-gray-200 bg-white p-4 text-gray-800 shadow-xl sm:absolute sm:left-0 sm:right-auto sm:top-full sm:mt-2 sm:w-80"
+            className="fixed left-4 right-4 top-20 z-50 mx-auto max-w-sm rounded-2xl border border-gray-200 bg-white p-4 text-gray-800 shadow-xl md:absolute md:left-auto md:right-0 md:top-full md:mx-0 md:mt-2 md:w-80"
           >
             <div className="flex items-center gap-3">
               <span className="text-4xl" aria-hidden>
@@ -176,7 +176,7 @@ export default function WeatherChip({
               <div>
                 <div className="text-2xl font-semibold">{data.temp}°C</div>
                 <div className="text-xs text-gray-500">
-                  {t.feels} {data.feels_like}°C
+                  {t.feels} {data.feels_like}°C · {advice.windLabel}
                 </div>
               </div>
               <button
