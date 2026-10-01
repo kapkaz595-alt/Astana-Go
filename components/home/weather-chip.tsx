@@ -142,7 +142,7 @@ export default function WeatherChip({
       ? 'border-red-300 bg-red-50 text-red-700'
       : advice.severity === 'warn'
         ? 'border-amber-300 bg-amber-50 text-amber-800'
-        : 'border-gray-200 bg-white text-gray-800'
+        : 'border-[#BFE0E3] bg-[#E8F4F5] text-[#1F6F75]'
   const tagTone =
     advice.severity === 'danger'
       ? 'bg-red-100 text-red-700'
