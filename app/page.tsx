@@ -8,6 +8,7 @@ import { BannerSlot } from '@/components/home/banner-slot';
 import { MasonryFeed } from '@/components/home/masonry-feed';
 import WechatQRTrigger from '@/components/wechat-qr-trigger';
 import CitySelector from '@/components/city-selector';
+import WeatherChip from '@/components/home/weather-chip';
 import NearbySection from '@/components/home/nearby-section';
 import { useUserPosition, haversine } from '@/lib/hooks/use-user-position';
 import { MessageMarquee } from '@/components/home/message-marquee';
@@ -257,6 +258,7 @@ function handleCityChange(slug: string) {
          <Image src="/logo.png" alt="Astana Go" width={180} height={60} className="h-[60px] w-auto" priority />
         </div>
         <div className="flex items-center gap-2">
+          <WeatherChip lang={locale} city={citySlug} />
           <button onClick={() => setCitySelectorOpen(true)} className="bg-white/90 rounded-full px-[13px] py-[6px] text-xs font-semibold">
             📍{cityName} ▼
           </button>
