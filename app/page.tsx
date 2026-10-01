@@ -258,7 +258,6 @@ function handleCityChange(slug: string) {
          <Image src="/logo.png" alt="Astana Go" width={180} height={60} className="h-[60px] w-auto" priority />
         </div>
         <div className="flex items-center gap-2">
-          <WeatherChip lang={locale} city={citySlug} />
           <button onClick={() => setCitySelectorOpen(true)} className="bg-white/90 rounded-full px-[13px] py-[6px] text-xs font-semibold">
             📍{cityName} ▼
           </button>
@@ -285,6 +284,10 @@ function handleCityChange(slug: string) {
         </form>
       </div>
    </div>
+
+    <div className="px-[18px] pt-3 pb-3">
+  <WeatherChip lang={locale} city={citySlug} />
+</div>
 
       {/* Categories */}
       <div className="px-3 pb-5 grid grid-cols-5 md:grid-cols-10 gap-x-[2px] md:gap-x-4 gap-y-[14px]">
