@@ -126,7 +126,7 @@ export default function WeatherChip({
   if (state === 'loading' || !data || !advice) {
     return (
       <div
-        className="h-8 w-[4.5rem] shrink-0 animate-pulse rounded-full bg-gray-200 md:w-[6.5rem]"
+        className="h-9 w-full animate-pulse rounded-xl bg-gray-200"
         aria-hidden
       />
     )
@@ -134,40 +134,49 @@ export default function WeatherChip({
 
   const t = T[lang]
   const aqiText = data.aqi ? t.aqi[data.aqi - 1] ?? '—' : '—'
+  const summary = [advice.warnings[0], advice.clothing]
+    .filter(Boolean)
+    .join(' · ')
   const tone =
     advice.severity === 'danger'
       ? 'border-red-300 bg-red-50 text-red-700'
       : advice.severity === 'warn'
         ? 'border-amber-300 bg-amber-50 text-amber-800'
-        : 'border-white/60 bg-white/90 text-gray-800'
+        : 'border-gray-200 bg-white text-gray-800'
   const tagTone =
     advice.severity === 'danger'
       ? 'bg-red-100 text-red-700'
       : 'bg-amber-100 text-amber-800'
 
   return (
-    <div className="relative shrink-0">
+    <div className="relative">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
-        className={`flex h-8 min-w-[4.5rem] items-center justify-center gap-1 rounded-full border px-2.5 text-xs font-semibold md:min-w-[6.5rem] md:gap-1.5 md:px-3 ${tone}`}
+        className={`flex h-9 w-full items-center gap-2 rounded-xl border px-3 text-xs ${tone}`}
       >
-        <span aria-hidden>{iconEmoji(data.icon)}</span>
-        <span>{data.temp}°</span>
-        <span className="hidden opacity-60 md:inline">·</span>
-        <span className="hidden md:inline">{advice.windLabel}</span>
+        <span className="text-base" aria-hidden>
+          {iconEmoji(data.icon)}
+        </span>
+        <span className="font-semibold">{data.temp}°</span>
+        <span className="shrink-0 opacity-70">{advice.windLabel}</span>
+        <span className="opacity-40">|</span>
+        <span className="min-w-0 flex-1 truncate text-left">{summary}</span>
+        <span className="shrink-0 opacity-50" aria-hidden>
+          ›
+        </span>
       </button>
 
       {open && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/20 md:bg-transparent"
+            className="fixed inset-0 z-[60] bg-black/20 md:bg-transparent"
             onClick={() => setOpen(false)}
           />
           <div
             role="dialog"
-            className="fixed left-4 right-4 top-20 z-50 mx-auto max-w-sm rounded-2xl border border-gray-200 bg-white p-4 text-gray-800 shadow-xl md:absolute md:left-auto md:right-0 md:top-full md:mx-0 md:mt-2 md:w-80"
+            className="fixed left-4 right-4 top-20 z-[70] mx-auto max-w-sm rounded-2xl border border-gray-200 bg-white p-4 text-gray-800 shadow-xl md:absolute md:left-0 md:right-auto md:top-full md:mx-0 md:mt-2 md:w-80"
           >
             <div className="flex items-center gap-3">
               <span className="text-4xl" aria-hidden>
