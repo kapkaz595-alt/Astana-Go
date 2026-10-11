@@ -142,6 +142,7 @@ function toggleLocale() {
 }
 
 function handleCityChange(slug: string) {
+  setMerchantsLoaded(false);
   setCitySlug(slug);
   document.cookie = `city_slug=${slug}; path=/; max-age=31536000`;
 }
@@ -167,7 +168,6 @@ function handleCityChange(slug: string) {
 
   // 一次性拉取所有分类的热门商家(合并接口,替代原来的N次循环请求)
   useEffect(() => {
-    setMerchantsLoaded(false);
     fetch(`/api/v1/merchants/by-categories?locale=${locale}&city_slug=${citySlug}&per_category_limit=10`)
       .then((r) => r.json())
       .then((d) => {
@@ -373,7 +373,7 @@ function handleCityChange(slug: string) {
           ))}
         </div>
         <div className="px-[18px]">
-          <MasonryFeed initialItems={feedItems} initialHasMore={feedHasMore} category={activeLocalPickCategory || undefined} key={activeLocalPickCategory} />
+          <MasonryFeed initialItems={feedItems} initialHasMore={feedHasMore} category={activeLocalPickCategory || undefined} key={`${activeLocalPickCategory}-${locale}-${citySlug}`} />
         </div>
 
       {/* Footer */}
