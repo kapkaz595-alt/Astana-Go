@@ -373,7 +373,7 @@ function handleCityChange(slug: string) {
           ))}
         </div>
         <div className="px-[18px]">
-          <MasonryFeed initialItems={feedItems} initialHasMore={feedHasMore} category={activeLocalPickCategory || undefined} key={`${activeLocalPickCategory}-${locale}-${citySlug}`} />
+          <MasonryFeed initialItems={feedItems} initialHasMore={feedHasMore} category={activeLocalPickCategory || undefined} locale={locale} citySlug={citySlug} key={activeLocalPickCategory} />
         </div>
 
       {/* Footer */}
